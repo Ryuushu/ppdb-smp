@@ -1,0 +1,217 @@
+import { type Column, DataTable } from "@/components/data-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { formatDate, formatDateTime } from "@/lib/date";
+import { Head, Link, router } from "@inertiajs/react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const programItems = [
+	{ id: "semua", name: "Semua Peserta" },
+	{ id: "1", name: "Reguler" },
+	{ id: "2", name: "Tahfidz" },
+	{ id: "3", name: "Unggulan" },
+];
+
+interface Program {
+	id: number;
+	nama: string;
+	abbreviation: string;
+}
+
+interface Peserta {
+	id: string;
+	no_pendaftaran: string;
+	nama_lengkap: string;
+	tempat_lahir: string;
+	tanggal_lahir: string;
+	no_hp: string;
+	bertindik: boolean;
+	bertato: boolean;
+	asal_sekolah: string;
+	program: Program;
+	diterima: number; // 0: proses, 1: diterima, 2: ditolak
+	created_at: string;
+}
+
+interface Props {
+	pesertappdb: {
+		data: Peserta[];
+		links: any[];
+		meta: any;
+	};
+	tahun: number;
+	years: number[];
+	program?: string | number;
+}
+
+export default function ListPendaftar({
+	pesertappdb,
+	tahun,
+	years,
+	program,
+}: Props) {
+	const columns: Column<Peserta>[] = [
+		{
+			header: "Identitas Peserta",
+			className: "min-w-[200px]",
+			cell: ({ row }) => (
+				<div className="flex flex-col">
+					<span className="font-mono text-muted-foreground text-xs">
+						{row.original.no_pendaftaran}
+					</span>
+					<Link
+						href={route("ppdb.show.peserta", row.original.id)}
+						className="font-bold text-primary hover:underline"
+					>
+						{row.original.nama_lengkap}
+					</Link>
+					<span className="sm:hidden mt-1 text-muted-foreground text-xs">
+						{row.original.program?.nama || "-"}
+					</span>
+				</div>
+			),
+		},
+		{
+			header: "Info Peserta",
+			className: "hidden md:table-cell",
+			cell: ({ row }) => (
+				<div className="flex flex-col text-sm">
+					<div className="flex items-center gap-1">
+						<span className="text-muted-foreground">TTL:</span>
+						<span>
+							{row.original.tempat_lahir},{" "}
+							{formatDate(row.original.tanggal_lahir)}
+						</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<span className="text-muted-foreground">Asal:</span>
+						<span className="max-w-[150px] truncate">
+							{row.original.asal_sekolah}
+						</span>
+					</div>
+					<div className="flex items-center gap-2 mt-1">
+						<Badge variant={row.original.bertindik ? "default" : "outline"}>
+							Bertindik: {row.original.bertindik ? "Ya" : "Tidak"}
+						</Badge>
+						<Badge variant={row.original.bertato ? "default" : "outline"}>
+							Bertato: {row.original.bertato ? "Ya" : "Tidak"}
+						</Badge>
+					</div>
+				</div>
+			),
+		},
+		{
+			header: "Kontak",
+			className: "hidden sm:table-cell",
+			cell: ({ row }) => (
+				<a
+					href={`https://wa.me/${row.original.no_hp}`}
+					target="_blank"
+					rel="noreferrer"
+					className="flex items-center gap-1 font-medium text-green-600 dark:text-green-400 text-sm hover:underline"
+				>
+					{row.original.no_hp}
+				</a>
+			),
+		},
+		{
+			header: "Program",
+			className: "hidden sm:table-cell",
+			cell: ({ row }) => (
+				<div className="font-medium text-sm">
+					{row.original.program?.abbreviation ||
+						row.original.program?.nama ||
+						"-"}
+				</div>
+			),
+		},
+
+		{
+			header: "Terdaftar",
+			className: "hidden lg:table-cell",
+			cell: ({ row }) => (
+				<span className="text-muted-foreground text-xs">
+					{formatDateTime(row.original.created_at)}
+				</span>
+			),
+		},
+	];
+
+	const handleYearChange = (year: string) => {
+		router.get(
+			window.location.pathname,
+			{ tahun: year, program: program || "semua" },
+			{ preserveState: true }
+		);
+	};
+
+	const handleProgramChange = (prog: string) => {
+        if (prog === "semua") {
+            router.get(route("ppdb.list.pendaftar"), { tahun }, { preserveState: true });
+        } else {
+            router.get(route("ppdb.list.pendaftar.program", { program: prog }), { tahun }, { preserveState: true });
+        }
+	};
+
+	return (
+		<>
+			<Head title="List Peserta SNPMB" />
+
+			<div className="space-y-6">
+                <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
+                    <TabsList className="mb-2">
+                        {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
+                            <TabsTrigger key={p.id} value={p.id}>
+                                {p.name}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </Tabs>
+
+				<div className="flex sm:flex-row flex-col justify-between gap-4">
+					<div className="w-full sm:w-1/4">
+						<Select value={String(tahun)} onValueChange={handleYearChange}>
+							<SelectTrigger>
+								<SelectValue placeholder="Pilih Tahun" />
+							</SelectTrigger>
+							<SelectContent>
+								{years.map((y) => (
+									<SelectItem key={y} value={String(y)}>
+										{y}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+					<div className="flex items-center gap-2">
+						<Button asChild>
+							<a
+								href={route("export.peserta.ppdb", {
+									tahun: tahun,
+									all: 1,
+									program: program || "",
+								})}
+							>
+								Export Excel
+							</a>
+						</Button>
+					</div>
+				</div>
+				<DataTable
+					columns={columns}
+					data={pesertappdb.data}
+					pagination={{ links: pesertappdb.links }}
+					searchPlaceholder="Cari nama, no pend, asal sekolah..."
+					additionalParams={{ program }}
+				/>
+			</div>
+		</>
+	);
+}
