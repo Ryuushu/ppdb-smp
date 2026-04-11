@@ -37,6 +37,7 @@ import { router, useForm as useInertiaForm, usePage } from "@inertiajs/react";
 import confetti from "canvas-confetti";
 import gsap from "gsap";
 import {
+	Calendar,
 	Check,
 	CheckCircle2,
 	ChevronLeft,
@@ -435,7 +436,7 @@ export function RegistrationForm({
 								<div className="flex items-start gap-3 text-left">
 									<CheckCircle2 className="mt-0.5 w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
 									<p className="text-muted-foreground">
-										Simpan nomor pendaftaran Anda untuk keperluan daftar ulang
+										Simpan nomor pendaftaran Anda dan segera datang ke sekolah untuk verifikasi berkas & administrasi
 									</p>
 								</div>
 								<div className="flex items-start gap-3 text-left">
@@ -448,8 +449,7 @@ export function RegistrationForm({
 								<div className="flex items-start gap-3 text-left">
 									<CheckCircle2 className="mt-0.5 w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
 									<p className="text-muted-foreground">
-										Pantau status pendaftaran dan pengumuman secara berkala
-										di website kami
+										Lakukan pembayaran administrasi pendaftaran secara offline di bagian Front Office sekolah
 									</p>
 								</div>
 							</div>

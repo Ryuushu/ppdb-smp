@@ -9,7 +9,6 @@ const navLinks = [
 	{ href: "/#beranda", label: "Beranda" },
 	{ href: "/#fasilitas", label: "Fasilitas" },
 	{ href: "/#ekskul", label: "Ekstrakurikuler" },
-	{ href: "/ranking", label: "Ranking Live" },
 ];
 
 export function Navbar({ onShowBrosur }: { onShowBrosur: () => void }) {
@@ -110,11 +109,11 @@ export function Navbar({ onShowBrosur }: { onShowBrosur: () => void }) {
 					<div ref={buttonRef} className="hidden md:flex items-center gap-3">
 						<ModeToggle />
 						<Button
+							asChild
 							size="lg"
 							className="rounded-full px-6 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:scale-105 transition-all duration-300"
-							onClick={onShowBrosur}
 						>
-							Daftar Sekarang
+							<Link href={route('ppdb.register')}>Daftar Sekarang</Link>
 						</Button>
 					</div>
 
@@ -152,8 +151,11 @@ export function Navbar({ onShowBrosur }: { onShowBrosur: () => void }) {
 							{link.label}
 						</Link>
 					))}
-					<Button onClick={onShowBrosur} className="w-full mt-4 rounded-full">
-						Daftar Sekarang
+					<Button onClick={onShowBrosur} className="w-full mt-4 rounded-full" variant="outline">
+						Lihat Brosur
+					</Button>
+					<Button asChild className="w-full mt-2 rounded-full">
+						<Link href={route('ppdb.register')}>Daftar Sekarang</Link>
 					</Button>
 				</div>
 			</div>

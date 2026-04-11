@@ -8,7 +8,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle2, MessageCircle, FileText, Info } from "lucide-react";
+import { Calendar, CheckCircle2, MessageCircle, FileText, Info, UserPlus } from "lucide-react";
+import { Link } from "@inertiajs/react";
 import { formatDateFull } from "@/lib/date";
 
 interface Wave {
@@ -122,12 +123,22 @@ export function BrosurModal({ isOpen, onClose, gelombang, setting }: BrosurModal
 
 						<div className="p-6 border-t bg-muted/30">
 							<div className="flex flex-col gap-3">
+								<Button 
+									asChild
+									className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl h-12 shadow-lg shadow-primary/20"
+								>
+									<Link href={route('ppdb.register')}>
+										<UserPlus className="w-5 h-5 mr-2" /> Daftar Online Sekarang
+									</Link>
+								</Button>
+
 								{waNumber && (
 									<Button 
-										className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl h-12 shadow-lg shadow-green-100"
+										variant="outline"
+										className="w-full border-green-500 text-green-600 hover:bg-green-50 rounded-xl h-12"
 										onClick={() => window.open(`https://wa.me/${waNumber.replace(/\D/g, '')}`, '_blank')}
 									>
-										<MessageCircle className="w-5 h-5 mr-2" /> Hubungi Panitia (WhatsApp)
+										<MessageCircle className="w-5 h-5 mr-2" /> Tanya Panitia (WhatsApp)
 									</Button>
 								)}
 								<p className="text-[11px] text-center text-muted-foreground">

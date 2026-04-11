@@ -198,7 +198,7 @@ export function Footer() {
 				<div className="mt-12 pt-8 border-background/10 border-t">
 					<div className="flex md:flex-row flex-col justify-between items-center gap-4">
 						<p className="text-background/60 text-sm">
-							&copy; {new Date().getFullYear()} SMP/MTs Diponegoro Karanganyar. Hak
+							&copy; {new Date().getFullYear()} MTs Nurul Ulum. Hak
 							Cipta Dilindungi.
 						</p>
 						<p className="text-background/60 text-sm">
