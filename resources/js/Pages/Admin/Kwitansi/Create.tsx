@@ -25,6 +25,13 @@ import {
 } from "@/components/ui/table";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { format } from "date-fns";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 interface User {
 	id: number;
@@ -55,11 +62,18 @@ interface Peserta {
 	kwitansi: Kwitansi[];
 }
 
-interface Props {
-	peserta: Peserta;
+interface AdminItem {
+	id: number;
+	name: string;
+	amount: number;
 }
 
-export default function Create({ peserta }: Props) {
+interface Props {
+	peserta: Peserta;
+	adminItems: AdminItem[];
+}
+
+export default function Create({ peserta, adminItems }: Props) {
 	const { data, setData, post, processing, errors, reset } = useForm({
 		jenis_pembayaran: "",
 		nominal: "",
@@ -119,22 +133,51 @@ export default function Create({ peserta }: Props) {
 							<Separator />
 
 							<div className="gap-4 grid grid-cols-1 md:grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="jenis_pembayaran">Jenis Pembayaran</Label>
-									<Input
-										id="jenis_pembayaran"
-										value={data.jenis_pembayaran}
-										onChange={(e) =>
-											setData("jenis_pembayaran", e.target.value)
-										}
-										placeholder="Contoh: Daftar Ulang, Seragam"
-										required
-									/>
-									{errors.jenis_pembayaran && (
-										<span className="text-destructive text-sm">
-											{errors.jenis_pembayaran}
-										</span>
-									)}
+								<div className="space-y-4">
+									<div className="space-y-2">
+										<Label>Pilih Item Biaya (Opsional)</Label>
+										<Select
+											onValueChange={(value) => {
+												const item = adminItems.find((i) => i.id.toString() === value);
+												if (item) {
+													setData({
+														...data,
+														jenis_pembayaran: item.name,
+														nominal: item.amount.toString(),
+													});
+												}
+											}}
+										>
+											<SelectTrigger>
+												<SelectValue placeholder="Pilih biaya yang terdaftar..." />
+											</SelectTrigger>
+											<SelectContent>
+												{adminItems.map((item) => (
+													<SelectItem key={item.id} value={item.id.toString()}>
+														{item.name} - {formatCurrency(item.amount)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div>
+
+									<div className="space-y-2">
+										<Label htmlFor="jenis_pembayaran">Jenis Pembayaran</Label>
+										<Input
+											id="jenis_pembayaran"
+											value={data.jenis_pembayaran}
+											onChange={(e) =>
+												setData("jenis_pembayaran", e.target.value)
+											}
+											placeholder="Contoh: Daftar Ulang, Seragam"
+											required
+										/>
+										{errors.jenis_pembayaran && (
+											<span className="text-destructive text-sm">
+												{errors.jenis_pembayaran}
+											</span>
+										)}
+									</div>
 								</div>
 								<div className="space-y-2">
 									<Label htmlFor="nominal">Jumlah (Rp)</Label>

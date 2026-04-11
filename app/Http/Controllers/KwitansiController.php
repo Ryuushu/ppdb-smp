@@ -23,7 +23,6 @@ class KwitansiController extends Controller
         $search = $request->input('search');
 
         $pesertappdb = PesertaPPDB::with('program', 'kwitansi')
-            ->where('diterima', 1)
             ->whereYear('created_at', $tahun)
             ->when($program, fn($q) => $q->where('program_id', $program))
             ->when($search, function ($query, $search) {
@@ -48,8 +47,9 @@ class KwitansiController extends Controller
     public function tambahKwitansi($uuid)
     {
         $peserta = PesertaPPDB::with(['program', 'kwitansi' => fn($query) => $query->withTrashed()->latest()->with('penerima', 'deletedBy')])->findOrFail($uuid);
+        $adminItems = \App\Models\AdminItem::all();
 
-        return inertia('Admin/Kwitansi/Create', compact('peserta'));
+        return inertia('Admin/Kwitansi/Create', compact('peserta', 'adminItems'));
     }
 
     public function storeKwitansi(StoreKwitansiRequest $request, $uuid)
@@ -79,7 +79,7 @@ class KwitansiController extends Controller
 
     public function cetakKwitansi($uuid)
     {
-        $pesertappdb = PesertaPPDB::with(['program', 'kwitansi'])->where('diterima', 1)->findOrFail($uuid);
+        $pesertappdb = PesertaPPDB::with(['program', 'kwitansi'])->findOrFail($uuid);
 
         // $pdf = PDF::loadView('pdf.cetak-kwitansi', $peserta);
 
@@ -95,7 +95,7 @@ class KwitansiController extends Controller
             'kwitansi' => function ($query) use ($id) {
                 $query->whereId($id);
             },
-        ])->where('diterima', 1)->findOrFail($uuid);
+        ])->findOrFail($uuid);
 
         // $pdf = PDF::loadView('pdf.cetak-kwitansi', $peserta);
 

@@ -119,20 +119,22 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 					className="flex sm:flex-row flex-col justify-center gap-4 mb-12"
 				>
 					<Button
+						asChild
 						size="lg"
 						className="bg-primary hover:bg-primary/90 shadow-2xl shadow-primary/30 hover:shadow-primary/50 px-10 rounded-full h-14 text-lg hover:scale-105 transition-all duration-300 gap-2"
-						onClick={onShowBrosur}
 					>
-						Daftar Sekarang
-						<ArrowRight className="w-5 h-5" />
+						<Link href={route('ppdb.register')}>
+							Daftar Online
+							<ArrowRight className="w-5 h-5" />
+						</Link>
 					</Button>
 					<Button
 						size="lg"
 						variant="outline"
 						className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-10 border-2 border-white/50 hover:border-white rounded-full h-14 text-white text-lg hover:scale-105 transition-all duration-300"
-						asChild
+						onClick={onShowBrosur}
 					>
-						<Link href="#fasilitas">Lihat Fasilitas</Link>
+						Lihat Brosur & Syarat
 					</Button>
 				</div>
 

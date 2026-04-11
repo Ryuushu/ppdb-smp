@@ -193,6 +193,19 @@ export function AppSidebar() {
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
+
+							{/* Pemetaan Kelas */}
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									asChild
+									isActive={url.startsWith("/dashboard/pemetaan-kelas")}
+								>
+									<Link href={route("admin.pemetaan-kelas.index")}>
+										<MonitorCog className="size-4" />
+										<span>Pemetaan Kelas</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
@@ -241,54 +254,52 @@ export function AppSidebar() {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 
-							{/* Kwitansi - Hidden for now, can be re-enabled later */}
-							{false && (
-								<CollapsibleMenuItem
-									icon={<Receipt className="size-4" />}
-									title="Kwitansi"
-									defaultOpen={isActive("/dashboard/kwitansi")}
-								>
-									<SidebarMenuSubItem>
+							{/* Kwitansi */}
+							<CollapsibleMenuItem
+								icon={<Receipt className="size-4" />}
+								title="Kwitansi"
+								defaultOpen={isActive("/dashboard/kwitansi")}
+							>
+								<SidebarMenuSubItem>
+									<SidebarMenuSubButton
+										asChild
+										isActive={
+											url === "/dashboard/kwitansi/show" ||
+											url === "/dashboard/kwitansi/show/"
+										}
+									>
+										<Link href={route("ppdb.kwitansi.show")}>
+											List Peserta Diterima
+										</Link>
+									</SidebarMenuSubButton>
+								</SidebarMenuSubItem>
+								{visiblePrograms.map((program) => (
+									<SidebarMenuSubItem key={program.id}>
 										<SidebarMenuSubButton
 											asChild
-											isActive={
-												url === "/dashboard/kwitansi/show" ||
-												url === "/dashboard/kwitansi/show/"
-											}
+											isActive={url.includes(`/kwitansi/show/${program.id}`)}
 										>
-											<Link href={route("ppdb.kwitansi.show")}>
-												List Peserta Diterima
-											</Link>
-										</SidebarMenuSubButton>
-									</SidebarMenuSubItem>
-									{visiblePrograms.map((program) => (
-										<SidebarMenuSubItem key={program.id}>
-											<SidebarMenuSubButton
-												asChild
-												isActive={url.includes(`/kwitansi/show/${program.id}`)}
+											<Link
+												href={route("ppdb.kwitansi.show.program", {
+													program: program.id,
+												})}
 											>
-												<Link
-													href={route("ppdb.kwitansi.show.program", {
-														program: program.id,
-													})}
-												>
-													{program.name}
-												</Link>
-											</SidebarMenuSubButton>
-										</SidebarMenuSubItem>
-									))}
-									<SidebarMenuSubItem>
-										<SidebarMenuSubButton
-											asChild
-											isActive={url.includes("/kwitansi/rekap")}
-										>
-											<Link href={route("ppdb.rekap.kwitansi")}>
-												Rekap Pembayaran
+												{program.name}
 											</Link>
 										</SidebarMenuSubButton>
 									</SidebarMenuSubItem>
-								</CollapsibleMenuItem>
-							)}
+								))}
+								<SidebarMenuSubItem>
+									<SidebarMenuSubButton
+										asChild
+										isActive={url.includes("/kwitansi/rekap")}
+									>
+										<Link href={route("ppdb.rekap.kwitansi")}>
+											Rekap Pembayaran
+										</Link>
+									</SidebarMenuSubButton>
+								</SidebarMenuSubItem>
+							</CollapsibleMenuItem>
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
@@ -310,17 +321,30 @@ export function AppSidebar() {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 							{user?.role === 'super_admin' && (
-								<SidebarMenuItem>
-									<SidebarMenuButton
-										asChild
-										isActive={url.includes("/setting/snpmb")}
-									>
-										<Link href={route("snpmb.set.batas.akhir")}>
-											<Settings className="size-4" />
-											<span>Pengaturan SNPMB</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
+								<>
+									<SidebarMenuItem>
+										<SidebarMenuButton
+											asChild
+											isActive={url.includes("/setting/admin-items")}
+										>
+											<Link href={route("admin.admin-items.index")}>
+												<Receipt className="size-4" />
+												<span>Biaya Administrasi</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+									<SidebarMenuItem>
+										<SidebarMenuButton
+											asChild
+											isActive={url.includes("/setting/ppdb")}
+										>
+											<Link href={route("snpmb.set.batas.akhir")}>
+												<Settings className="size-4" />
+												<span>Pengaturan SNPMB</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								</>
 							)}
 						</SidebarMenu>
 					</SidebarGroupContent>

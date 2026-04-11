@@ -31,10 +31,13 @@ class AddColumnUserIdOnKwitansiTable extends Migration
      */
     public function down()
     {
+        Schema::table('kwitansi', function (Blueprint $table) {
+            $table->dropForeign(['peserta_ppdb_id']);
+            $table->dropColumn('user_id');
+        });
+
         Schema::table('peserta_ppdb', function (Blueprint $table) {
             $table->dropPrimary('id');
         });
-
-        Schema::dropColumns('kwitansi', ['user_id']);
     }
 }

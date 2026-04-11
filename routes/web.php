@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminItemController;
+use App\Http\Controllers\Admin\PemetaanKelasController;
 
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FormulirController;
@@ -38,12 +40,19 @@ Route::get('/', function () {
     ]);
 });
 Route::get('/register', function () {
-    return redirect('/')->with('info', 'Pendaftaran online dinonaktifkan. Silakan datang langsung ke sekolah membawa persyaratan yang tertera pada brosur.');
+    $program = \App\Models\Program::all()->map(fn($p) => ['value' => $p->id, 'label' => $p->nama]);
+    $gelombangAktif = \App\Models\Gelombang::where('status', 'buka')
+        ->where('tanggal_mulai', '<=', now())
+        ->where('tanggal_selesai', '>=', now())
+        ->first();
+
+    return inertia('Pendaftaran', [
+        'program' => $program,
+        'gelombangAktif' => $gelombangAktif
+    ]);
 })->name('ppdb.register');
 
-Route::post('/register', function () {
-    return redirect('/')->with('error', 'Pendaftaran online dinonaktifkan.');
-})->name('ppdb.register.submit');
+Route::post('/register', [PendaftaranPPDB::class, 'mendaftar'])->name('ppdb.register.submit');
 
 Route::get('/ranking', [\App\Http\Controllers\RankingController::class, 'index'])->name('ppdb.ranking');
 
@@ -58,6 +67,11 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
     Route::middleware('role:super_admin')->group(function () {
         Route::get('/setting/ppdb', [PpdbSettingController::class, 'index'])->name('snpmb.set.batas.akhir');
         Route::put('/setting/ppdb', [PpdbSettingController::class, 'setBatasAkhir'])->name('snpmb.set.batas.akhir');
+
+        // Admin Items (Fees)
+        Route::get('/setting/admin-items', [AdminItemController::class, 'index'])->name('admin.admin-items.index');
+        Route::post('/setting/admin-items', [AdminItemController::class, 'store'])->name('admin.admin-items.store');
+        Route::delete('/setting/admin-items/{id}', [AdminItemController::class, 'destroy'])->name('admin.admin-items.destroy');
     });
 
     // Gelombang Pendaftaran
@@ -73,10 +87,13 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
     Route::post('/gelombang/{id}/kriteria', [\App\Http\Controllers\Admin\GelombangController::class, 'storeKriteria'])->name('admin.gelombang.store_kriteria');
     Route::delete('/kriteria/{id}', [\App\Http\Controllers\Admin\GelombangController::class, 'deleteKriteria'])->name('admin.gelombang.delete_kriteria');
 
-    // SPK & Ranking
-    Route::get('/spk/input-nilai/{peserta_id}', [\App\Http\Controllers\Admin\SPKController::class, 'inputNilai'])->name('admin.spk.input_nilai');
-    Route::post('/spk/input-nilai/{peserta_id}', [\App\Http\Controllers\Admin\SPKController::class, 'storeNilai'])->name('admin.spk.store_nilai');
-    Route::post('/spk/hitung-ranking/{gelombang_id}', [\App\Http\Controllers\Admin\SPKController::class, 'hitungRankingManual'])->name('admin.spk.hitung_ranking');
+    // Pemetaan Kelas
+    Route::prefix('pemetaan-kelas')->group(function () {
+        Route::get('/', [PemetaanKelasController::class, 'index'])->name('admin.pemetaan-kelas.index');
+        Route::get('/setting-ranges', [PemetaanKelasController::class, 'settingRanges'])->name('admin.pemetaan-kelas.setting_ranges');
+        Route::post('/setting-ranges', [PemetaanKelasController::class, 'storeRanges'])->name('admin.pemetaan-kelas.store_ranges');
+        Route::delete('/setting-ranges/{id}', [PemetaanKelasController::class, 'deleteRange'])->name('admin.pemetaan-kelas.delete_range');
+    });
 
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
