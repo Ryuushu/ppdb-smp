@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle2, AlertCircle, Info, Calculator, CreditCard } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -80,9 +80,13 @@ interface Props {
 }
 
 export default function Create({ peserta, adminItems }: Props) {
+	const nonDeletedCount = peserta.kwitansi.filter(k => !k.deleted_at).length;
+	const INITIAL_J_P = `Cicilan ke-${nonDeletedCount + 1}`;
+
 	const { data, setData, post, processing, errors, reset } = useForm({
-		jenis_pembayaran: "",
+		jenis_pembayaran: INITIAL_J_P,
 		nominal: "",
+		pembayaran_mode: "cicil" as "cicil" | "lunas",
 	});
 
 	const [itemInfo, setItemInfo] = useState<{
@@ -92,24 +96,6 @@ export default function Create({ peserta, adminItems }: Props) {
 	} | null>(null);
 
 	const { flash, csrf_token } = usePage<any>().props;
-
-	const submit = (e: React.FormEvent) => {
-		e.preventDefault();
-
-		// Cek jika nominal melebihi batas (untuk item yang terdaftar)
-		if (maxAllowedForItem !== null && Number(data.nominal) > maxAllowedForItem) {
-			setData("nominal", maxAllowedForItem.toString());
-			return;
-		}
-
-		post(route("ppdb.kwitansi.tambah", { uuid: peserta.id }), {
-			onSuccess: () => reset(),
-		});
-	};
-
-	const handleDelete = (id: number) => {
-		router.delete(route("ppdb.kwitansi.hapus", { id }));
-	};
 
 	const formatCurrency = (amount: number) => {
 		return new Intl.NumberFormat("id-ID", {
@@ -134,28 +120,56 @@ export default function Create({ peserta, adminItems }: Props) {
 	const sisaTagihan = totalBill - totalTerbayar;
 	const progressPercent = totalBill > 0 ? (totalTerbayar / totalBill) * 100 : 0;
 
-	// Calculate max allowed for currently selected item name
-	const matchingAdminItem = adminItems.find(
-		(i) => i.name.toLowerCase() === data.jenis_pembayaran.toLowerCase(),
-	);
+	// In total-based installment logic, max is always sisaTagihan
+	const maxAllowed = Math.max(0, sisaTagihan);
 
-	const maxAllowedForItem = matchingAdminItem
-		? (() => {
-				const price =
-					peserta.jenis_kelamin === "l"
-						? (matchingAdminItem.amount_male ?? 0)
-						: (matchingAdminItem.amount_female ?? 0);
-				const alreadyPaid = peserta.kwitansi
-					.filter(
-						(k) =>
-							!k.deleted_at &&
-							k.jenis_pembayaran.toLowerCase() ===
-								matchingAdminItem.name.toLowerCase(),
-					)
-					.reduce((sum, k) => sum + Number(k.nominal ?? 0), 0);
-				return Math.max(0, price - alreadyPaid);
-			})()
-		: null;
+	// Handle automatic defaults for payment mode
+	useEffect(() => {
+		if (data.pembayaran_mode === 'cicil') {
+			if (!data.jenis_pembayaran || data.jenis_pembayaran === 'Pelunasan Biaya Administrasi') {
+				setData('jenis_pembayaran', INITIAL_J_P);
+			}
+		} else {
+			setData('jenis_pembayaran', 'Pelunasan Biaya Administrasi');
+			setData('nominal', maxAllowed.toString());
+		}
+	}, [data.pembayaran_mode]);
+
+	const submit = (e: React.FormEvent) => {
+		e.preventDefault();
+
+		// Cek jika nominal melebihi batas sisa tagihan
+		if (Number(data.nominal) > maxAllowed) {
+			setData("nominal", maxAllowed.toString());
+			return;
+		}
+
+		post(route("ppdb.kwitansi.tambah", { uuid: peserta.id }), {
+			onSuccess: () => reset(),
+		});
+	};
+	const initialInstallmentName = () => {
+		const nonDeletedCount = peserta.kwitansi.filter(k => !k.deleted_at).length;
+		return `Cicilan ke-${nonDeletedCount + 1}`;
+	};
+
+	let remainingBalanceForAllocation = totalTerbayar;
+	const itemAllocations = adminItems.map((item) => {
+		const price = Number(peserta.jenis_kelamin === "l" ? (item.amount_male ?? 0) : (item.amount_female ?? 0));
+		let paidForItem = 0;
+		if (price > 0) {
+			if (remainingBalanceForAllocation >= price) {
+				paidForItem = price;
+				remainingBalanceForAllocation -= price;
+			} else {
+				paidForItem = remainingBalanceForAllocation;
+				remainingBalanceForAllocation = 0;
+			}
+		}
+		const remainder = Math.max(0, price - paidForItem);
+		const isPaid = remainder <= 0 && price > 0;
+		return { ...item, price, paidForItem, remainder, isPaid };
+	});
 
 	return (
 		<>
@@ -245,6 +259,47 @@ export default function Create({ peserta, adminItems }: Props) {
 					</Card>
 				</div>
 
+				<Card>
+					<CardHeader>
+						<CardTitle className="text-lg flex items-center">
+							<Info className="mr-2 size-5 text-blue-600" />
+							Kumpulan Item Invoice (Tagihan)
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="rounded-md border overflow-hidden">
+							<Table>
+								<TableHeader className="bg-muted/50">
+									<TableRow>
+										<TableHead>Item Biaya</TableHead>
+										<TableHead className="text-right">Harga</TableHead>
+										<TableHead className="text-right">Terbayar</TableHead>
+										<TableHead className="text-right">Sisa</TableHead>
+										<TableHead className="text-center">Status</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{itemAllocations.map((item) => (
+											<TableRow key={item.id}>
+												<TableCell className="font-medium">{item.name}</TableCell>
+												<TableCell className="text-right font-mono">{formatCurrency(item.price)}</TableCell>
+												<TableCell className="text-right font-mono text-green-600">{formatCurrency(item.paidForItem)}</TableCell>
+												<TableCell className="text-right font-mono text-orange-600">{formatCurrency(item.remainder)}</TableCell>
+												<TableCell className="text-center">
+													{item.isPaid ? (
+														<Badge className="bg-green-500 hover:bg-green-600">Lunas</Badge>
+													) : (
+														<Badge variant="outline" className="text-orange-500 border-orange-200">Belum Lunas</Badge>
+													)}
+												</TableCell>
+											</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</div>
+					</CardContent>
+				</Card>
+
 				<Card className="lg:min-w-3xl">
 					<CardHeader>
 						<CardTitle>Kwitansi Peserta</CardTitle>
@@ -268,87 +323,43 @@ export default function Create({ peserta, adminItems }: Props) {
 
 							<div className="gap-4 grid grid-cols-1 md:grid-cols-2">
 								<div className="space-y-4">
+
+
+									</div>
+								</div>
+
+								<div className="space-y-4">
 									<div className="space-y-2">
-										<Label>Pilih Item Biaya (Opsional)</Label>
-										<Select
-											onValueChange={(value) => {
-												const item = adminItems.find(
-													(i) => i.id.toString() === value,
-												);
-												if (item) {
-													const itemPrice = Number(
-														peserta.jenis_kelamin === "l"
-															? (item.amount_male ?? 0)
-															: (item.amount_female ?? 0),
-													);
-
-													// Hitung berapa yang sudah dibayar untuk item ini (berdasarkan nama)
-													const alreadyPaid = peserta.kwitansi
-														.filter(
-															(k) =>
-																!k.deleted_at &&
-																k.jenis_pembayaran.toLowerCase() ===
-																	item.name.toLowerCase(),
-														)
-														.reduce(
-															(sum, k) => sum + Number(k.nominal ?? 0),
-															0,
-														);
-
-													const remainder = Math.max(0, itemPrice - alreadyPaid);
-
-													setItemInfo({
-														price: itemPrice,
-														paid: alreadyPaid,
-														remaining: remainder,
-													});
-
-													setData({
-														...data,
-														jenis_pembayaran: item.name,
-														nominal: remainder > 0 ? remainder.toString() : itemPrice.toString(),
-													});
-												}
-											}}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Pilih biaya yang terdaftar..." />
-											</SelectTrigger>
-											<SelectContent>
-												{adminItems.map((item) => (
-													<SelectItem key={item.id} value={item.id.toString()}>
-														{item.name} - (P: {formatCurrency(item.amount_male)} / W: {formatCurrency(item.amount_female)})
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										{itemInfo && (
-											<div className="mt-2 p-3 rounded-lg bg-blue-50 border border-blue-100 flex items-start gap-2 shadow-sm animate-in fade-in slide-in-from-top-1">
-												<Info className="size-4 text-blue-600 mt-0.5" />
-												<div className="text-xs text-blue-700 space-y-1">
-													<div className="flex justify-between gap-4">
-														<span>Harga Item:</span>
-														<span className="font-semibold">{formatCurrency(itemInfo.price)}</span>
-													</div>
-													<div className="flex justify-between gap-4">
-														<span>Sudah Dibayar:</span>
-														<span className="font-semibold">{formatCurrency(itemInfo.paid)}</span>
-													</div>
-													<div className="h-px bg-blue-200 my-1" />
-													<div className="flex justify-between gap-4 text-blue-900 font-bold">
-														<span>Sisa Tagihan Item:</span>
-														<span>{formatCurrency(itemInfo.remaining)}</span>
-													</div>
-												</div>
-											</div>
-										)}
+										<Label>Mode Pembayaran</Label>
+										<div className="flex gap-2 p-1 bg-muted rounded-lg border w-fit">
+											<button
+												type="button"
+												className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${data.pembayaran_mode === 'cicil' ? 'bg-white shadow-sm text-primary' : 'text-muted-foreground hover:bg-white/50'}`}
+												onClick={() => setData(prev => ({ ...prev, pembayaran_mode: 'cicil' }))}
+											>
+												Cicilan
+											</button>
+											<button
+												type="button"
+												className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${data.pembayaran_mode === 'lunas' ? 'bg-white shadow-sm text-primary' : 'text-muted-foreground hover:bg-white/50'}`}
+												onClick={() => {
+													setData(prev => ({ 
+														...prev, 
+														pembayaran_mode: 'lunas'
+													}));
+												}}
+											>
+												Lunas (Full)
+											</button>
+										</div>
 									</div>
 
 									<div className="space-y-2">
-										<Label htmlFor="jenis_pembayaran">Jenis Pembayaran</Label>
+										<Label htmlFor="jenis_pembayaran">Jenis Pembayaran / Keterangan</Label>
 										<Input
 											id="jenis_pembayaran"
 											value={data.jenis_pembayaran}
+											readOnly={data.pembayaran_mode === 'lunas'}
 											onChange={(e) =>
 												setData("jenis_pembayaran", e.target.value)
 											}
@@ -361,19 +372,21 @@ export default function Create({ peserta, adminItems }: Props) {
 											</span>
 										)}
 									</div>
-								</div>
+
 									<div className="space-y-2">
-										<Label htmlFor="nominal">Jumlah (Rp)</Label>
+										<Label htmlFor="nominal">Jumlah Pembayaran (Rp)</Label>
 										<Input
 											id="nominal"
 											type="number"
 											min="1"
-											max={maxAllowedForItem ?? undefined}
+											max={maxAllowed}
 											value={data.nominal}
+											readOnly={data.pembayaran_mode === 'lunas'}
+											className={data.pembayaran_mode === 'lunas' ? 'bg-muted font-bold text-lg' : ''}
 											onChange={(e) => {
 												let val = e.target.value;
-												if (maxAllowedForItem !== null && Number(val) > maxAllowedForItem) {
-													val = maxAllowedForItem.toString();
+												if (Number(val) > maxAllowed) {
+													val = maxAllowed.toString();
 												}
 												setData("nominal", val);
 											}}
@@ -382,11 +395,9 @@ export default function Create({ peserta, adminItems }: Props) {
 										/>
 										<p className="text-muted-foreground text-xs">
 											*Tanpa titik maupun koma
-											{maxAllowedForItem !== null && (
-												<span className="ml-1 text-primary font-medium">
-													(Maks: {formatCurrency(maxAllowedForItem)})
-												</span>
-											)}
+											<span className="ml-1 text-primary font-medium">
+												(Maksimal: {formatCurrency(maxAllowed)})
+											</span>
 										</p>
 									{errors.nominal && (
 										<span className="text-destructive text-sm">
