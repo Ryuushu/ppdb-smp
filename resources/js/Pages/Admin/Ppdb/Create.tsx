@@ -33,6 +33,8 @@ interface Props {
 const steps = [
 	{ id: 1, title: "Identitas Diri" },
 	{ id: 2, title: "Identitas Orang Tua" },
+    { id: 3, title: "Riwayat & Bakat" },
+    { id: 4, title: "Dokumen" },
 ];
 
 export default function Create({ gelombang, masterDocuments }: Props) {
@@ -42,7 +44,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 		nama_lengkap: "",
 		jenis_kelamin: "l",
 		tempat_lahir: "",
-		tanggal_lahir: "", // dd-mm-yyyy expected by controller/logic? controller validates date but format depends on inputmask
+		tanggal_lahir: "",
 		nik: "",
 		alamat_lengkap: "",
 		dukuh: "",
@@ -54,19 +56,41 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 		provinsi: "",
 		kode_pos: "",
 		nisn: "",
-		penerima_kip: false,
-		no_kip: "",
+        agama: "",
+        jumlah_saudara_kandung: "",
+        anak_ke: "",
+        status_anak: "Kandung",
 		no_hp: "",
+        no_hp_pribadi: "",
 		bertindik: false,
 		bertato: false,
 
 		// Orang Tua
 		nama_ayah: "",
+        nik_ayah: "",
 		no_ayah: "",
+        pendidikan_ayah: "",
 		pekerjaan_ayah: "",
 		nama_ibu: "",
+        nik_ibu: "",
 		no_ibu: "",
+        pendidikan_ibu: "",
 		pekerjaan_ibu: "",
+        penghasilan_ortu: "",
+        no_kip_kks_pkh: "",
+
+        // Riwayat & Bakat
+        asal_sekolah: "",
+        npsn_sekolah_asal: "",
+        alamat_sekolah_asal: "",
+        tahun_lulus: "",
+        pernah_paud: false,
+        pernah_tk: false,
+        prestasi_diraih: "",
+        pengalaman_berkesan: "",
+        cita_cita: "",
+        ekstrakurikuler: [] as string[],
+
         // Dynamic documents
         ...masterDocuments.reduce((acc, doc) => ({ ...acc, [doc.slug]: null }), {}),
 	});
@@ -80,7 +104,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 
 	const nextStep = (e: React.MouseEvent) => {
 		e.preventDefault();
-		setCurrentStep((prev) => Math.min(prev + 1, 2));
+		setCurrentStep((prev) => Math.min(prev + 1, 4));
 	};
 
 	const prevStep = (e: React.MouseEvent) => {
@@ -228,6 +252,17 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 										)}
 									</div>
 
+                                    <div className="space-y-2">
+										<Label htmlFor="agama">Agama *</Label>
+										<Input
+											id="agama"
+											value={data.agama}
+											onChange={(e) => setData("agama", e.target.value)}
+											placeholder="Contoh: Islam"
+											required
+										/>
+									</div>
+
 									<div className="space-y-2">
 										<Label htmlFor="nik">NIK *</Label>
 										<Input
@@ -243,15 +278,56 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 									</div>
 
 									<div className="space-y-2">
-										<Label htmlFor="no_hp">No. HP (Whatsapp) *</Label>
+										<Label htmlFor="no_hp">No. HP Orang Tua / Wali *</Label>
 										<Input
 											id="no_hp"
-											type="number"
+											type="tel"
 											value={data.no_hp}
 											onChange={(e) => setData("no_hp", e.target.value)}
 											placeholder="Contoh: 08xxxxxxxxxx"
 											required
 										/>
+									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="no_hp_pribadi">No. HP Pribadi (Jika ada)</Label>
+										<Input
+											id="no_hp_pribadi"
+											type="tel"
+											value={data.no_hp_pribadi}
+											onChange={(e) => setData("no_hp_pribadi", e.target.value)}
+											placeholder="Contoh: 08xxxxxxxxxx"
+										/>
+									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="jumlah_saudara_kandung">Jumlah Saudara Kandung *</Label>
+										<Input
+											id="jumlah_saudara_kandung"
+                                            type="number"
+											value={data.jumlah_saudara_kandung}
+											onChange={(e) => setData("jumlah_saudara_kandung", e.target.value)}
+											required
+										/>
+									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="anak_ke">Anak Ke *</Label>
+										<Input
+											id="anak_ke"
+                                            type="number"
+											value={data.anak_ke}
+											onChange={(e) => setData("anak_ke", e.target.value)}
+											required
+										/>
+									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="status_anak">Status Anak *</Label>
+										<Select value={data.status_anak} onValueChange={(v) => setData("status_anak", v)}>
+                                            <SelectTrigger><SelectValue placeholder="Pilih..." /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Kandung">Kandung</SelectItem>
+                                                <SelectItem value="Angkat">Angkat</SelectItem>
+                                                <SelectItem value="Tiri">Tiri</SelectItem>
+                                            </SelectContent>
+                                        </Select>
 									</div>
 								</div>
 
@@ -326,16 +402,16 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 										<div className="flex items-center space-x-2">
 											<Checkbox
 												id="penerima_kip"
-												checked={data.penerima_kip}
-												onCheckedChange={(c) => setData("penerima_kip", !!c)}
+												checked={!!data.no_kip_kks_pkh}
+												onCheckedChange={(c) => !c && setData("no_kip_kks_pkh", "")}
 											/>
-											<Label htmlFor="penerima_kip">Penerima KIP</Label>
+											<Label htmlFor="penerima_kip">Penerima PKH/KIP/KKS</Label>
 										</div>
-										{data.penerima_kip && (
+										{!!data.no_kip_kks_pkh || (
 											<Input
-												placeholder="No. KIP"
-												value={data.no_kip}
-												onChange={(e) => setData("no_kip", e.target.value)}
+												placeholder="No. PKH/KIP/KKS"
+												value={data.no_kip_kks_pkh}
+												onChange={(e) => setData("no_kip_kks_pkh", e.target.value)}
 											/>
 										)}
 									</div>
@@ -376,10 +452,28 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 											required
 										/>
 									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="nik_ayah">NIK Ayah</Label>
+										<Input
+											id="nik_ayah"
+											value={data.nik_ayah}
+											onChange={(e) => setData("nik_ayah", e.target.value)}
+											placeholder="16 digit NIK"
+										/>
+									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="pendidikan_ayah">Pendidikan Terakhir Ayah</Label>
+										<Input
+											id="pendidikan_ayah"
+											value={data.pendidikan_ayah}
+											onChange={(e) => setData("pendidikan_ayah", e.target.value)}
+										/>
+									</div>
 									<div className="space-y-2">
 										<Label htmlFor="no_ayah">No. HP Ayah</Label>
 										<Input
 											id="no_ayah"
+											type="tel"
 											value={data.no_ayah}
 											onChange={(e) => setData("no_ayah", e.target.value)}
 											placeholder="Contoh: 08xxxxxxxxxx"
@@ -397,7 +491,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 										/>
 									</div>
 
-									<div className="col-span-2 border-t my-4"></div>
+									<div className="col-span-1 md:col-span-2 border-t my-4"></div>
 
 									<div className="space-y-2">
 										<Label htmlFor="nama_ibu">Nama Ibu *</Label>
@@ -409,10 +503,27 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 											required
 										/>
 									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="nik_ibu">NIK Ibu</Label>
+										<Input
+											id="nik_ibu"
+											value={data.nik_ibu}
+											onChange={(e) => setData("nik_ibu", e.target.value)}
+										/>
+									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="pendidikan_ibu">Pendidikan Terakhir Ibu</Label>
+										<Input
+											id="pendidikan_ibu"
+											value={data.pendidikan_ibu}
+											onChange={(e) => setData("pendidikan_ibu", e.target.value)}
+										/>
+									</div>
 									<div className="space-y-2">
 										<Label htmlFor="no_ibu">No. HP Ibu</Label>
 										<Input
 											id="no_ibu"
+											type="tel"
 											value={data.no_ibu}
 											onChange={(e) => setData("no_ibu", e.target.value)}
 											placeholder="Contoh: 08xxxxxxxxxx"
@@ -427,8 +538,154 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 											placeholder="Contoh: Ibu rumah tangga, Guru"
 										/>
 									</div>
+                                    <div className="space-y-2">
+										<Label htmlFor="penghasilan_ortu">Penghasilan Orang Tua</Label>
+										<Select value={data.penghasilan_ortu} onValueChange={(v) => setData("penghasilan_ortu", v)}>
+                                            <SelectTrigger><SelectValue placeholder="Pilih..." /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="K">{"< 1 Juta"}</SelectItem>
+                                                <SelectItem value="A">1 Juta - 3 Juta</SelectItem>
+                                                <SelectItem value="B">3 Juta - 5 Juta</SelectItem>
+                                                <SelectItem value="C">{"> 5 Juta"}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+									</div>
 								</div>
-						</div>
+							</div>
+
+							{/* Step 3: Riwayat & Bakat */}
+							<div className={currentStep === 3 ? "block space-y-6" : "hidden"}>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-4">Sekolah Sebelumnya</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label htmlFor="asal_sekolah">Nama Sekolah Asal</Label>
+                                            <Input
+                                                id="asal_sekolah"
+                                                value={data.asal_sekolah}
+                                                onChange={(e) => setData("asal_sekolah", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="npsn_sekolah_asal">NPSN Sekolah</Label>
+                                            <Input
+                                                id="npsn_sekolah_asal"
+                                                value={data.npsn_sekolah_asal}
+                                                onChange={(e) => setData("npsn_sekolah_asal", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="tahun_lulus">Tahun Lulus</Label>
+                                            <Input
+                                                id="tahun_lulus"
+                                                value={data.tahun_lulus}
+                                                onChange={(e) => setData("tahun_lulus", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label htmlFor="alamat_sekolah_asal">Alamat Sekolah Asal</Label>
+                                            <Input
+                                                id="alamat_sekolah_asal"
+                                                value={data.alamat_sekolah_asal}
+                                                onChange={(e) => setData("alamat_sekolah_asal", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="flex items-center space-x-6 py-2">
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id="pernah_paud"
+                                                    checked={data.pernah_paud}
+                                                    onCheckedChange={(c) => setData("pernah_paud", !!c)}
+                                                />
+                                                <Label htmlFor="pernah_paud">Pernah PAUD</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id="pernah_tk"
+                                                    checked={data.pernah_tk}
+                                                    onCheckedChange={(c) => setData("pernah_tk", !!c)}
+                                                />
+                                                <Label htmlFor="pernah_tk">Pernah TK</Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="border-t pt-6">
+                                    <h3 className="font-semibold text-lg mb-4">Bakat & Minat</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label htmlFor="prestasi_diraih">Prestasi yang Pernah Diraih</Label>
+                                            <Textarea
+                                                id="prestasi_diraih"
+                                                value={data.prestasi_diraih}
+                                                onChange={(e) => setData("prestasi_diraih", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label htmlFor="pengalaman_berkesan">Pengalaman Terkesan</Label>
+                                            <Textarea
+                                                id="pengalaman_berkesan"
+                                                value={data.pengalaman_berkesan}
+                                                onChange={(e) => setData("pengalaman_berkesan", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="cita_cita">Cita-cita</Label>
+                                            <Input
+                                                id="cita_cita"
+                                                value={data.cita_cita}
+                                                onChange={(e) => setData("cita_cita", e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label>Ekstrakurikuler yang Ingin Diikuti</Label>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                                                {["Pramuka", "PBB", "Kaligrafi", "Tilawah", "Seni Hadrah"].map((item) => (
+                                                    <div key={item} className="flex items-center space-x-2">
+                                                        <Checkbox
+                                                            id={`extra-${item}`}
+                                                            checked={data.ekstrakurikuler.includes(item)}
+                                                            onCheckedChange={(checked) => {
+                                                                if (checked) {
+                                                                    setData("ekstrakurikuler", [...data.ekstrakurikuler, item]);
+                                                                } else {
+                                                                    setData("ekstrakurikuler", data.ekstrakurikuler.filter(i => i !== item));
+                                                                }
+                                                            }}
+                                                        />
+                                                        <Label htmlFor={`extra-${item}`} className="font-normal cursor-pointer">{item}</Label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+							</div>
+
+                            {/* Step 4: Dokumen */}
+							<div className={currentStep === 4 ? "block space-y-6" : "hidden"}>
+                                <div className="bg-muted p-4 rounded-lg mb-6">
+                                    <p className="text-sm text-muted-foreground">
+                                        Admin dapat mengunggah dokumen peserta di sini. Format yang didukung: JPG, PNG, PDF. Maksimal 2MB per file.
+                                    </p>
+                                </div>
+                                <div className="gap-6 grid md:grid-cols-2">
+                                    {masterDocuments.map((doc) => (
+                                        <div key={doc.id} className="space-y-2">
+                                            <Label htmlFor={doc.slug}>{doc.name} {doc.is_required && "*"}</Label>
+                                            <Input 
+                                                id={doc.slug} 
+                                                type="file" 
+                                                onChange={(e) => setData(doc.slug, e.target.files?.[0] || null)} 
+                                                className="cursor-pointer" 
+                                            />
+                                            {doc.description && <p className="text-[10px] text-muted-foreground">{doc.description}</p>}
+                                            {errors[doc.slug] && <p className="text-xs text-destructive">{errors[doc.slug]}</p>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
 					</CardContent>
 					<CardFooter className="flex justify-between">
 						{currentStep > 1 && (
@@ -437,7 +694,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 							</Button>
 						)}
 						{currentStep === 1 && <div></div>}
-						{currentStep < 2 ? (
+						{currentStep < 4 ? (
 							<Button onClick={nextStep}>Lanjut</Button>
 						) : (
 							<Button type="submit" disabled={processing}>

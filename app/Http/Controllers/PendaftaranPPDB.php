@@ -45,10 +45,6 @@ class PendaftaranPPDB extends Controller
     {
         $data = $request->validated();
 
-        $data['penerima_kip'] = 'n'; // Not in the form, setting default
-        $data['rekomendasi_mwc'] = 0;
-        $data['bertindik'] = 0;
-        $data['bertato'] = 0;
 
         // Determine File Store Process
         $peserta = PesertaPPDB::create($data);
@@ -132,7 +128,7 @@ class PendaftaranPPDB extends Controller
 
     public function edit($id)
     {
-        $peserta = PesertaPPDB::findOrFail($id);
+        $peserta = PesertaPPDB::with(['documents.masterDocument'])->findOrFail($id);
         $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
 
         return inertia('Admin/Ppdb/Edit', compact('peserta', 'masterDocuments'));
@@ -198,10 +194,6 @@ class PendaftaranPPDB extends Controller
             return back()->withErrors(['gelombang_id' => 'Gelombang pendaftaran sudah ditutup atau tidak tersedia.']);
         }
 
-        $data['penerima_kip'] = 'n';
-        $data['rekomendasi_mwc'] = 0;
-        $data['bertindik'] = 0;
-        $data['bertato'] = 0;
 
         $ppdb = PesertaPPDB::create($data);
 
