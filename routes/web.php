@@ -92,6 +92,8 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::get('/setting-ranges', [PemetaanKelasController::class, 'settingRanges'])->name('admin.pemetaan-kelas.setting_ranges');
         Route::post('/setting-ranges', [PemetaanKelasController::class, 'storeRanges'])->name('admin.pemetaan-kelas.store_ranges');
         Route::delete('/setting-ranges/{id}', [PemetaanKelasController::class, 'deleteRange'])->name('admin.pemetaan-kelas.delete_range');
+        Route::put('/{id}/score', [PemetaanKelasController::class, 'saveScore'])->name('admin.pemetaan-kelas.save_score');
+        Route::put('/setting-ranges/{id}', [PemetaanKelasController::class, 'updateRange'])->name('admin.pemetaan-kelas.update_range');
     });
 
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');

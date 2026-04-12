@@ -31,54 +31,49 @@ class CalculateSPKRanking implements ShouldQueue
      */
     public function handle(): void
     {
-        $kriteria = KriteriaSPK::where('gelombang_id', $this->gelombangId)->get();
-        if ($kriteria->isEmpty()) return;
-
-        // Validasi total bobot 1.0 (wajib pas 100%)
-        $totalBobot = $kriteria->sum('bobot');
-        if (abs($totalBobot - 1.0) > 0.001) {
-            // Bobot tidak valid, tidak bisa melanjut perhitungan SPK
-            return;
+        // If gelombangId is null, calculate for ALL students (cross-gelombang)
+        $query = PesertaPPDB::query();
+        if ($this->gelombangId !== null) {
+            $query->where('gelombang_id', $this->gelombangId);
         }
-
-        $pesertaList = PesertaPPDB::where('gelombang_id', $this->gelombangId)->get();
+        $pesertaList = $query->whereNotNull('nilai_baca')->get();
         if ($pesertaList->isEmpty()) return;
 
-        // 1. Cari nilai Max/Min untuk tiap kriteria (Normalisasi)
-        $minMax = [];
-        foreach ($kriteria as $k) {
-            if ($k->tipe === 'benefit') {
-                $minMax[$k->id] = NilaiPeserta::where('kriteria_id', $k->id)->max('nilai') ?? 1; // hindari max 0
-                if ($minMax[$k->id] == 0) $minMax[$k->id] = 1; 
-            } else { // cost
-                $minMax[$k->id] = NilaiPeserta::where('kriteria_id', $k->id)->min('nilai') ?? 0;
-            }
-        }
+        // 1. Cari nilai Max (Normalisasi Benefit)
+        $maxBaca = $pesertaList->max('nilai_baca') ?? 1;
+        $maxTulis = $pesertaList->max('nilai_tulis') ?? 1;
+        $maxHitung = $pesertaList->max('nilai_hitung') ?? 1;
+
+        if ($maxBaca == 0) $maxBaca = 1;
+        if ($maxTulis == 0) $maxTulis = 1;
+        if ($maxHitung == 0) $maxHitung = 1;
+
+        // Bobot seimbang 33.33% tiap kriteria
+        $bobot = 1/3;
 
         // 2. Hitung skor untuk masing-masing peserta
         $skorData = [];
         foreach ($pesertaList as $peserta) {
-            $skorTotal = 0;
-            $nilaiPeserta = NilaiPeserta::where('peserta_id', $peserta->id)->get()->keyBy('kriteria_id');
+            $bacaRaw = $peserta->nilai_baca ?? 0;
+            $tulisRaw = $peserta->nilai_tulis ?? 0;
+            $hitungRaw = $peserta->nilai_hitung ?? 0;
+            
+            // Normalisasi SAW
+            $normBaca = $bacaRaw / $maxBaca;
+            $normTulis = $tulisRaw / $maxTulis;
+            $normHitung = $hitungRaw / $maxHitung;
 
-            foreach ($kriteria as $k) {
-                $nilaiRaw = isset($nilaiPeserta[$k->id]) ? $nilaiPeserta[$k->id]->nilai : 0;
-                
-                // Normalisasi SAW
-                $nilaiNormal = 0;
-                if ($k->tipe === 'benefit') {
-                    $nilaiNormal = $nilaiRaw / $minMax[$k->id];
-                } else { // cost
-                    $nilaiNormal = $nilaiRaw == 0 ? 0 : ($minMax[$k->id] / $nilaiRaw); 
-                }
+            // Bobot * Normalisasi
+            $skorTotal = ($normBaca * $bobot) + ($normTulis * $bobot) + ($normHitung * $bobot);
 
-                // Bobot * Normalisasi
-                $skorTotal += ($nilaiNormal * $k->bobot);
-            }
+            // Skala 0-100 (karena normalisasi max 1.0 * total bobot 1.0 = 1.0. Jadi dikali 100 biar lebih manusiawi jika diinginkan
+            // Tapi sebelumnya logic Class Mapping assumes total_score_mapped directly dari skor_spk.
+            // Biar gampang mapping 0-100, kita kalikan 100
+            $skorTotal100 = $skorTotal * 100;
 
             $skorData[] = [
                 'id' => $peserta->id,
-                'skor_spk' => $skorTotal
+                'skor_spk' => $skorTotal100
             ];
         }
 
