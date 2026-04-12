@@ -31,7 +31,6 @@ class PpdbSettingController extends Controller
                 'no_surat' => $request->input('no_surat'),
                 'hasil_seleksi' => $request->input('hasil_seleksi'),
                 'whatsapp' => $request->input('whatsapp'),
-                'persyaratan' => $request->input('persyaratan', []), // Array of strings
             ],
         ]);
 

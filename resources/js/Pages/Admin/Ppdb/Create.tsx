@@ -26,8 +26,8 @@ interface Gelombang {
 }
 
 interface Props {
-
 	gelombang: Gelombang[];
+    masterDocuments: any[];
 }
 
 const steps = [
@@ -35,7 +35,7 @@ const steps = [
 	{ id: 2, title: "Identitas Orang Tua" },
 ];
 
-export default function Create({ gelombang }: Props) {
+export default function Create({ gelombang, masterDocuments }: Props) {
 	const { data, setData, post, processing, errors } = useForm({
 		// Identitas Diri
 		gelombang_id: gelombang.length > 0 ? String(gelombang[0].id) : "",
@@ -67,6 +67,8 @@ export default function Create({ gelombang }: Props) {
 		nama_ibu: "",
 		no_ibu: "",
 		pekerjaan_ibu: "",
+        // Dynamic documents
+        ...masterDocuments.reduce((acc, doc) => ({ ...acc, [doc.slug]: null }), {}),
 	});
 
 	const [currentStep, setCurrentStep] = useState(1);

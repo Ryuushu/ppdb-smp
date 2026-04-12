@@ -39,6 +39,7 @@ import { toast } from "sonner";
 
 interface RegistrationFormProps {
 	gelombangAktif?: any | null;
+    masterDocuments?: any[];
 }
 
 const steps = [
@@ -83,6 +84,7 @@ function FormField({
 
 export function RegistrationForm({
 	gelombangAktif = null,
+    masterDocuments = [],
 }: RegistrationFormProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
@@ -154,6 +156,8 @@ export function RegistrationForm({
         scan_ijazah_paud_tk: null as File | null,
         scan_kk: null as File | null,
         scan_akta_kelahiran: null as File | null,
+        // Dynamic documents
+        ...masterDocuments.reduce((acc, doc) => ({ ...acc, [doc.slug]: null }), {}),
         ekstrakurikuler: [] as string[],
 	});
 
@@ -600,21 +604,45 @@ export function RegistrationForm({
                                                 <p className="text-sm text-muted-foreground">Silakan upload scan/foto dokumen asli. Format yang didukung: JPG, PNG, PDF. Maksimal 2MB per file.</p>
                                             </div>
                                             <div className="gap-6 grid md:grid-cols-2">
-                                                <FormField id="pas_foto" label="Pas Foto Berwarna (3x4)" error={getError("pas_foto")}>
-                                                    <Input id="pas_foto" type="file" accept="image/jpeg,image/png" onChange={(e) => setData("pas_foto", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
-                                                </FormField>
-                                                
-                                                <FormField id="scan_ijazah_paud_tk" label="Scan Ijazah Terakhir" error={getError("scan_ijazah_paud_tk")}>
-                                                    <Input id="scan_ijazah_paud_tk" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(e) => setData("scan_ijazah_paud_tk", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
-                                                </FormField>
+                                                {masterDocuments.map((doc) => (
+                                                    <FormField 
+                                                        key={doc.id} 
+                                                        id={doc.slug} 
+                                                        label={doc.name} 
+                                                        required={doc.is_required} 
+                                                        error={getError(doc.slug)}
+                                                    >
+                                                        <Input 
+                                                            id={doc.slug} 
+                                                            type="file" 
+                                                            accept={doc.slug === 'pas_foto' ? "image/jpeg,image/png" : "image/jpeg,image/png,application/pdf"} 
+                                                            onChange={(e) => setData(doc.slug, e.target.files?.[0] || null)} 
+                                                            className="rounded-xl pt-2.5 h-12 cursor-pointer" 
+                                                        />
+                                                        {doc.description && <p className="text-[10px] text-muted-foreground mt-1 px-1">{doc.description}</p>}
+                                                    </FormField>
+                                                ))}
 
-                                                <FormField id="scan_kk" label="Scan Kartu Keluarga (KK)" error={getError("scan_kk")}>
-                                                    <Input id="scan_kk" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(e) => setData("scan_kk", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
-                                                </FormField>
+                                                {/* Fallback for hardcoded fields if masterDocuments is empty (backwards compatibility) */}
+                                                {masterDocuments.length === 0 && (
+                                                    <>
+                                                        <FormField id="pas_foto" label="Pas Foto Berwarna (3x4)" error={getError("pas_foto")}>
+                                                            <Input id="pas_foto" type="file" accept="image/jpeg,image/png" onChange={(e) => setData("pas_foto", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
+                                                        </FormField>
+                                                        
+                                                        <FormField id="scan_ijazah_paud_tk" label="Scan Ijazah Terakhir" error={getError("scan_ijazah_paud_tk")}>
+                                                            <Input id="scan_ijazah_paud_tk" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(e) => setData("scan_ijazah_paud_tk", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
+                                                        </FormField>
 
-                                                <FormField id="scan_akta_kelahiran" label="Scan Akta Kelahiran" error={getError("scan_akta_kelahiran")}>
-                                                    <Input id="scan_akta_kelahiran" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(e) => setData("scan_akta_kelahiran", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
-                                                </FormField>
+                                                        <FormField id="scan_kk" label="Scan Kartu Keluarga (KK)" error={getError("scan_kk")}>
+                                                            <Input id="scan_kk" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(e) => setData("scan_kk", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
+                                                        </FormField>
+
+                                                        <FormField id="scan_akta_kelahiran" label="Scan Akta Kelahiran" error={getError("scan_akta_kelahiran")}>
+                                                            <Input id="scan_akta_kelahiran" type="file" accept="image/jpeg,image/png,application/pdf" onChange={(e) => setData("scan_akta_kelahiran", e.target.files?.[0] || null)} className="rounded-xl pt-2.5 h-12 cursor-pointer" />
+                                                        </FormField>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     )}

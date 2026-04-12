@@ -606,11 +606,20 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('ppdb.set.batas.akhir') }}"
-                        class="nav-link {{ request()->routeIs('ppdb.set.batas.akhir') ? 'active' : '' }}">
+                    <a href="{{ route('snpmb.set.batas.akhir') }}"
+                        class="nav-link {{ request()->routeIs('snpmb.set.batas.akhir') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-newspaper"></i>
                         <p>
                             Pengaturan SPMB
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.master-documents.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.master-documents.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-contract"></i>
+                        <p>
+                            Master Dokumen
                         </p>
                     </a>
                 </li>

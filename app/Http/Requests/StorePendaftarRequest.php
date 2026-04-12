@@ -21,7 +21,7 @@ class StorePendaftarRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'gelombang_id' => 'required|exists:gelombang,id',
             
             // Identitas Diri
@@ -37,13 +37,9 @@ class StorePendaftarRequest extends FormRequest
             'alamat_lengkap' => 'required|string',
             'agama' => 'required|string',
             
-            // Riwayat Pendidikan & Dokumen
+            // Riwayat Pendidikan
             'pernah_paud' => 'required|boolean',
             'pernah_tk' => 'required|boolean',
-            'pas_foto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'scan_ijazah_paud_tk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'scan_kk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'scan_akta_kelahiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
 
             // Data Orang Tua
             'nama_ayah' => 'required|string',
@@ -74,5 +70,20 @@ class StorePendaftarRequest extends FormRequest
             'no_hp_pribadi' => 'nullable|string',
             'ekstrakurikuler' => 'nullable|array',
         ];
+
+        // Dynamic Document Rules
+        $masterDocs = \App\Models\MasterDocument::where('is_active', true)->get();
+        foreach ($masterDocs as $doc) {
+            $rule = $doc->is_required ? 'required|' : 'nullable|';
+            $rule .= 'file|max:2048';
+            if ($doc->slug === 'pas_foto') {
+                 $rule .= '|mimes:jpg,jpeg,png';
+            } else {
+                 $rule .= '|mimes:jpg,jpeg,png,pdf';
+            }
+            $rules[$doc->slug] = $rule;
+        }
+
+        return $rules;
     }
 }

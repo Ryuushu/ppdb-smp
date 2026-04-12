@@ -7,7 +7,7 @@ import { BrosurModal } from "@/components/BrosurModal";
 import { Head } from "@inertiajs/react";
 import { useState } from "react";
 
-export default function Home({ gelombang, setting }: { gelombang: any[]; setting: any }) {
+export default function Home({ gelombang, setting, masterDocuments }: { gelombang: any[]; setting: any; masterDocuments: any[] }) {
 	const [isBrosurOpen, setIsBrosurOpen] = useState(false);
 
 	return (
@@ -24,6 +24,7 @@ export default function Home({ gelombang, setting }: { gelombang: any[]; setting
 				onClose={() => setIsBrosurOpen(false)} 
 				gelombang={gelombang}
 				setting={setting}
+                masterDocuments={masterDocuments}
 			/>
 		</main>
 	);

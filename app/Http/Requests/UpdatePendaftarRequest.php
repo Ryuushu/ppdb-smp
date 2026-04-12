@@ -21,7 +21,7 @@ class UpdatePendaftarRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             // Identitas Diri
             'nama_lengkap' => 'required|string|max:255',
             'nisn' => 'nullable|string',
@@ -35,13 +35,9 @@ class UpdatePendaftarRequest extends FormRequest
             'alamat_lengkap' => 'required|string',
             'agama' => 'required|string',
             
-            // Riwayat Pendidikan & Dokumen validation on update is usually similar but nullable files
+            // Riwayat Pendidikan
             'pernah_paud' => 'required|boolean',
             'pernah_tk' => 'required|boolean',
-            'pas_foto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'scan_ijazah_paud_tk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'scan_kk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'scan_akta_kelahiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
 
             // Data Orang Tua
             'nama_ayah' => 'required|string',
@@ -71,5 +67,19 @@ class UpdatePendaftarRequest extends FormRequest
             'no_hp_pribadi' => 'nullable|string',
             'ekstrakurikuler' => 'nullable|array',
         ];
+
+        // Dynamic Document Rules (Always nullable for updates)
+        $masterDocs = \App\Models\MasterDocument::where('is_active', true)->get();
+        foreach ($masterDocs as $doc) {
+            $rule = 'nullable|file|max:2048';
+            if ($doc->slug === 'pas_foto') {
+                 $rule .= '|mimes:jpg,jpeg,png';
+            } else {
+                 $rule .= '|mimes:jpg,jpeg,png,pdf';
+            }
+            $rules[$doc->slug] = $rule;
+        }
+
+        return $rules;
     }
 }

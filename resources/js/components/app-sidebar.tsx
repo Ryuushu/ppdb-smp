@@ -328,6 +328,17 @@ export function AppSidebar() {
 											</Link>
 										</SidebarMenuButton>
 									</SidebarMenuItem>
+									<SidebarMenuItem>
+										<SidebarMenuButton
+											asChild
+											isActive={url.includes("/setting/master-documents")}
+										>
+											<Link href={route("admin.master-documents.index")}>
+												<FileText className="size-4" />
+												<span>Master Dokumen</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
 								</>
 							)}
 						</SidebarMenu>

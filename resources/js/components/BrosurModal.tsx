@@ -33,16 +33,19 @@ interface BrosurModalProps {
 	onClose: () => void;
 	gelombang: Wave[];
 	setting: PpdbSetting | null;
+    masterDocuments?: any[];
 }
 
-export function BrosurModal({ isOpen, onClose, gelombang, setting }: BrosurModalProps) {
+export function BrosurModal({ isOpen, onClose, gelombang, setting, masterDocuments = [] }: BrosurModalProps) {
 	const waNumber = setting?.body?.whatsapp;
-	const persyaratan = setting?.body?.persyaratan || [
-		"Fotocopy Ijazah/SKL (2 Lembar)",
-		"Fotocopy Kartu Keluarga (2 Lembar)",
-		"Fotocopy Akta Kelahiran (2 Lembar)",
-		"Pas Foto 3x4 Background Merah (4 Lembar)"
-	];
+	const persyaratan = masterDocuments.length > 0 
+        ? masterDocuments.map(doc => doc.name)
+        : [
+            "Fotocopy Ijazah/SKL (2 Lembar)",
+            "Fotocopy Kartu Keluarga (2 Lembar)",
+            "Fotocopy Akta Kelahiran (2 Lembar)",
+            "Pas Foto 3x4 Background Merah (4 Lembar)"
+        ];
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>

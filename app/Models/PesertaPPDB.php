@@ -76,6 +76,11 @@ class PesertaPPDB extends Model
         return $this->hasMany(NilaiPeserta::class, 'peserta_id');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(PesertaDocument::class, 'peserta_ppdb_id');
+    }
+
     public function toWhatsapp($no)
     {
         if (! $no) {

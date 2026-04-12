@@ -19,7 +19,6 @@ interface PpdbSetting {
 		no_surat: string;
 		hasil_seleksi: string;
 		whatsapp: string;
-		persyaratan: string[];
 	};
 }
 
@@ -33,7 +32,6 @@ export default function Ppdb({ setting }: Props) {
 		no_surat: setting?.body?.no_surat || "",
 		hasil_seleksi: setting?.body?.hasil_seleksi || "",
 		whatsapp: setting?.body?.whatsapp || "",
-		persyaratan: setting?.body?.persyaratan || [],
 	});
 
 	const submit = (e: React.FormEvent) => {
@@ -164,50 +162,6 @@ export default function Ppdb({ setting }: Props) {
 									onChange={(e) => setData("whatsapp", e.target.value)}
 									placeholder="628..."
 								/>
-							</div>
-
-							<div className="space-y-4 pt-4 border-t">
-								<div className="flex items-center justify-between">
-									<Label>Daftar Persyaratan Dokumen</Label>
-									<Button 
-										type="button" 
-										variant="outline" 
-										size="sm"
-										onClick={() => setData('persyaratan', [...data.persyaratan, ""])}
-									>
-										Tambah Dokumen
-									</Button>
-								</div>
-								<div className="space-y-2">
-									{data.persyaratan.map((item, index) => (
-										<div key={index} className="flex gap-2">
-											<Input 
-												value={item}
-												onChange={e => {
-													const newPersyaratan = [...data.persyaratan];
-													newPersyaratan[index] = e.target.value;
-													setData('persyaratan', newPersyaratan);
-												}}
-												placeholder="Contoh: Fotocopy Kartu Keluarga"
-											/>
-											<Button 
-												type="button" 
-												variant="ghost" 
-												size="icon"
-												className="text-red-500"
-												onClick={() => {
-													const newPersyaratan = data.persyaratan.filter((_, i) => i !== index);
-													setData('persyaratan', newPersyaratan);
-												}}
-											>
-												&times;
-											</Button>
-										</div>
-									))}
-									{data.persyaratan.length === 0 && (
-										<p className="text-xs text-muted-foreground italic">Belum ada persyaratan yang ditambahkan.</p>
-									)}
-								</div>
 							</div>
 						</CardContent>
 						<CardFooter>

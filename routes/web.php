@@ -33,10 +33,12 @@ Route::get('/', function () {
         ->orderBy('tanggal_mulai', 'asc')
         ->get();
     $setting = \App\Models\PpdbSetting::latest()->first();
+    $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
 
     return inertia('Landing', [
         'gelombang' => $gelombang,
-        'setting' => $setting
+        'setting' => $setting,
+        'masterDocuments' => $masterDocuments
     ]);
 });
 Route::get('/register', function () {
@@ -45,8 +47,11 @@ Route::get('/register', function () {
         ->where('tanggal_selesai', '>=', now())
         ->first();
 
+    $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+
     return inertia('Pendaftaran', [
-        'gelombangAktif' => $gelombangAktif
+        'gelombangAktif' => $gelombangAktif,
+        'masterDocuments' => $masterDocuments
     ]);
 })->name('ppdb.register');
 
@@ -71,6 +76,12 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::post('/setting/admin-items', [AdminItemController::class, 'store'])->name('admin.admin-items.store');
         Route::put('/setting/admin-items/{id}', [AdminItemController::class, 'update'])->name('admin.admin-items.update');
         Route::delete('/setting/admin-items/{id}', [AdminItemController::class, 'destroy'])->name('admin.admin-items.destroy');
+
+        // Master Documents
+        Route::get('/setting/master-documents', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'index'])->name('admin.master-documents.index');
+        Route::post('/setting/master-documents', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'store'])->name('admin.master-documents.store');
+        Route::put('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'update'])->name('admin.master-documents.update');
+        Route::delete('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'destroy'])->name('admin.master-documents.destroy');
     });
 
     // Gelombang Pendaftaran

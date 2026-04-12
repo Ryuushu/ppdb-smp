@@ -35,9 +35,10 @@ class PendaftaranPPDB extends Controller
 
     public function tambahPendaftar()
     {
-        $gelombang = \App\Models\Gelombang::orderBy('tanggal_mulai', 'desc')->get();
+        $gelombang = \App\Models\Gelombang::where('status', 'buka')->get();
+        $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
 
-        return inertia('Admin/Ppdb/Create', compact('gelombang'));
+        return inertia('Admin/Ppdb/Create', compact('gelombang', 'masterDocuments'));
     }
 
     public function submitPendaftar(StorePendaftarRequest $request)
@@ -50,14 +51,20 @@ class PendaftaranPPDB extends Controller
         $data['bertato'] = 0;
 
         // Determine File Store Process
-        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
-        foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                $data[$field] = $request->file($field)->store('dokumen_peserta', 'public');
+        $peserta = PesertaPPDB::create($data);
+
+        // Handle Dynamic Documents
+        $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+        foreach ($masterDocuments as $doc) {
+            if ($request->hasFile($doc->slug)) {
+                $path = $request->file($doc->slug)->store('dokumen_peserta', 'public');
+                \App\Models\PesertaDocument::create([
+                    'peserta_ppdb_id' => $peserta->id,
+                    'master_document_id' => $doc->id,
+                    'file_path' => $path
+                ]);
             }
         }
-
-        $peserta = PesertaPPDB::create($data);
 
         // Queue SPK ranking calculation after new registration
         \App\Jobs\CalculateSPKRanking::dispatch($data['gelombang_id']);
@@ -118,7 +125,7 @@ class PendaftaranPPDB extends Controller
 
     public function showPeserta($id)
     {
-        $peserta = PesertaPPDB::findOrFail($id);
+        $peserta = PesertaPPDB::with(['documents.masterDocument', 'gelombang', 'ukuranSeragam'])->findOrFail($id);
 
         return inertia('Admin/Ppdb/Show', compact('peserta'));
     }
@@ -126,8 +133,9 @@ class PendaftaranPPDB extends Controller
     public function edit($id)
     {
         $peserta = PesertaPPDB::findOrFail($id);
+        $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
 
-        return inertia('Admin/Ppdb/Edit', compact('peserta'));
+        return inertia('Admin/Ppdb/Edit', compact('peserta', 'masterDocuments'));
     }
 
     public function update(UpdatePendaftarRequest $request, $id)
@@ -140,20 +148,34 @@ class PendaftaranPPDB extends Controller
         $data['bertindik'] = 0;
         $data['bertato'] = 0;
 
-        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
-        foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                // Delete old file if exists
-                if ($ppdb->$field && Storage::disk('public')->exists($ppdb->$field)) {
-                    Storage::disk('public')->delete($ppdb->$field);
+        $ppdb->update($data);
+
+        // Handle Dynamic Documents
+        $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+        foreach ($masterDocuments as $doc) {
+            if ($request->hasFile($doc->slug)) {
+                // Delete old file if exists in peserta_documents
+                $oldDoc = \App\Models\PesertaDocument::where('peserta_ppdb_id', $ppdb->id)
+                    ->where('master_document_id', $doc->id)
+                    ->first();
+
+                if ($oldDoc && Storage::disk('public')->exists($oldDoc->file_path)) {
+                    Storage::disk('public')->delete($oldDoc->file_path);
                 }
-                $data[$field] = $request->file($field)->store('dokumen_peserta', 'public');
-            } else {
-                unset($data[$field]); // don't override with null if no file is uploaded
+
+                $path = $request->file($doc->slug)->store('dokumen_peserta', 'public');
+                
+                \App\Models\PesertaDocument::updateOrCreate(
+                    [
+                        'peserta_ppdb_id' => $ppdb->id,
+                        'master_document_id' => $doc->id,
+                    ],
+                    [
+                        'file_path' => $path
+                    ]
+                );
             }
         }
-
-        $ppdb->update($data);
 
         session()->flash('success', 'Data peserta telah di ubah');
 
@@ -181,14 +203,20 @@ class PendaftaranPPDB extends Controller
         $data['bertindik'] = 0;
         $data['bertato'] = 0;
 
-        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
-        foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                $data[$field] = $request->file($field)->store('dokumen_peserta', 'public');
+        $ppdb = PesertaPPDB::create($data);
+
+        // Handle Dynamic Documents
+        $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+        foreach ($masterDocuments as $doc) {
+            if ($request->hasFile($doc->slug)) {
+                $path = $request->file($doc->slug)->store('dokumen_peserta', 'public');
+                \App\Models\PesertaDocument::create([
+                    'peserta_ppdb_id' => $ppdb->id,
+                    'master_document_id' => $doc->id,
+                    'file_path' => $path
+                ]);
             }
         }
-
-        $ppdb = PesertaPPDB::create($data);
 
         // Queue SPK ranking calculation after new registration
         \App\Jobs\CalculateSPKRanking::dispatch($data['gelombang_id']);
@@ -233,12 +261,11 @@ class PendaftaranPPDB extends Controller
 
     public function hapusPeserta($uuid)
     {
-        $peserta = PesertaPPDB::findOrFail($uuid);
+        $peserta = PesertaPPDB::with('documents')->findOrFail($uuid);
 
-        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
-        foreach ($fileFields as $field) {
-            if ($peserta->$field && Storage::disk('public')->exists($peserta->$field)) {
-                Storage::disk('public')->delete($peserta->$field);
+        foreach ($peserta->documents as $doc) {
+            if (Storage::disk('public')->exists($doc->file_path)) {
+                Storage::disk('public')->delete($doc->file_path);
             }
         }
 

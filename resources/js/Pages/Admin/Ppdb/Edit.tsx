@@ -85,8 +85,8 @@ interface Peserta {
 }
 
 interface Props {
-
 	peserta: Peserta;
+    masterDocuments: any[];
 }
 
 const steps = [
@@ -94,7 +94,7 @@ const steps = [
 	{ id: 2, title: "Identitas Orang Tua" },
 ];
 
-export default function Edit({ peserta }: Props) {
+export default function Edit({ peserta, masterDocuments }: Props) {
 	const { data, setData, put, processing, errors } = useForm({
 		// Identitas Diri
 		nama_lengkap: peserta.nama_lengkap || "",
@@ -129,6 +129,8 @@ export default function Edit({ peserta }: Props) {
 		no_ibu: peserta.no_hp_ibu || "",
 		pekerjaan_ibu: peserta.pekerjaan_ibu || "",
 
+        // Dynamic documents
+        ...masterDocuments.reduce((acc, doc) => ({ ...acc, [doc.slug]: null }), {}),
 	});
 
 	const [currentStep, setCurrentStep] = useState(1);

@@ -22,6 +22,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/date";
 import { Head, Link, router, usePage } from "@inertiajs/react";
+import { FileText, AlertCircle } from "lucide-react";
 
 interface Peserta {
 	id: string;
@@ -258,6 +259,56 @@ export default function Show({ peserta }: Props) {
 							<InfoRow label="Saran Dari" value={peserta.saran_dari} />
                             <InfoRow label="Ekstrakurikuler" value={peserta.ekstrakurikuler?.join(", ")} />
 						</div>
+                        
+                        <Separator />
+
+						<div>
+							<h3 className="mb-4 font-semibold text-lg flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-primary" />
+								# Dokumen Terunggah
+							</h3>
+							{peserta.documents && peserta.documents.length > 0 ? (
+								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+									{peserta.documents.map((doc: any) => (
+                                        <Card key={doc.id} className="overflow-hidden border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+                                            <div className="aspect-video bg-muted flex items-center justify-center relative group">
+                                                {doc.file_path.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                                                    <img 
+                                                        src={`/storage/${doc.file_path}`} 
+                                                        alt={doc.master_document?.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="flex flex-col items-center gap-1">
+                                                        <FileText className="w-10 h-10 text-muted-foreground" />
+                                                        <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                                                            {doc.file_path.split('.').pop()}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                    <Button size="sm" variant="secondary" asChild className="h-8">
+                                                        <a href={`/storage/${doc.file_path}`} target="_blank" rel="noopener noreferrer">Buka</a>
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="p-3 bg-background">
+                                                <p className="text-xs font-bold truncate" title={doc.master_document?.name}>
+                                                    {doc.master_document?.name}
+                                                </p>
+                                            </div>
+                                        </Card>
+                                    ))}
+								</div>
+							) : (
+								<div className="p-10 border-2 border-dashed rounded-2xl text-center text-muted-foreground bg-muted/30">
+									<AlertCircle className="w-10 h-10 mx-auto mb-2 opacity-20" />
+									<p>Tidak ada dokumen yang diunggah.</p>
+								</div>
+							)}
+						</div>
+
+						<Separator />
 
 						{peserta.status_daftar_ulang === 'sudah' && (
 							<>
