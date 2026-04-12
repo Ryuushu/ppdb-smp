@@ -38,7 +38,10 @@ export default function AdminItems({
 		amount_male: "",
 		amount_female: "",
 		description: "",
+		sync_gender: false,
 	});
+
+	const [syncGender, setSyncGender] = useState(false);
 
 	const [editId, setEditId] = useState<number | null>(null);
 
@@ -50,13 +53,16 @@ export default function AdminItems({
 			amount_male: item.amount_male.toString(),
 			amount_female: item.amount_female.toString(),
 			description: item.description || "",
+			sync_gender: item.amount_male === item.amount_female,
 		});
+		setSyncGender(item.amount_male === item.amount_female);
 	};
 
 	const cancelEdit = () => {
 		setEditId(null);
 		reset();
 		clearErrors();
+		setSyncGender(false);
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -116,7 +122,14 @@ export default function AdminItems({
 											type="number"
 											placeholder="Pria"
 											value={data.amount_male}
-											onChange={(e) => setData("amount_male", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value;
+												setData(prev => ({
+													...prev,
+													amount_male: val,
+													amount_female: syncGender ? val : prev.amount_female
+												}));
+											}}
 											required
 										/>
 										{errors.amount_male && <p className="text-red-500 text-xs">{errors.amount_male}</p>}
@@ -128,11 +141,35 @@ export default function AdminItems({
 											type="number"
 											placeholder="Wanita"
 											value={data.amount_female}
-											onChange={(e) => setData("amount_female", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value;
+												setData("amount_female", val);
+												if (syncGender && val !== data.amount_male) {
+													setSyncGender(false);
+												}
+											}}
 											required
 										/>
 										{errors.amount_female && <p className="text-red-500 text-xs">{errors.amount_female}</p>}
 									</div>
+								</div>
+								<div className="flex items-center space-x-2 pb-2">
+									<input
+										type="checkbox"
+										id="sync_gender"
+										className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+										checked={syncGender}
+										onChange={(e) => {
+											const checked = e.target.checked;
+											setSyncGender(checked);
+											if (checked) {
+												setData("amount_female", data.amount_male);
+											}
+										}}
+									/>
+									<Label htmlFor="sync_gender" className="cursor-pointer text-sm font-medium">
+										Sama untuk semua gender
+									</Label>
 								</div>
 								<div className="space-y-2">
 									<Label htmlFor="description">Keterangan (Opsional)</Label>

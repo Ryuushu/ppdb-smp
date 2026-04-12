@@ -159,17 +159,37 @@
                 $totalL = 0;
                 $totalP = 0;
             @endphp
+            @php
+                $totalPaid = $peserta->kwitansi->filter(fn($k) => !isset($k->deleted_at))->sum('nominal');
+                $remainingBalanceForAllocation = $totalPaid;
+            @endphp
             @foreach($adminItems as $item)
                 @php
+                    $price = $peserta->jenis_kelamin === 'l' ? $item->amount_male : $item->amount_female;
                     $totalL += $item->amount_male;
                     $totalP += $item->amount_female;
+                    
+                    // Cumulative allocation logic
+                    $isPaid = false;
+                    if ($price > 0) {
+                        if ($remainingBalanceForAllocation >= $price) {
+                            $isPaid = true;
+                            $remainingBalanceForAllocation -= $price;
+                        } else {
+                            $isPaid = false;
+                            // Optionally track partial payments if needed, but the column is just Sudah/Belum
+                            $remainingBalanceForAllocation = 0;
+                        }
+                    } else {
+                        $isPaid = true; // Item is free
+                    }
                 @endphp
                 <tr>
                     <td>{{ $item->name }}</td>
                     <td class="text-right">Rp {{ number_format($item->amount_male, 0, ',', '.') }}</td>
                     <td class="text-right">Rp {{ number_format($item->amount_female, 0, ',', '.') }}</td>
-                    <td class="text-center"></td>
-                    <td class="text-center"></td>
+                    <td class="text-center">{!! $isPaid ? '&#10004;' : '' !!}</td>
+                    <td class="text-center">{!! !$isPaid && $price > 0 ? '&#10006;' : '' !!}</td>
                 </tr>
             @endforeach
             <tr class="font-bold">
