@@ -178,15 +178,13 @@ export default function Show({
 										<TableRow>
 											<TableHead className="w-[80px]">No</TableHead>
 											<TableHead>No. Urut / Nama</TableHead>
-											<TableHead>Program</TableHead>
-											<TableHead className="text-center">Asal Sekolah</TableHead>
 											<TableHead className="text-right">Aksi</TableHead>
 										</TableRow>
 									</TableHeader>
 									<TableBody>
 										{gelombang.peserta.length === 0 ? (
 											<TableRow>
-												<TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+												<TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
 													Belum ada peserta yang mendaftar.
 												</TableCell>
 											</TableRow>
@@ -209,10 +207,6 @@ export default function Show({
 														<div className="text-xs text-muted-foreground">
 															{p.no_pendaftaran}
 														</div>
-													</TableCell>
-													<TableCell>{p.program?.nama}</TableCell>
-													<TableCell className="text-center">
-														{p.asal_sekolah}
 													</TableCell>
 													<TableCell className="text-right">
 														<div className="flex justify-end gap-2">

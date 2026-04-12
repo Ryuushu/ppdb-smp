@@ -12,18 +12,7 @@ import { formatDate, formatDateTime } from "@/lib/date";
 import { Head, Link, router } from "@inertiajs/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const programItems = [
-	{ id: "semua", name: "Semua Peserta" },
-	{ id: "1", name: "Reguler" },
-	{ id: "2", name: "Tahfidz" },
-	{ id: "3", name: "Unggulan" },
-];
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
 
 interface Peserta {
 	id: string;
@@ -34,8 +23,8 @@ interface Peserta {
 	no_hp: string;
 	bertindik: boolean;
 	bertato: boolean;
-	asal_sekolah: string;
-	program: Program;
+
+
 	diterima: number; // 0: proses, 1: diterima, 2: ditolak
 	created_at: string;
 }
@@ -48,14 +37,13 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
-	program?: string | number;
+
 }
 
 export default function ListPendaftar({
 	pesertappdb,
 	tahun,
 	years,
-	program,
 }: Props) {
 	const columns: Column<Peserta>[] = [
 		{
@@ -72,9 +60,6 @@ export default function ListPendaftar({
 					>
 						{row.original.nama_lengkap}
 					</Link>
-					<span className="sm:hidden mt-1 text-muted-foreground text-xs">
-						{row.original.program?.nama || "-"}
-					</span>
 				</div>
 			),
 		},
@@ -88,12 +73,6 @@ export default function ListPendaftar({
 						<span>
 							{row.original.tempat_lahir},{" "}
 							{formatDate(row.original.tanggal_lahir)}
-						</span>
-					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-muted-foreground">Asal:</span>
-						<span className="max-w-[150px] truncate">
-							{row.original.asal_sekolah}
 						</span>
 					</div>
 					<div className="flex items-center gap-2 mt-1">
@@ -121,17 +100,6 @@ export default function ListPendaftar({
 				</a>
 			),
 		},
-		{
-			header: "Program",
-			className: "hidden sm:table-cell",
-			cell: ({ row }) => (
-				<div className="font-medium text-sm">
-					{row.original.program?.abbreviation ||
-						row.original.program?.nama ||
-						"-"}
-				</div>
-			),
-		},
 
 		{
 			header: "Terdaftar",
@@ -147,17 +115,9 @@ export default function ListPendaftar({
 	const handleYearChange = (year: string) => {
 		router.get(
 			window.location.pathname,
-			{ tahun: year, program: program || "semua" },
+			{ tahun: year },
 			{ preserveState: true }
 		);
-	};
-
-	const handleProgramChange = (prog: string) => {
-        if (prog === "semua") {
-            router.get(route("ppdb.list.pendaftar"), { tahun }, { preserveState: true });
-        } else {
-            router.get(route("ppdb.list.pendaftar.program", { program: prog }), { tahun }, { preserveState: true });
-        }
 	};
 
 	return (
@@ -165,15 +125,6 @@ export default function ListPendaftar({
 			<Head title="List Peserta SNPMB" />
 
 			<div className="space-y-6">
-                <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
-                    <TabsList className="mb-2">
-                        {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
-                            <TabsTrigger key={p.id} value={p.id}>
-                                {p.name}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
 
 				<div className="flex sm:flex-row flex-col justify-between gap-4">
 					<div className="w-full sm:w-1/4">
@@ -196,7 +147,6 @@ export default function ListPendaftar({
 								href={route("export.peserta.ppdb", {
 									tahun: tahun,
 									all: 1,
-									program: program || "",
 								})}
 							>
 								Export Excel
@@ -208,8 +158,7 @@ export default function ListPendaftar({
 					columns={columns}
 					data={pesertappdb.data}
 					pagination={{ links: pesertappdb.links }}
-					searchPlaceholder="Cari nama, no pend, asal sekolah..."
-					additionalParams={{ program }}
+					searchPlaceholder="Cari nama, no pend..."
 				/>
 			</div>
 		</>

@@ -34,7 +34,7 @@ interface Peserta {
 	id: string;
 	no_pendaftaran: string;
 	nama_lengkap: string;
-	program: { nama: string };
+
 	total_bill: number;
 	total_paid: number;
 	is_lunas: boolean;
@@ -79,7 +79,7 @@ interface Props {
 	tahun: number;
 	years: number[];
 	status: string | null;
-	program: string | null;
+
 	tab: string;
 	search: string | null;
 }
@@ -92,7 +92,6 @@ export default function Rekap({
 	tahun,
 	years,
 	status,
-	program,
 	tab,
 	search,
 }: Props) {
@@ -114,7 +113,6 @@ export default function Rekap({
 			{
 				tahun,
 				status,
-				program,
 				tab,
 				search: searchQuery,
 				...params,
@@ -155,23 +153,7 @@ export default function Rekap({
 						</Select>
 					</div>
 
-					<div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-1">
-						{/* Program Filter */}
-						<Select
-							value={program || "semua"}
-							onValueChange={(val) => handleFilterChange({ program: val })}
-						>
-							<SelectTrigger className="w-[150px]">
-								<SelectValue placeholder="Semua Program" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="semua">Semua Program</SelectItem>
-								<SelectItem value="1">Reguler</SelectItem>
-								<SelectItem value="2">Tahfidz</SelectItem>
-								<SelectItem value="3">Unggulan</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
+
 				</div>
 
 				<Tabs
@@ -390,7 +372,7 @@ export default function Rekap({
 									<TableHeader>
 										<TableRow>
 											<TableHead>Peserta</TableHead>
-											<TableHead>Program</TableHead>
+
 											<TableHead>Total Tagihan</TableHead>
 											<TableHead>Sudah Bayar</TableHead>
 											<TableHead>Progres</TableHead>
@@ -413,7 +395,7 @@ export default function Rekap({
 																<span className="text-xs text-muted-foreground">{p.no_pendaftaran}</span>
 															</div>
 														</TableCell>
-														<TableCell>{p.program.nama}</TableCell>
+
 														<TableCell>{formatCurrency(p.total_bill)}</TableCell>
 														<TableCell className="font-medium text-blue-600">
 															{formatCurrency(p.total_paid)}

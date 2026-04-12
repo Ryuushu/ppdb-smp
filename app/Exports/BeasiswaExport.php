@@ -30,8 +30,7 @@ class BeasiswaExport implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             'nama lengkap',
             'jenis kelamin',
             'tempat lahir',
-            'tanggal lahir',
-            'pilihan program',
+            'tanggal_lahir',
             'akademik',
             'non akademik',
             'penerima kip',
@@ -39,7 +38,6 @@ class BeasiswaExport implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             'rekomendasi mwc',
             'no hp',
             'alamat lengkap',
-            'asal sekolah'
         ];
     }
 
@@ -51,7 +49,6 @@ class BeasiswaExport implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             $row->jenis_kelamin === 'p' ? 'Perempuan' : 'Laki-laki',
             $row->tempat_lahir,
             $row->tanggal_lahir,
-            $row->program->nama,
             $row->akademik,
             $row->non_akademik,
             $row->penerima_kip === 'y' ? 'Ya' : 'Tidak',
@@ -59,7 +56,6 @@ class BeasiswaExport implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             $row->rekomendasi_mwc ? 'Ya' : 'Tidak',
             $row->no_hp,
             $row->alamat_lengkap,
-            $row->asal_sekolah
         ];
     }
 }

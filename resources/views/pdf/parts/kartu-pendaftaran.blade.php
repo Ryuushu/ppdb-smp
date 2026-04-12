@@ -1,126 +1,64 @@
 <!-- header -->
-<div class="row p-1 px-3 m-1" style="border: 3px solid black; border-radius: 10px;">
-    <div class="col-2 p-0">
-        <img src="/img/logo.png" width="65%" height="75%" class="float-left" style="object-fit: contain;" />
+<div class="header-container" style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; position: relative;">
+    <img src="/img/logo.png" style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; object-fit: contain;" />
+    <div style="margin-left: 70px;">
+        <strong style="font-size: 16px; display: block; text-transform: uppercase;">YAYASAN NURUL ULUM</strong>
+        <strong style="font-size: 18px; display: block; text-transform: uppercase;">MADRASAH TSANAWIYAH NURUL ULUM</strong>
+        <span style="font-size: 10px; display: block;">CINDOGO TAPEN BONDOWOSO 68283</span>
     </div>
-
-    <div class="col-10 p-0">
-        <div class="text-center">
-            <strong class="d-block" style="font-size: 14px;">FORMULIR PENDAFTARAN PESERTA DIDIK BARU</strong>
-            <strong class="d-block" style="font-size: 12px;">SMK DIPONEGORO KARANGANYAR</strong>
-            <span class="d-block" style="font-size: 12px;">Jl. Karanganyar Km. 1,5 Kayugeritan – Karanganyar kab.
-                Pekalongan 51182</span>
-            <span style="font-size: 11px;">website: smkdiponegoropekalongan.sch.id</span>
-        </div>
-    </div>
-
-
 </div>
 
-<!-- header -->
-
-<!-- heading -->
-<div class="text-center">
-    <strong style="font-weight: 900; font-size: 20px;">KARTU PENDAFTARAN SPMB TA
-        {{ $peserta->created_at->format('Y') . '/' . $peserta->created_at->addYear()->format('Y') }}</strong>
+<div style="text-align: center; margin-bottom: 15px;">
+    <strong style="font-size: 16px; text-decoration: underline; text-transform: uppercase;">KARTU PENDAFTARAN PPDBM 2026</strong>
 </div>
 
+<div class="card-content" style="font-size: 14px; line-height: 1.6; border: 2px solid #000; padding: 15px; border-radius: 10px; background-color: #f9f9f9;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td width="30%">No. Pendaftaran</td>
+            <td width="5%">:</td>
+            <td><strong style="font-size: 18px; color: #d32f2f;">{{ $peserta->no_pendaftaran }}</strong></td>
+            <td rowspan="5" width="25%" style="text-align: center; vertical-align: middle;">
+                <div style="border: 1px solid #000; width: 100px; height: 120px; line-height: 120px; font-size: 12px; background: #fff;">Foto 3x4</div>
+            </td>
+        </tr>
+        <tr>
+            <td>Nama Lengkap</td>
+            <td>:</td>
+            <td><strong>{{ $peserta->nama_lengkap }}</strong></td>
+        </tr>
+        <tr>
+            <td>NISN</td>
+            <td>:</td>
+            <td>{{ $peserta->nisn ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Asal Sekolah</td>
+            <td>:</td>
+            <td>{{ $peserta->asal_sekolah ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Tempat, Tgl Lahir</td>
+            <td>:</td>
+            <td>{{ $peserta->tempat_lahir }}, {{ $peserta->tanggal_lahir->format('d-m-Y') }}</td>
+        </tr>
+    </table>
+</div>
 
-<!-- table  -->
+<div style="margin-top: 20px; font-size: 12px;">
+    <strong>Catatan:</strong>
+    <ul style="margin-top: 5px; padding-left: 20px;">
+        <li>Bawa kartu ini saat melakukan verifikasi berkas di Madrasah.</li>
+        <li>Pastikan seluruh dokumen persyaratan (KK, Akta, Ijazah/SKL) sudah lengkap.</li>
+        <li>Informasi pengumuman akan disampaikan melalui No. WA yang terdaftar.</li>
+    </ul>
+</div>
 
-@php
-    $jurusanAbbr = $peserta->program->abbreviation ?? '';
-    $bgColor = '#FFFFFF';
-    $borderColor = '#000000';
-    $textColor = '#000000';
-    
-    // Mapping warna background, border, dan text berdasarkan jurusan
-    // TSM & TKR: BIRU MUDA DAN BIRU TUA
-    // TJKT & ACP: PINK DAN MAROON
-    // AT: HIJAU
-    // BCF: KUNING
-    switch ($jurusanAbbr) {
-        case 'TBSM':
-        case 'TSM':
-            // Biru Muda (Light Sky Blue)
-            $bgColor = '#87CEFA'; 
-            $borderColor = '#00689e'; // Darker version of bg
-            $textColor = '#000000';
-            break;
-        case 'TKR':
-        case 'TKRO':
-            // Biru Tua (Dark Blue)
-            $bgColor = '#00008B'; 
-            $borderColor = '#000000'; // Black border for contrast
-            $textColor = '#FFFFFF';
-            break;
-        case 'TKJ':
-        case 'TJKT':
-            // Pink (Hot Pink)
-            $bgColor = '#FF69B4'; 
-            $borderColor = '#C71585'; // Medium Violet Red
-            $textColor = '#FFFFFF';
-            break;
-        case 'ACP':
-            // Maroon
-            $bgColor = '#800000'; 
-            $borderColor = '#000000';
-            $textColor = '#FFFFFF';
-            break;
-        case 'AT':
-        case 'ATPH':
-            // Hijau (Green)
-            $bgColor = '#008000'; 
-            $borderColor = '#004d00'; // Darker Green
-            $textColor = '#FFFFFF';
-            break;
-        case 'BCF':
-            // Kuning (Gold)
-            $bgColor = '#FFD700'; 
-            $borderColor = '#B8860B'; // Dark Golden Rod
-            $textColor = '#000000';
-            break;
-    }
-@endphp
-
-<table class="m-2" style="font-size: 16px;">
-    <tr>
-        <td class="p-1" width="37%">No. Pendaftaran</td>
-        <td class="p-1" width="5%">:</td>
-        <td class="">
-            <span style="background-color: {{ $bgColor }}; color: {{ $textColor }}; border: 2px solid {{ $borderColor }}; border-radius: 5px; padding: 2px 5px; font-weight: bold; display: inline-block; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-                {{ $peserta->no_pendaftaran }}
-            </span>
-        </td>
-    </tr>
-    <tr>
-        <td class="p-1" width="37%">Nama Lengkap</td>
-        <td class="p-1" width="5%">:</td>
-        <td class="">{{ $peserta->nama_lengkap }}</td>
-    </tr>
-    <tr>
-        <td class="p-1" width="37%">TTL</td>
-        <td class="p-1" width="5%">:</td>
-        <td class="">{{ $peserta->tempat_lahir }}, {{ $peserta->tanggal_lahir->translatedFormat('d F Y') }}</td>
-    </tr>
-    <tr>
-        <td class="p-1" width="37%">Program Keahlian</td>
-        <td class="p-1" width="5%">:</td>
-        <td class="">{{ $peserta->program->nama }}</td>
-    </tr>
-</table>
-
-<!-- photo adn ttd -->
-<div class="row mt-2">
-    <div class="col-md-6">
-        <div
-            style="width: 120px; height: 140px; border: 3px solid black; border-radius: 8px; margin: 5px; margin-left: 20px;">
-        </div>
+<div style="margin-top: 20px;">
+    <div style="float: right; width: 40%; text-align: center; font-size: 13px;">
+        Bondowoso, {{ $peserta->created_at->format('d F Y') }}<br>
+        Panitia PPDBM,<br><br><br><br>
+        ( ........................................ )
     </div>
-
-    <div class="col-md-6 text-center">
-        <span>Pekalongan, {{ $peserta->created_at->translatedFormat('d F Y') }}</span>
-        <strong class="d-block" style="font-size: 16px;">Panitia Pendaftaran</strong>
-        <div style="margin-top: 50px;">( {{ auth()->user()->name }} )</div>
-    </div>
+    <div style="clear: both;"></div>
 </div>

@@ -23,11 +23,6 @@ import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/date";
 import { Head, Link, router, usePage } from "@inertiajs/react";
 
-interface Program {
-	id: number;
-	nama: string;
-}
-
 interface Peserta {
 	id: string;
 	no_pendaftaran: string;
@@ -45,13 +40,18 @@ interface Peserta {
 	kabupaten_kota: string;
 	provinsi: string;
 	kode_pos: string;
-	program: Program;
-	asal_sekolah: string;
-	tahun_lulus: string;
+
 	nisn: string;
-	penerima_kip: string; // 'y' or 'n' or null
+	penerima_kip: string;
 	no_kip: string;
+    no_kip_kks_pkh: string;
 	no_hp: string;
+    no_hp_pribadi: string;
+    asal_sekolah: string;
+    npsn_sekolah_asal: string;
+    alamat_sekolah_asal: string;
+    tahun_lulus: string;
+    ekstrakurikuler: string[];
 	bertindik: boolean;
 	bertato: boolean;
 	nama_ayah: string;
@@ -165,9 +165,7 @@ export default function Show({ peserta }: Props) {
 								label="Tempat, Tanggal Lahir"
 								value={`${peserta.tempat_lahir}, ${formatDate(peserta.tanggal_lahir)}`}
 							/>
-							<InfoRow label="Asal Sekolah" value={peserta.asal_sekolah} />
-							<InfoRow label="Tahun Lulus" value={peserta.tahun_lulus} />
-							<InfoRow label="Program Pilihan" value={peserta.program?.nama} />
+
 							<InfoRow label="NIK" value={peserta.nik} />
 							<InfoRow label="NISN" value={peserta.nisn} />
 							<InfoRow label="Alamat Jalan" value={peserta.alamat_lengkap} />
@@ -179,7 +177,8 @@ export default function Show({ peserta }: Props) {
 							<InfoRow label="Kabupaten/Kota" value={peserta.kabupaten_kota} />
 							<InfoRow label="Provinsi" value={peserta.provinsi} />
 							<InfoRow label="Kode Pos" value={peserta.kode_pos} />
-							<InfoRow label="No. HP" value={peserta.no_hp} />
+							<InfoRow label="No. HP Ortu" value={peserta.no_hp} />
+                            <InfoRow label="No. HP Pribadi" value={peserta.no_hp_pribadi} />
 							<InfoRow
 								label="Bertindik"
 								value={peserta.bertindik ? "Ya" : "Tidak"}
@@ -197,6 +196,17 @@ export default function Show({ peserta }: Props) {
 								}
 							/>
 							<InfoRow label="No. KIP" value={peserta.no_kip} />
+                            <InfoRow label="No. PKH/KKS/KIP" value={peserta.no_kip_kks_pkh} />
+						</div>
+
+						<Separator />
+
+                        <div>
+							<h3 className="mb-3 font-semibold text-lg"># Riwayat Pendidikan</h3>
+							<InfoRow label="Asal Sekolah" value={peserta.asal_sekolah} />
+							<InfoRow label="NPSN Sekolah" value={peserta.npsn_sekolah_asal} />
+							<InfoRow label="Tahun Lulus" value={peserta.tahun_lulus} />
+							<InfoRow label="Alamat Sekolah" value={peserta.alamat_sekolah_asal} />
 						</div>
 
 						<Separator />
@@ -246,6 +256,7 @@ export default function Show({ peserta }: Props) {
 								}
 							/>
 							<InfoRow label="Saran Dari" value={peserta.saran_dari} />
+                            <InfoRow label="Ekstrakurikuler" value={peserta.ekstrakurikuler?.join(", ")} />
 						</div>
 
 						{peserta.status_daftar_ulang === 'sudah' && (

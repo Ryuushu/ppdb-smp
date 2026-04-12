@@ -7,16 +7,12 @@ use App\Models\PesertaPPDB;
 
 class SuratController extends Controller
 {
-    public function showProgramPeserta(DocumentFilterRequest $request, $program = null)
+    public function showProgramPeserta(DocumentFilterRequest $request)
     {
         $tahun = $request->input('tahun', now()->year);
         $search = $request->input('search');
 
-        $pesertappdb = PesertaPPDB::with('program')
-            ->when($program && $program !== 'semua', function ($q) use ($program) {
-                $q->where('program_id', $program);
-            })
-            ->where('status_seleksi', 'lolos')
+        $pesertappdb = PesertaPPDB::where('status_seleksi', 'lolos')
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where('nama_lengkap', 'like', "%{$search}%")
@@ -37,7 +33,6 @@ class SuratController extends Controller
             'pesertappdb' => $pesertappdb,
             'tahun' => $tahun,
             'years' => $years,
-            'program' => $program,
             'title' => 'Surat Diterima Peserta SNPMB',
             'printSingleRoute' => 'ppdb.cetak.surat',
             'printAllRoute' => 'ppdb.cetak.surat.semua',
@@ -46,13 +41,9 @@ class SuratController extends Controller
         ]);
     }
 
-    public function cetakSurat($program = null)
+    public function cetakSurat()
     {
-        $pesertappdb = PesertaPPDB::with(['program'])
-            ->when($program && $program !== 'semua', function ($q) use ($program) {
-                $q->where('program_id', $program);
-            })
-            ->whereDiterima(1)
+        $pesertappdb = PesertaPPDB::whereDiterima(1)
             ->whereYear('created_at', now()->year)
             ->get();
 
@@ -61,9 +52,7 @@ class SuratController extends Controller
 
     public function cetakSuratSingle($uuid)
     {
-        $pesertappdb = PesertaPPDB::with(['program'])
-            ->whereId($uuid)
-            ->get();
+        $pesertappdb = PesertaPPDB::whereId($uuid)->get();
 
         return view('pdf.cetak-surat', compact('pesertappdb'));
     }

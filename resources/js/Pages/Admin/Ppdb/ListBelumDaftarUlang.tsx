@@ -11,18 +11,7 @@ import {
 import { Head, Link, router } from "@inertiajs/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const programItems = [
-	{ id: "semua", name: "Semua Peserta" },
-	{ id: "1", name: "Reguler" },
-	{ id: "2", name: "Tahfidz" },
-	{ id: "3", name: "Unggulan" },
-];
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
 
 interface Peserta {
 	id: string;
@@ -31,8 +20,8 @@ interface Peserta {
 	tempat_lahir: string;
 	tanggal_lahir: string;
 	no_hp: string;
-	asal_sekolah: string;
-	program: Program;
+
+
 	created_at: string;
 	diterima: number;
 }
@@ -53,14 +42,12 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
-	program: string | null;
 }
 
 export default function ListBelumDaftarUlang({
 	pesertappdb,
 	tahun,
 	years,
-	program,
 }: Props) {
 	const columns: Column<Peserta>[] = [
 		{
@@ -82,28 +69,8 @@ export default function ListBelumDaftarUlang({
 				<div className="font-medium">{row.getValue("nama_lengkap")}</div>
 			),
 		},
-		{
-			header: "Program",
-			cell: ({ row }) => (
-				<div className="font-medium text-sm">
-					{row.original.program?.abbreviation ||
-						row.original.program?.nama ||
-						"-"}
-				</div>
-			),
-		},
-		{
-			accessorKey: "asal_sekolah",
-			header: "Asal Sekolah",
-			cell: ({ row }) => (
-				<div
-					className="max-w-[200px] text-muted-foreground text-sm truncate"
-					title={row.original.asal_sekolah}
-				>
-					{row.original.asal_sekolah}
-				</div>
-			),
-		},
+
+
 		{
 			accessorKey: "no_hp",
 			header: "No. HP",
@@ -155,13 +122,9 @@ export default function ListBelumDaftarUlang({
 	const handleYearChange = (year: string) => {
 		router.get(
 			window.location.pathname,
-			{ tahun: year, program: program || "semua" },
+			{ tahun: year },
 			{ preserveState: true }
 		);
-	};
-
-	const handleProgramChange = (prog: string) => {
-        router.get(route("ppdb.belum.daftar.ulang.list", { program: prog }), { tahun }, { preserveState: true });
 	};
 
 	return (
@@ -169,15 +132,7 @@ export default function ListBelumDaftarUlang({
 			<Head title="List Peserta Belum Daftar Ulang" />
 
 			<div className="space-y-6">
-                <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
-                    <TabsList className="mb-2">
-                        {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
-                            <TabsTrigger key={p.id} value={p.id}>
-                                {p.name}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
+
 
 				<div className="flex sm:flex-row flex-col justify-between gap-4">
 					<div className="w-full sm:w-1/4">
@@ -194,13 +149,11 @@ export default function ListBelumDaftarUlang({
 							</SelectContent>
 						</Select>
 					</div>
-
-					<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2">
 						<Button asChild>
 							<a
 								href={route("export.belum.daftar.ulang", {
 									tahun: tahun,
-									program: program || "",
 								})}
 							>
 								Export Excel
@@ -222,8 +175,7 @@ export default function ListBelumDaftarUlang({
 					columns={columns}
 					data={pesertappdb.data}
 					pagination={{ links: pesertappdb.links }}
-					searchPlaceholder="Cari nama, no pend, asal sekolah..."
-					additionalParams={{ program }}
+					searchPlaceholder="Cari nama, no pend..."
 				/>
 			</div>
 		</>

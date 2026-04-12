@@ -29,7 +29,6 @@ class RankingController extends Controller
             $selectedGelombang = Gelombang::find($gelombang_id);
             $peserta = PesertaPPDB::where('gelombang_id', $gelombang_id)
                 ->whereNotNull('ranking')
-                ->with('program')
                 ->orderBy('ranking', 'asc')
                 ->get();
         }

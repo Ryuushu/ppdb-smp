@@ -42,11 +42,7 @@ interface User {
 	name: string;
 }
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
+
 
 interface Kwitansi {
 	id: number;
@@ -63,7 +59,6 @@ interface Peserta {
 	no_pendaftaran: string;
 	nama_lengkap: string;
 	jenis_kelamin: 'l' | 'p';
-	program: Program;
 	kwitansi: Kwitansi[];
 }
 
@@ -148,6 +143,13 @@ export default function Create({ peserta, adminItems }: Props) {
 			onSuccess: () => reset(),
 		});
 	};
+
+	const handleDelete = (id: number) => {
+		router.delete(route("ppdb.kwitansi.hapus", { id }), {
+			preserveScroll: true,
+		});
+	};
+
 	const initialInstallmentName = () => {
 		const nonDeletedCount = peserta.kwitansi.filter(k => !k.deleted_at).length;
 		return `Cicilan ke-${nonDeletedCount + 1}`;

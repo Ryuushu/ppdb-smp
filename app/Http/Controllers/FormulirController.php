@@ -7,17 +7,12 @@ use App\Models\PesertaPPDB;
 
 class FormulirController extends Controller
 {
-    public function showProgramPeserta(DocumentFilterRequest $request, $program = null)
+    public function showProgramPeserta(DocumentFilterRequest $request)
     {
         $tahun = $request->input('tahun', now()->year);
         $search = $request->input('search');
 
-        $pesertappdb = PesertaPPDB::with('program')
-            ->when($program && $program !== 'semua', function ($q) use ($program) {
-                $q->where('program_id', $program);
-            })
-            // ->whereDiterima(1)
-            ->whereYear('created_at', $tahun)
+        $pesertappdb = PesertaPPDB::whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where('nama_lengkap', 'like', "%{$search}%")
                     ->orWhere('no_pendaftaran', 'like', "%{$search}%");
@@ -32,7 +27,6 @@ class FormulirController extends Controller
             'pesertappdb' => $pesertappdb,
             'tahun' => $tahun,
             'years' => $years,
-            'program' => $program,
             'title' => 'Formulir Pendaftaran Peserta SNPMB',
             'printSingleRoute' => 'ppdb.cetak.formulir',
             'printAllRoute' => 'ppdb.cetak.formulir.semua',
@@ -40,24 +34,16 @@ class FormulirController extends Controller
         ]);
     }
 
-    public function cetakFormulir($program = null)
+    public function cetakFormulir()
     {
-        $pesertappdb = PesertaPPDB::with(['program'])
-            ->when($program && $program !== 'semua', function ($q) use ($program) {
-                $q->where('program_id', $program);
-            })
-            // ->whereDiterima(1)
-            ->whereYear('created_at', now()->year)
-            ->get();
+        $pesertappdb = PesertaPPDB::whereYear('created_at', now()->year)->get();
 
         return view('pdf.cetak-formulir', compact('pesertappdb'));
     }
 
     public function cetakFormulirSingle($uuid)
     {
-        $pesertappdb = PesertaPPDB::with(['program'])
-            ->whereId($uuid)
-            ->get();
+        $pesertappdb = PesertaPPDB::whereId($uuid)->get();
 
         return view('pdf.cetak-formulir', compact('pesertappdb'));
     }

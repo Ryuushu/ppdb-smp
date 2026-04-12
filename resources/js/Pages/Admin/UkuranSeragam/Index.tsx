@@ -24,18 +24,7 @@ import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const programItems = [
-	{ id: "semua", name: "Semua Peserta" },
-	{ id: "1", name: "Reguler" },
-	{ id: "2", name: "Tahfidz" },
-	{ id: "3", name: "Unggulan" },
-];
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
 
 interface UkuranSeragam {
 	id: number;
@@ -57,7 +46,7 @@ interface Peserta {
 	no_pendaftaran: string;
 	nama_lengkap: string;
 	jenis_kelamin: "l" | "p";
-	program: Program;
+
 	ukuran_seragam: UkuranSeragam | null;
 }
 
@@ -77,10 +66,9 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
-	program: string | null;
 }
 
-export default function Index({ pesertappdb, tahun, years, program }: Props) {
+export default function Index({ pesertappdb, tahun, years }: Props) {
 	const { flash } = usePage<any>().props;
 
 	// Edit Modal State
@@ -195,13 +183,9 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 	const handleYearChange = (year: string) => {
 		router.get(
 			route("ppdb.seragam.show.program"),
-			{ tahun: year, program: program || "semua" },
+			{ tahun: year },
 			{ preserveState: true }
 		);
-	};
-
-	const handleProgramChange = (prog: string) => {
-        router.get(route("ppdb.seragam.show.program", { program: prog }), { tahun }, { preserveState: true });
 	};
 
 	return (
@@ -211,15 +195,7 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 			<div className="space-y-6">
 				<AlertMessages flash={flash} />
 
-                <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
-                    <TabsList className="mb-2">
-                        {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
-                            <TabsTrigger key={p.id} value={p.id}>
-                                {p.name}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
+
 
 				<div className="flex sm:flex-row flex-col justify-between gap-4">
 					<div className="w-full sm:w-1/4">
@@ -242,7 +218,6 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 							<a
 								href={route("export.seragam", {
 									tahun: tahun,
-									program: program || "",
 								})}
 							>
 								Export Excel
@@ -256,7 +231,6 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 					data={pesertappdb.data}
 					pagination={{ links: pesertappdb.links }}
 					searchPlaceholder="Cari nama, no pend..."
-					additionalParams={{ program }}
 				/>
 
 				<Dialog open={open} onOpenChange={setOpen}>

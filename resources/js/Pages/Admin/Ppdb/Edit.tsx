@@ -37,13 +37,11 @@ import { cn } from "@/lib/utils";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
-interface Program {
-	id: number;
-	nama: string;
-}
+
 
 interface Peserta {
 	id: number;
+	tahun_ajaran: string;
 	nama_lengkap: string;
 	jenis_kelamin: string;
 	tempat_lahir: string;
@@ -58,9 +56,7 @@ interface Peserta {
 	kabupaten_kota: string;
 	provinsi: string;
 	kode_pos: string;
-	program_id: number;
-	asal_sekolah: string;
-	tahun_lulus: string;
+
 	nisn: string;
 	penerima_kip: string; // 'y' or 'n' or null
 	no_kip: string;
@@ -89,7 +85,7 @@ interface Peserta {
 }
 
 interface Props {
-	program: Program[];
+
 	peserta: Peserta;
 }
 
@@ -98,7 +94,7 @@ const steps = [
 	{ id: 2, title: "Identitas Orang Tua" },
 ];
 
-export default function Edit({ program, peserta }: Props) {
+export default function Edit({ peserta }: Props) {
 	const { data, setData, put, processing, errors } = useForm({
 		// Identitas Diri
 		nama_lengkap: peserta.nama_lengkap || "",
@@ -117,9 +113,7 @@ export default function Edit({ program, peserta }: Props) {
 		kabupaten_kota: peserta.kabupaten_kota || "",
 		provinsi: peserta.provinsi || "",
 		kode_pos: peserta.kode_pos || "",
-		pilihan_jurusan: String(peserta.program_id || ""),
-		asal_sekolah: peserta.asal_sekolah || "",
-		tahun_lulus: peserta.tahun_lulus || new Date().getFullYear().toString(),
+
 		nisn: peserta.nisn || "",
 		penerima_kip: peserta.penerima_kip === "y",
 		no_kip: peserta.no_kip || "",
@@ -389,64 +383,7 @@ export default function Edit({ program, peserta }: Props) {
 									/>
 								</div>
 
-								<div className="space-y-2">
-									<Label htmlFor="pilihan_jurusan">Program Pilihan *</Label>
-									<Select
-										value={data.pilihan_jurusan}
-										onValueChange={(v) => setData("pilihan_jurusan", v)}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Pilih Program" />
-										</SelectTrigger>
-										<SelectContent>
-											{program.map((j) => (
-												<SelectItem key={j.id} value={String(j.id)}>
-													{j.nama}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									{errors.pilihan_jurusan && (
-										<span className="text-red-500 text-sm">
-											{errors.pilihan_jurusan}
-										</span>
-									)}
-								</div>
-
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="space-y-2">
-										<Label htmlFor="asal_sekolah">Asal Sekolah *</Label>
-										<Input
-											id="asal_sekolah"
-											value={data.asal_sekolah}
-											onChange={(e) => setData("asal_sekolah", e.target.value)}
-											placeholder="Contoh: SMP N 1 Karanganyar"
-											required
-										/>
-									</div>
-
-									<div className="space-y-2">
-										<Label htmlFor="tahun_lulus">Tahun Lulus *</Label>
-										<Select
-											value={data.tahun_lulus}
-											onValueChange={(v) => setData("tahun_lulus", v)}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Tahun Lulus" />
-											</SelectTrigger>
-											<SelectContent>
-												{Array.from(
-													{ length: 8 },
-													(_, i) => new Date().getFullYear() - i,
-												).map((y) => (
-													<SelectItem key={y} value={String(y)}>
-														{y}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
-
 									<div className="space-y-2">
 										<Label htmlFor="nisn">NISN</Label>
 										<Input

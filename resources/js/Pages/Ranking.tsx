@@ -27,7 +27,7 @@ interface Participant {
 	ranking: number;
 	nama_lengkap: string;
 	no_pendaftaran: string;
-	program: { nama: string };
+
 	skor_spk: string;
 	status_seleksi: string;
 }
@@ -94,7 +94,6 @@ export default function Ranking({
 											<Select 
 												value={selectedGelombang ? String(selectedGelombang.id) : ""} 
 												onValueChange={handleWaveChange}
-												modal={false}
 											>
 												<SelectTrigger className="rounded-xl h-11">
 													<SelectValue placeholder="Pilih Gelombang" />
@@ -164,7 +163,7 @@ export default function Ranking({
 												<TableRow className="hover:bg-transparent border-0">
 													<TableHead className="w-[80px] text-center font-bold">POS</TableHead>
 													<TableHead className="font-bold">PESERTA</TableHead>
-													<TableHead className="font-bold">PROGRAM</TableHead>
+
 													<TableHead className="text-center font-bold">SKOR SPK</TableHead>
 													<TableHead className="text-center font-bold">HASIL</TableHead>
 												</TableRow>
@@ -198,9 +197,7 @@ export default function Ranking({
 																<div className="font-bold text-foreground">{p.nama_lengkap}</div>
 																<div className="text-xs font-mono text-muted-foreground uppercase">{p.no_pendaftaran}</div>
 															</TableCell>
-															<TableCell>
-																<Badge variant="secondary" className="rounded-lg">{p.program?.nama}</Badge>
-															</TableCell>
+
 															<TableCell className="text-center font-mono font-medium">
 																{parseFloat(p.skor_spk).toFixed(4)}
 															</TableCell>

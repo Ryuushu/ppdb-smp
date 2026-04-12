@@ -19,18 +19,7 @@ import { formatDate, formatDateFull } from "@/lib/date";
 import { Head, Link, router, usePage } from "@inertiajs/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const programItems = [
-	{ id: "semua", name: "Semua Peserta" },
-	{ id: "1", name: "Reguler" },
-	{ id: "2", name: "Tahfidz" },
-	{ id: "3", name: "Unggulan" },
-];
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
 
 interface Peserta {
 	id: string;
@@ -39,8 +28,8 @@ interface Peserta {
 	tempat_lahir: string;
 	tanggal_lahir: string; // ISO date string
 	no_hp: string;
-	asal_sekolah: string;
-	program: Program;
+
+
 }
 
 interface PaginationLink {
@@ -64,7 +53,6 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
-	program: string | null;
 	title: string;
 	printSingleRoute: string; // Route name, e.g. 'ppdb.cetak.surat'
 	printAllRoute: string; // Route name, e.g. 'ppdb.cetak.surat.semua'
@@ -76,7 +64,6 @@ export default function Index({
 	pesertappdb,
 	tahun,
 	years,
-	program,
 	title,
 	printSingleRoute,
 	printAllRoute,
@@ -100,9 +87,6 @@ export default function Index({
 					>
 						{row.original.nama_lengkap}
 					</Link>
-					<span className="text-xs sm:hidden text-muted-foreground mt-1">
-						{row.original.program?.nama || "-"}
-					</span>
 				</div>
 			),
 		},
@@ -118,26 +102,10 @@ export default function Index({
 							{formatDate(row.original.tanggal_lahir)}
 						</span>
 					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-muted-foreground">Asal:</span>
-						<span className="truncate max-w-[150px]">
-							{row.original.asal_sekolah}
-						</span>
-					</div>
 				</div>
 			),
 		},
-		{
-			header: "Program",
-			className: "hidden sm:table-cell",
-			cell: ({ row }) => (
-				<div className="text-sm font-medium">
-					{row.original.program?.abbreviation ||
-						row.original.program?.nama ||
-						"-"}
-				</div>
-			),
-		},
+
 		{
 			id: "actions",
 			header: "Aksi",
@@ -155,15 +123,9 @@ export default function Index({
 	const handleYearChange = (year: string) => {
 		router.get(
 			window.location.pathname,
-			{ tahun: year, program: program || "semua" },
+			{ tahun: year },
 			{ preserveState: true }
 		);
-	};
-
-	const handleProgramChange = (prog: string) => {
-        // Safe check in case route().current() returns undefined
-        const currentRoute = route().current() || "";
-        router.get(route(currentRoute, { program: prog }), { tahun }, { preserveState: true });
 	};
 
 	const handlePrintAll = (e: React.FormEvent) => {
@@ -214,7 +176,7 @@ export default function Index({
 						<h3 className="text-lg font-bold">{title}</h3>
 						<div className="flex items-center gap-2">
 							<form
-								action={route(printAllRoute, { program: program || "semua" })}
+								action={route(printAllRoute, { tahun: tahun })}
 								method="POST"
 								target="_blank"
 							>
@@ -230,15 +192,7 @@ export default function Index({
 						</div>
 					</div>
 
-                    <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
-                        <TabsList className="mb-4">
-                            {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
-                                <TabsTrigger key={p.id} value={p.id}>
-                                    {p.name}
-                                </TabsTrigger>
-                            ))}
-                        </TabsList>
-                    </Tabs>
+
 
 					<div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
 						<div className="w-full sm:w-1/4">
@@ -263,7 +217,6 @@ export default function Index({
 						pagination={{ links: pesertappdb.links }}
 						searchEndpoint={window.location.pathname}
 						searchPlaceholder="Cari nama, no pend..."
-						additionalParams={{ program }}
 					/>
 				</Card>
 			</div>

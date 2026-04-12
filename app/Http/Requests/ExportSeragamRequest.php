@@ -22,7 +22,7 @@ class ExportSeragamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'jurusan' => ['nullable', 'exists:programs,id'],
+
             'tahun' => ['nullable', 'integer'],
         ];
     }

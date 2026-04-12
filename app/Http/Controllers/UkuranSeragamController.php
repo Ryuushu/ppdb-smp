@@ -9,14 +9,13 @@ use App\Models\UkuranSeragam;
 
 class UkuranSeragamController extends Controller
 {
-    public function showProgramPeserta(DocumentFilterRequest $request, $program = null)
+    public function showProgramPeserta(DocumentFilterRequest $request)
     {
         $tahun = $request->input('tahun', now()->year);
         $search = $request->input('search');
 
-        $pesertappdb = PesertaPPDB::with(['program', 'ukuranSeragam'])
+        $pesertappdb = PesertaPPDB::with(['ukuranSeragam'])
             ->where('status_daftar_ulang', 'sudah')
-            ->when($program && $program !== 'semua', fn ($q) => $q->where('program_id', $program))
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where('nama_lengkap', 'like', "%{$search}%")
@@ -28,7 +27,7 @@ class UkuranSeragamController extends Controller
 
         $years = range(now()->year, now()->year - 5);
 
-        return inertia('Admin/UkuranSeragam/Index', compact('pesertappdb', 'tahun', 'years', 'program'));
+        return inertia('Admin/UkuranSeragam/Index', compact('pesertappdb', 'tahun', 'years'));
     }
 
     public function ubahUkuranSeragam(UpdateUkuranSeragamRequest $request)

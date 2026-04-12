@@ -11,18 +11,7 @@ import { formatDate, formatDateTime } from "@/lib/date";
 import { Head, Link, router, usePage } from "@inertiajs/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const programItems = [
-	{ id: "semua", name: "Semua Peserta" },
-	{ id: "1", name: "Reguler" },
-	{ id: "2", name: "Tahfidz" },
-	{ id: "3", name: "Unggulan" },
-];
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
 
 interface Peserta {
 	id: string;
@@ -31,8 +20,8 @@ interface Peserta {
 	tempat_lahir: string;
 	tanggal_lahir: string;
 	no_hp: string;
-	asal_sekolah: string;
-	program: Program;
+
+
 	created_at: string;
 }
 
@@ -52,16 +41,12 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
-	jurusan: string | null;
-	program: string | null;
 }
 
 export default function ListDaftarUlang({
 	pesertappdb,
 	tahun,
 	years,
-	jurusan,
-	program,
 }: Props) {
 	const columns: Column<Peserta>[] = [
 		{
@@ -78,9 +63,6 @@ export default function ListDaftarUlang({
 					>
 						{row.original.nama_lengkap}
 					</Link>
-					<span className="sm:hidden mt-1 text-blue-600 text-muted-foreground dark:text-blue-400 text-xs">
-						{row.original.program?.nama || "-"}
-					</span>
 				</div>
 			),
 		},
@@ -94,12 +76,6 @@ export default function ListDaftarUlang({
 						<span>
 							{row.original.tempat_lahir},{" "}
 							{formatDate(row.original.tanggal_lahir)}
-						</span>
-					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-muted-foreground">Asal:</span>
-						<span className="max-w-[150px] truncate">
-							{row.original.asal_sekolah}
 						</span>
 					</div>
 				</div>
@@ -119,29 +95,15 @@ export default function ListDaftarUlang({
 				</a>
 			),
 		},
-		{
-			header: "Program",
-			className: "hidden sm:table-cell",
-			cell: ({ row }) => (
-				<div className="font-medium text-sm">
-					{row.original.program?.abbreviation ||
-						row.original.program?.nama ||
-						"-"}
-				</div>
-			),
-		},
+
 	];
 
 	const handleYearChange = (year: string) => {
 		router.get(
 			window.location.pathname,
-			{ tahun: year, program: program || "semua" },
+			{ tahun: year },
 			{ preserveState: true }
 		);
-	};
-
-	const handleProgramChange = (prog: string) => {
-        router.get(route("ppdb.daftar.ulang.list", { program: prog }), { tahun }, { preserveState: true });
 	};
 
 	return (
@@ -149,15 +111,7 @@ export default function ListDaftarUlang({
 			<Head title="List Peserta Daftar Ulang" />
 
 			<div className="space-y-6">
-                <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
-                    <TabsList className="mb-2">
-                        {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
-                            <TabsTrigger key={p.id} value={p.id}>
-                                {p.name}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
+
 
 				<div className="flex sm:flex-row flex-col justify-between gap-4">
 					<div className="w-full sm:w-1/4">
@@ -182,7 +136,6 @@ export default function ListDaftarUlang({
 									tahun: tahun,
 									diterima: 1,
 									all: 0,
-									jurusan: jurusan || "",
 								})}
 							>
 								Export Excel
@@ -204,8 +157,7 @@ export default function ListDaftarUlang({
 					columns={columns}
 					data={pesertappdb.data}
 					pagination={{ links: pesertappdb.links }}
-					searchPlaceholder="Cari nama, no pend, asal sekolah..."
-					additionalParams={{ jurusan }}
+					searchPlaceholder="Cari nama, no pend..."
 				/>
 			</div>
 		</>

@@ -10,18 +10,7 @@ import { formatDate } from "@/lib/date";
 import { Head, Link, router } from "@inertiajs/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const programItems = [
-	{ id: "semua", name: "Semua Peserta" },
-	{ id: "1", name: "Reguler" },
-	{ id: "2", name: "Tahfidz" },
-	{ id: "3", name: "Unggulan" },
-];
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
 
 interface Kwitansi {
 	id: number;
@@ -36,8 +25,8 @@ interface Peserta {
 	tempat_lahir: string;
 	tanggal_lahir: string;
 	no_hp: string;
-	asal_sekolah: string;
-	program: Program;
+
+
 	created_at: string;
 	kwitansi: Kwitansi[];
 }
@@ -58,10 +47,9 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
-	program: string | null;
 }
 
-export default function Index({ pesertappdb, tahun, years, program }: Props) {
+export default function Index({ pesertappdb, tahun, years }: Props) {
 	const formatCurrency = (amount: number) => {
 		return new Intl.NumberFormat("id-ID", {
 			style: "currency",
@@ -106,14 +94,8 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 			accessorKey: "no_hp",
 			header: "No. HP",
 		},
-		{
-			accessorKey: "asal_sekolah",
-			header: "Asal Sekolah",
-		},
-		{
-			accessorKey: "program.nama",
-			header: "Program",
-		},
+
+
 		{
 			id: "kwitansi_count",
 			header: "Kwitansi",
@@ -149,17 +131,9 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 	const handleYearChange = (value: string) => {
 		router.get(
 			route("ppdb.kwitansi.show"),
-			{ tahun: value, program: program || "semua" },
+			{ tahun: value },
 			{ preserveState: true },
 		);
-	};
-
-	const handleProgramChange = (prog: string) => {
-        if (prog === "semua") {
-            router.get(route("ppdb.kwitansi.show"), { tahun }, { preserveState: true });
-        } else {
-            router.get(route("ppdb.kwitansi.show"), { tahun, program: prog }, { preserveState: true });
-        }
 	};
 
 	return (
@@ -167,15 +141,7 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 			<Head title="Dashboard Kwitansi" />
 
 			<div className="space-y-6">
-                <Tabs value={String(program || "semua")} onValueChange={handleProgramChange}>
-                    <TabsList className="mb-2">
-                        {programItems.filter(p => p.id !== "2" || Number(tahun) < 2025).map((p) => (
-                            <TabsTrigger key={p.id} value={p.id}>
-                                {p.name}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
+
 
 				<div className="flex flex-col sm:flex-row justify-between gap-4">
 					<div className="w-full sm:w-1/4">
@@ -218,8 +184,7 @@ export default function Index({ pesertappdb, tahun, years, program }: Props) {
 					columns={columns}
 					data={pesertappdb.data}
 					pagination={{ links: pesertappdb.links }}
-					searchPlaceholder="Cari nama, no pend, asal sekolah..."
-					additionalParams={{ program }}
+					searchPlaceholder="Cari nama, no pend..."
 				/>
 			</div>
 		</>

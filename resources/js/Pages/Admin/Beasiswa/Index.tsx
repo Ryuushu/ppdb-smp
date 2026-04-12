@@ -11,11 +11,7 @@ import {
 import { formatDate } from "@/lib/date";
 import { Head, Link, router, usePage } from "@inertiajs/react";
 
-interface Program {
-	id: number;
-	nama: string;
-	abbreviation: string;
-}
+
 
 interface Peserta {
 	id: string;
@@ -24,8 +20,7 @@ interface Peserta {
 	tempat_lahir: string;
 	tanggal_lahir: string; // ISO date string
 	no_hp: string;
-	asal_sekolah: string;
-	program: Program;
+
 }
 
 interface PaginationLink {
@@ -65,9 +60,6 @@ export default function Index({ pesertappdb, tahun, years, title }: Props) {
 					>
 						{row.original.nama_lengkap}
 					</Link>
-					<span className="sm:hidden mt-1 text-blue-600 text-muted-foreground dark:text-blue-400 text-xs">
-						{row.original.program?.nama || "-"}
-					</span>
 				</div>
 			),
 		},
@@ -81,12 +73,6 @@ export default function Index({ pesertappdb, tahun, years, title }: Props) {
 						<span>
 							{row.original.tempat_lahir},{" "}
 							{formatDate(row.original.tanggal_lahir)}
-						</span>
-					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-muted-foreground">Asal:</span>
-						<span className="max-w-[150px] truncate">
-							{row.original.asal_sekolah}
 						</span>
 					</div>
 				</div>
@@ -106,17 +92,7 @@ export default function Index({ pesertappdb, tahun, years, title }: Props) {
 				</a>
 			),
 		},
-		{
-			header: "Jurusan",
-			className: "hidden sm:table-cell",
-			cell: ({ row }) => (
-				<div className="font-medium text-sm">
-					{row.original.program?.abbreviation ||
-						row.original.program?.nama ||
-						"-"}
-				</div>
-			),
-		},
+
 	];
 
 	const handleYearChange = (value: string) => {
@@ -162,7 +138,7 @@ export default function Index({ pesertappdb, tahun, years, title }: Props) {
 					<div className="flex items-center gap-2">
 						<Button asChild>
 							<a
-								href={route(route().current() as string, {
+								href={route("export.beasiswa", {
 									tahun: tahun,
 									export: 1,
 								})}

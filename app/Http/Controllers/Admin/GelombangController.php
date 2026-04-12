@@ -47,7 +47,7 @@ class GelombangController extends Controller
 
     public function show($id)
     {
-        $gelombang = Gelombang::with(['peserta.program', 'kriteria'])->findOrFail($id);
+        $gelombang = Gelombang::with(['peserta', 'kriteria'])->findOrFail($id);
         
         return Inertia::render('Admin/Gelombang/Show', [
             'gelombang' => $gelombang,

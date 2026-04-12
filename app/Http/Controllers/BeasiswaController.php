@@ -15,13 +15,12 @@ class BeasiswaController extends Controller
         $search = $request->input('search');
         $title = 'Beasiswa Rekomendasi MWC';
 
-        $query = PesertaPPDB::with('program')->whereRekomendasiMwc(1)
+        $query = PesertaPPDB::whereRekomendasiMwc(1)
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest();
@@ -50,7 +49,7 @@ class BeasiswaController extends Controller
         // {"kelas":"","semester":"","peringkat":"","hafidz":""}
         // where all column is null
         // where all column is null
-        $query = PesertaPPDB::query()->with('program')
+        $query = PesertaPPDB::query()
             ->where('akademik->kelas', '!=', '')
             ->where('akademik->semester', '!=', '')
             ->where('akademik->peringkat', '!=', '')
@@ -58,8 +57,7 @@ class BeasiswaController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest();
@@ -88,7 +86,7 @@ class BeasiswaController extends Controller
         // {"jenis_lomba":"","juara_ke":"","juara_tingkat":""}
         // where all column is null / ""
         // where all column is null / ""
-        $query = PesertaPPDB::with('program')
+        $query = PesertaPPDB::query()
             ->where('non_akademik->jenis_lomba', '!=', '')
             ->where('non_akademik->juara_ke', '!=', '')
             ->where('non_akademik->juara_tingkat', '!=', '')
@@ -96,8 +94,7 @@ class BeasiswaController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest();
@@ -126,14 +123,13 @@ class BeasiswaController extends Controller
         // {"kelas":"","semester":"","peringkat":"","hafidz":""}
         // where all column is null
         // where all column is null
-        $query = PesertaPPDB::with('program')
+        $query = PesertaPPDB::query()
             ->where('penerima_kip', 'y')
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest();
@@ -162,7 +158,7 @@ class BeasiswaController extends Controller
         // {"kelas":"","semester":"","peringkat":"","hafidz":""}
         // filter where hafidz is not empty
         // filter where hafidz is not empty
-        $query = PesertaPPDB::with('program')
+        $query = PesertaPPDB::query()
             ->where('akademik->hafidz', '!=', '')
             ->where('akademik->hafidz', '!=', '-')
             ->where('akademik->hafidz', '!=', '_')
@@ -170,8 +166,7 @@ class BeasiswaController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest();

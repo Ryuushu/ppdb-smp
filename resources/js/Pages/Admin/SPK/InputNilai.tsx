@@ -88,10 +88,7 @@ export default function InputNilai({
 								<div className="font-bold text-sm text-muted-foreground">No Pendaftaran</div>
 								<div className="font-mono">{peserta.no_pendaftaran}</div>
 							</div>
-							<div>
-								<div className="font-bold text-sm text-muted-foreground">Asal Sekolah</div>
-								<div>{peserta.asal_sekolah || '-'}</div>
-							</div>
+
 							<div className="pt-4 border-t">
 								<div className="font-bold text-sm text-muted-foreground">Gelombang</div>
 								<div>{peserta.gelombang?.nama} ({peserta.gelombang?.tipe})</div>

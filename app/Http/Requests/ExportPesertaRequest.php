@@ -22,7 +22,7 @@ class ExportPesertaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'jurusan' => ['nullable', 'exists:programs,id'],
+
             'diterima' => ['nullable', 'integer'],
             'tahun' => ['nullable', 'integer'],
             'all' => ['nullable', 'integer'],

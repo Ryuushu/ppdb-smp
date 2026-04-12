@@ -19,7 +19,6 @@ class PemetaanKelasController extends Controller
         $peserta = [];
         if ($gelombangId) {
             $peserta = PesertaPPDB::where('gelombang_id', $gelombangId)
-                ->with('program')
                 ->get()
                 ->map(function ($p) {
                     $score = floatval($p->skor_spk) * 100; // Convert to 0-100 scale if needed

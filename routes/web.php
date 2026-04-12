@@ -40,14 +40,12 @@ Route::get('/', function () {
     ]);
 });
 Route::get('/register', function () {
-    $program = \App\Models\Program::all()->map(fn($p) => ['value' => $p->id, 'label' => $p->nama]);
     $gelombangAktif = \App\Models\Gelombang::where('status', 'buka')
         ->where('tanggal_mulai', '<=', now())
         ->where('tanggal_selesai', '>=', now())
         ->first();
 
     return inertia('Pendaftaran', [
-        'program' => $program,
         'gelombangAktif' => $gelombangAktif
     ]);
 })->name('ppdb.register');
@@ -102,8 +100,6 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
 
     Route::get('/ppdb/list-pendaftar', [PendaftaranPPDB::class, 'listPendaftar'])->name('ppdb.list.pendaftar');
 
-    Route::get('/ppdb/list-pendaftar/{program}', [PendaftaranPPDB::class, 'listPendaftarProgram'])->name('ppdb.list.pendaftar.program');
-
     // tanbah pendaftar
 
     Route::get('/ppdb/tambah-pendaftar', [PendaftaranPPDB::class, 'tambahPendaftar'])->name('ppdb.tambah.pendaftar');
@@ -126,12 +122,11 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
 
     Route::post('/ppdb/daftar-ulang/{uuid}', [PendaftaranPPDB::class, 'terimaPeserta'])->name('ppdb.terima.peserta');
 
-    Route::get('/ppdb/list/terdaftar-ulang/{program?}', [PendaftaranPPDB::class, 'listDaftarUlang'])->name('ppdb.daftar.ulang.list');
-    Route::get('/ppdb/list/belum-daftar-ulang/{program?}', [PendaftaranPPDB::class, 'listBelumDaftarUlang'])->name('ppdb.belum.daftar.ulang.list');
+    Route::get('/ppdb/list/terdaftar-ulang', [PendaftaranPPDB::class, 'listDaftarUlang'])->name('ppdb.daftar.ulang.list');
+    Route::get('/ppdb/list/belum-daftar-ulang', [PendaftaranPPDB::class, 'listBelumDaftarUlang'])->name('ppdb.belum.daftar.ulang.list');
 
     Route::prefix('kwitansi')->group(function () {
         Route::get('show', [KwitansiController::class, 'showPesertaDiterima'])->name('ppdb.kwitansi.show');
-        Route::get('show/{program}', [KwitansiController::class, 'showProgramPeserta'])->name('ppdb.kwitansi.show.program');
 
         // tambah kwitansi
         Route::get('/tambah/{uuid}', [KwitansiController::class, 'tambahKwitansi'])->name('ppdb.kwitansi.tambah');
@@ -149,29 +144,29 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
     });
 
     Route::prefix('ukuran-seragam')->group(function () {
-        Route::get('show/{program?}', [UkuranSeragamController::class, 'showProgramPeserta'])->name('ppdb.seragam.show.program');
+        Route::get('show', [UkuranSeragamController::class, 'showProgramPeserta'])->name('ppdb.seragam.show.program');
 
         Route::post('/ubah/seragam', [UkuranSeragamController::class, 'ubahUkuranSeragam'])->name('ppdb.ubah.seragam');
     });
 
     Route::prefix('surat')->group(function () {
-        Route::get('show/{program?}', [SuratController::class, 'showProgramPeserta'])->name('ppdb.surat.show.program');
+        Route::get('show', [SuratController::class, 'showProgramPeserta'])->name('ppdb.surat.show.program');
 
-        Route::post('/cetak/surat/{program?}', [SuratController::class, 'cetakSurat'])->name('ppdb.cetak.surat.semua');
+        Route::post('/cetak/surat', [SuratController::class, 'cetakSurat'])->name('ppdb.cetak.surat.semua');
         Route::post('/cetak/surat/{uuid}/single', [SuratController::class, 'cetakSuratSingle'])->name('ppdb.cetak.surat');
     });
 
     Route::prefix('formulir')->group(function () {
-        Route::get('show/{program?}', [FormulirController::class, 'showProgramPeserta'])->name('ppdb.formulir.show.program');
+        Route::get('show', [FormulirController::class, 'showProgramPeserta'])->name('ppdb.formulir.show.program');
 
-        Route::post('/cetak/formulir/{program?}', [FormulirController::class, 'cetakFormulir'])->name('ppdb.cetak.formulir.semua');
+        Route::post('/cetak/formulir', [FormulirController::class, 'cetakFormulir'])->name('ppdb.cetak.formulir.semua');
         Route::post('/cetak/formulir/{uuid}/single', [FormulirController::class, 'cetakFormulirSingle'])->name('ppdb.cetak.formulir');
     });
 
     Route::prefix('kartu-pendaftaran')->group(function () {
-        Route::get('show/{program?}', [KartuPendaftaranController::class, 'showProgramPeserta'])->name('ppdb.kartu.show.program');
+        Route::get('show', [KartuPendaftaranController::class, 'showProgramPeserta'])->name('ppdb.kartu.show.program');
 
-        Route::post('/cetak/kartu/{program?}', [KartuPendaftaranController::class, 'cetakKartu'])->name('ppdb.cetak.kartu.semua');
+        Route::post('/cetak/kartu', [KartuPendaftaranController::class, 'cetakKartu'])->name('ppdb.cetak.kartu.semua');
         Route::post('/cetak/kartu/{uuid}/single', [KartuPendaftaranController::class, 'cetakKartuSingle'])->name('ppdb.cetak.kartu');
     });
 

@@ -17,18 +17,16 @@ import { cn } from "@/lib/utils";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
-interface Program {
-	id: number;
-	nama: string;
-}
+
 
 interface Gelombang {
 	id: number;
 	nama: string;
+	tahun_ajaran?: string;
 }
 
 interface Props {
-	program: Program[];
+
 	gelombang: Gelombang[];
 }
 
@@ -37,7 +35,7 @@ const steps = [
 	{ id: 2, title: "Identitas Orang Tua" },
 ];
 
-export default function Create({ program, gelombang }: Props) {
+export default function Create({ gelombang }: Props) {
 	const { data, setData, post, processing, errors } = useForm({
 		// Identitas Diri
 		gelombang_id: gelombang.length > 0 ? String(gelombang[0].id) : "",
@@ -55,9 +53,6 @@ export default function Create({ program, gelombang }: Props) {
 		kabupaten_kota: "",
 		provinsi: "",
 		kode_pos: "",
-		pilihan_jurusan: "",
-		asal_sekolah: "",
-		tahun_lulus: "",
 		nisn: "",
 		penerima_kip: false,
 		no_kip: "",
@@ -314,64 +309,7 @@ export default function Create({ program, gelombang }: Props) {
 									/>
 								</div>
 
-								<div className="space-y-2">
-									<Label htmlFor="pilihan_jurusan">Program Pilihan *</Label>
-									<Select
-										value={data.pilihan_jurusan}
-										onValueChange={(v) => setData("pilihan_jurusan", v)}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Pilih Program" />
-										</SelectTrigger>
-										<SelectContent>
-											{program.map((j) => (
-												<SelectItem key={j.id} value={String(j.id)}>
-													{j.nama}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									{errors.pilihan_jurusan && (
-										<span className="text-red-500 text-sm">
-											{errors.pilihan_jurusan}
-										</span>
-									)}
-								</div>
-
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="space-y-2">
-										<Label htmlFor="asal_sekolah">Asal Sekolah *</Label>
-										<Input
-											id="asal_sekolah"
-											value={data.asal_sekolah}
-											onChange={(e) => setData("asal_sekolah", e.target.value)}
-											placeholder="Contoh: SMP N 1 Karanganyar"
-											required
-										/>
-									</div>
-
-									<div className="space-y-2">
-										<Label htmlFor="tahun_lulus">Tahun Lulus *</Label>
-										<Select
-											value={data.tahun_lulus}
-											onValueChange={(v) => setData("tahun_lulus", v)}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Tahun Lulus" />
-											</SelectTrigger>
-											<SelectContent>
-												{Array.from(
-													{ length: 8 },
-													(_, i) => new Date().getFullYear() - i,
-												).map((y) => (
-													<SelectItem key={y} value={String(y)}>
-														{y}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
-
 									<div className="space-y-2">
 										<Label htmlFor="nisn">NISN</Label>
 										<Input

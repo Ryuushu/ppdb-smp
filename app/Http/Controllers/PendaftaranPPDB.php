@@ -6,9 +6,9 @@ use App\Http\Requests\DocumentFilterRequest;
 use App\Http\Requests\StorePendaftarRequest;
 use App\Http\Requests\UpdatePendaftarRequest;
 use App\Http\Requests\UpdatePesertaStatusRequest;
-use App\Models\Program;
 use App\Models\PesertaPPDB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class PendaftaranPPDB extends Controller
 {
@@ -18,12 +18,10 @@ class PendaftaranPPDB extends Controller
         $search = $request->input('search');
 
         $pesertappdb = PesertaPPDB::whereYear('created_at', $tahun)
-            ->with(['program']) // Eager load relationships
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest()
@@ -35,80 +33,29 @@ class PendaftaranPPDB extends Controller
         return inertia('Admin/Ppdb/ListPendaftar', compact('pesertappdb', 'tahun', 'years'));
     }
 
-    public function listPendaftarProgram(DocumentFilterRequest $request, $program)
-    {
-        $tahun = $request->input('tahun', now()->year);
-        $search = $request->input('search');
-
-        $pesertappdb = PesertaPPDB::whereYear('created_at', $tahun)
-            ->with(['program'])
-            ->where('program_id', $program)
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate($request->input('per_page', 10))
-            ->withQueryString();
-
-        $years = range(now()->year, now()->year - 5);
-
-        return inertia('Admin/Ppdb/ListPendaftar', compact('pesertappdb', 'tahun', 'years', 'program'));
-    }
-
     public function tambahPendaftar()
     {
-        $program = Program::all();
         $gelombang = \App\Models\Gelombang::orderBy('tanggal_mulai', 'desc')->get();
 
-        return inertia('Admin/Ppdb/Create', compact('program', 'gelombang'));
+        return inertia('Admin/Ppdb/Create', compact('gelombang'));
     }
 
     public function submitPendaftar(StorePendaftarRequest $request)
     {
         $data = $request->validated();
 
-        $data['program_id'] = $request->input('pilihan_jurusan');
-        unset($data['pilihan_jurusan']);
-        $data['penerima_kip'] = $request->has('penerima_kip') ? 'y' : 'n';
-        $data['rekomendasi_mwc'] = $request->has('rekomendasi_mwc') ? 1 : 0;
-        $data['bertindik'] = $request->has('bertindik') ? 1 : 0;
-        $data['bertato'] = $request->has('bertato') ? 1 : 0;
-        $data['no_hp_ayah'] = $request->input('no_ayah');
-        $data['no_hp_ibu'] = $request->input('no_ibu');
+        $data['penerima_kip'] = 'n'; // Not in the form, setting default
+        $data['rekomendasi_mwc'] = 0;
+        $data['bertindik'] = 0;
+        $data['bertato'] = 0;
 
-        // Gabungkan alamat jika alamat_lengkap tidak diisi
-        if (empty($data['alamat_lengkap'])) {
-            $alamatParts = array_filter([
-                $data['dukuh'] ? "Dk. {$data['dukuh']}" : '',
-                $data['rt'] || $data['rw'] ? "RT {$data['rt']} / RW {$data['rw']}" : '',
-                $data['desa_kelurahan'],
-                $data['kecamatan'],
-                $data['kabupaten_kota'],
-                $data['provinsi'],
-                $data['kode_pos'] ? "Kode Pos {$data['kode_pos']}" : '',
-            ]);
-
-            $data['alamat_lengkap'] = implode(', ', $alamatParts);
+        // Determine File Store Process
+        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $data[$field] = $request->file($field)->store('dokumen_peserta', 'public');
+            }
         }
-
-        $data['akademik'] = [
-            'kelas' => explode('/', $request->input('peringkat'))[0] ?? '',
-            'semester' => explode('/', $request->input('peringkat'))[1] ?? '',
-            'peringkat' => explode('/', $request->input('peringkat'))[2] ?? '',
-            'hafidz' => $request->input('hafidz') ?? '',
-        ];
-
-        $data['non_akademik'] = [
-            'jenis_lomba' => $request->input('jenis_lomba') ?? '',
-            'juara_ke' => $request->input('juara_ke') ?? '',
-            'juara_tingkat' => $request->input('juara_tingkat') ?? '',
-        ];
-
-        unset($data['peringkat'], $data['hafidz'], $data['jenis_lomba'], $data['juara_ke'], $data['juara_tingkat'], $data['no_ayah'], $data['no_ibu']);
 
         $peserta = PesertaPPDB::create($data);
 
@@ -121,22 +68,19 @@ class PendaftaranPPDB extends Controller
     }
 
     // show daftar ulang
-
-    public function listDaftarUlang(DocumentFilterRequest $request, $program = null)
+    public function listDaftarUlang(DocumentFilterRequest $request)
     {
         $tahun = $request->input('tahun', now()->year);
         $search = $request->input('search');
 
-        $pesertappdb = PesertaPPDB::with(['program', 'gelombang'])
+        $pesertappdb = PesertaPPDB::with(['gelombang'])
             ->where('status_seleksi', 'lolos')
             ->where('status_daftar_ulang', 'sudah')
-            ->when($program && $program !== 'semua', fn ($q) => $q->where('program_id', $program))
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest()
@@ -145,24 +89,22 @@ class PendaftaranPPDB extends Controller
 
         $years = range(now()->year, now()->year - 5);
 
-        return inertia('Admin/Ppdb/ListDaftarUlang', compact('pesertappdb', 'tahun', 'years', 'program'));
+        return inertia('Admin/Ppdb/ListDaftarUlang', compact('pesertappdb', 'tahun', 'years'));
     }
 
-    public function listBelumDaftarUlang(DocumentFilterRequest $request, $program = null)
+    public function listBelumDaftarUlang(DocumentFilterRequest $request)
     {
         $tahun = $request->input('tahun', now()->year);
         $search = $request->input('search');
 
-        $pesertappdb = PesertaPPDB::with(['program', 'gelombang'])
+        $pesertappdb = PesertaPPDB::with(['gelombang'])
             ->where('status_seleksi', 'lolos')
             ->where('status_daftar_ulang', 'belum')
-            ->when($program && $program !== 'semua', fn ($q) => $q->where('program_id', $program))
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                        ->orWhere('asal_sekolah', 'like', "%{$search}%");
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                 });
             })
             ->latest()
@@ -171,80 +113,45 @@ class PendaftaranPPDB extends Controller
 
         $years = range(now()->year, now()->year - 5);
 
-        return inertia('Admin/Ppdb/ListBelumDaftarUlang', compact('pesertappdb', 'tahun', 'years', 'program'));
+        return inertia('Admin/Ppdb/ListBelumDaftarUlang', compact('pesertappdb', 'tahun', 'years'));
     }
 
     public function showPeserta($id)
     {
-        $peserta = PesertaPPDB::with('program')->findOrFail($id);
+        $peserta = PesertaPPDB::findOrFail($id);
 
         return inertia('Admin/Ppdb/Show', compact('peserta'));
     }
 
-    /*
-    * Edit data peserta
-    */
     public function edit($id)
     {
         $peserta = PesertaPPDB::findOrFail($id);
-        $program = Program::all();
 
-        return inertia('Admin/Ppdb/Edit', compact('peserta', 'program'));
+        return inertia('Admin/Ppdb/Edit', compact('peserta'));
     }
 
     public function update(UpdatePendaftarRequest $request, $id)
     {
         $data = $request->validated();
-
         $ppdb = PesertaPPDB::findOrFail($id);
-        $program = Program::findOrFail($request->input('pilihan_jurusan'));
 
-        // check apakah peserta memgubah program
-        if ($ppdb->program_id != $program->id) {
-            $data['no_pendaftaran'] = $program->abbreviation.'-'.Str::padLeft($ppdb->no_urut, 3, 0).'-'.now()->format('m-y');
+        $data['penerima_kip'] = 'n';
+        $data['rekomendasi_mwc'] = 0;
+        $data['bertindik'] = 0;
+        $data['bertato'] = 0;
 
-            session()->flash('warning', 'Peserta memilih program berbeda. Pastikan untuk mencetak kembali dokumen pendaftaran.');
+        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                // Delete old file if exists
+                if ($ppdb->$field && Storage::disk('public')->exists($ppdb->$field)) {
+                    Storage::disk('public')->delete($ppdb->$field);
+                }
+                $data[$field] = $request->file($field)->store('dokumen_peserta', 'public');
+            } else {
+                unset($data[$field]); // don't override with null if no file is uploaded
+            }
         }
-
-        $data['program_id'] = $program->id;
-        unset($data['pilihan_jurusan']);
-
-        $data['penerima_kip'] = $request->has('penerima_kip') ? 'y' : 'n';
-        $data['rekomendasi_mwc'] = $request->has('rekomendasi_mwc') ? 1 : 0;
-        $data['bertindik'] = $request->has('bertindik') ? 1 : 0;
-        $data['bertato'] = $request->has('bertato') ? 1 : 0;
-        $data['no_hp_ayah'] = $request->input('no_ayah');
-        $data['no_hp_ibu'] = $request->input('no_ibu');
-
-        // Gabungkan alamat jika alamat_lengkap tidak diisi
-        if (empty($data['alamat_lengkap'])) {
-            $alamatParts = array_filter([
-                $data['dukuh'] ? "Dk. {$data['dukuh']}" : '',
-                $data['rt'] || $data['rw'] ? "RT {$data['rt']} / RW {$data['rw']}" : '',
-                $data['desa_kelurahan'],
-                $data['kecamatan'],
-                $data['kabupaten_kota'],
-                $data['provinsi'],
-                $data['kode_pos'] ? "Kode Pos {$data['kode_pos']}" : '',
-            ]);
-
-            $data['alamat_lengkap'] = implode(', ', $alamatParts);
-        }
-
-        $data['akademik'] = [
-            'kelas' => explode('/', $request->input('peringkat'))[0] ?? '',
-            'semester' => explode('/', $request->input('peringkat'))[1] ?? '',
-            'peringkat' => explode('/', $request->input('peringkat'))[2] ?? '',
-            'hafidz' => $request->input('hafidz') ?? '',
-        ];
-
-        $data['non_akademik'] = [
-            'jenis_lomba' => $request->input('jenis_lomba') ?? '',
-            'juara_ke' => $request->input('juara_ke') ?? '',
-            'juara_tingkat' => $request->input('juara_tingkat') ?? '',
-        ];
-
-        unset($data['peringkat'], $data['hafidz'], $data['jenis_lomba'], $data['juara_ke'], $data['juara_tingkat'], $data['no_ayah'], $data['no_ibu']);
 
         $ppdb->update($data);
 
@@ -269,44 +176,17 @@ class PendaftaranPPDB extends Controller
             return back()->withErrors(['gelombang_id' => 'Gelombang pendaftaran sudah ditutup atau tidak tersedia.']);
         }
 
-        $data['program_id'] = $request->input('pilihan_jurusan');
-        unset($data['pilihan_jurusan']);
-        $data['penerima_kip'] = $request->has('penerima_kip') ? 'y' : 'n';
-        $data['rekomendasi_mwc'] = $request->has('rekomendasi_mwc') ? 1 : 0;
-        $data['bertindik'] = $request->has('bertindik') ? 1 : 0;
-        $data['bertato'] = $request->has('bertato') ? 1 : 0;
-        $data['no_hp_ayah'] = $request->input('no_ayah');
-        $data['no_hp_ibu'] = $request->input('no_ibu');
+        $data['penerima_kip'] = 'n';
+        $data['rekomendasi_mwc'] = 0;
+        $data['bertindik'] = 0;
+        $data['bertato'] = 0;
 
-        // Gabungkan alamat jika alamat_lengkap tidak diisi
-        if (empty($data['alamat_lengkap'])) {
-            $alamatParts = array_filter([
-                $data['dukuh'] ? "Dk. {$data['dukuh']}" : '',
-                $data['rt'] || $data['rw'] ? "RT {$data['rt']} / RW {$data['rw']}" : '',
-                $data['desa_kelurahan'],
-                $data['kecamatan'],
-                $data['kabupaten_kota'],
-                $data['provinsi'],
-                $data['kode_pos'] ? "Kode Pos {$data['kode_pos']}" : '',
-            ]);
-
-            $data['alamat_lengkap'] = implode(', ', $alamatParts);
+        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $data[$field] = $request->file($field)->store('dokumen_peserta', 'public');
+            }
         }
-
-        $data['akademik'] = [
-            'kelas' => explode('/', $request->input('peringkat'))[0] ?? '',
-            'semester' => explode('/', $request->input('peringkat'))[1] ?? '',
-            'peringkat' => explode('/', $request->input('peringkat'))[2] ?? '',
-            'hafidz' => $request->input('hafidz') ?? '',
-        ];
-
-        $data['non_akademik'] = [
-            'jenis_lomba' => $request->input('jenis_lomba') ?? '',
-            'juara_ke' => $request->input('juara_ke') ?? '',
-            'juara_tingkat' => $request->input('juara_tingkat') ?? '',
-        ];
-
-        unset($data['peringkat'], $data['hafidz'], $data['jenis_lomba'], $data['juara_ke'], $data['juara_tingkat'], $data['no_ayah'], $data['no_ibu']);
 
         $ppdb = PesertaPPDB::create($data);
 
@@ -322,7 +202,7 @@ class PendaftaranPPDB extends Controller
     {
         $request->validated();
 
-        $peserta = PesertaPPDB::with(['program', 'kwitansi'])->findOrFail($uuid);
+        $peserta = PesertaPPDB::with(['kwitansi'])->findOrFail($uuid);
 
         $peserta->diterima = $request->input('status') == 'y' ? 1 : 2;
         $peserta->save();
@@ -354,6 +234,13 @@ class PendaftaranPPDB extends Controller
     public function hapusPeserta($uuid)
     {
         $peserta = PesertaPPDB::findOrFail($uuid);
+
+        $fileFields = ['pas_foto', 'scan_ijazah_paud_tk', 'scan_kk', 'scan_akta_kelahiran'];
+        foreach ($fileFields as $field) {
+            if ($peserta->$field && Storage::disk('public')->exists($peserta->$field)) {
+                Storage::disk('public')->delete($peserta->$field);
+            }
+        }
 
         $peserta->delete();
 

@@ -22,37 +22,57 @@ class StorePendaftarRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama_lengkap' => 'required',
-            'jenis_kelamin' => 'required',
-            'tempat_lahir' => 'required',
-            'tanggal_lahir' => 'required|date_format:Y-m-d',
-            'nik' => 'required',
-            'alamat_lengkap' => 'nullable',
-            'dukuh' => 'nullable',
-            'rt' => 'nullable',
-            'rw' => 'nullable',
-            'desa_kelurahan' => 'nullable',
-            'kecamatan' => 'nullable',
-            'kabupaten_kota' => 'nullable',
-            'provinsi' => 'nullable',
-            'kode_pos' => 'nullable',
             'gelombang_id' => 'required|exists:gelombang,id',
-            'pilihan_jurusan' => 'required',
-            'asal_sekolah' => 'required',
-            'tahun_lulus' => 'required',
-            'nisn' => 'nullable',
-            'penerima_kip' => 'nullable',
-            'no_hp' => 'required',
-            'bertindik' => 'nullable|boolean',
-            'bertato' => 'nullable|boolean',
-            'nama_ayah' => 'required',
-            'nama_ibu' => 'required',
-            'peringkat' => 'nullable',
-            'hafidz' => 'nullable',
-            'jenis_lomba' => 'nullable',
-            'juara_ke' => 'nullable',
-            'juara_tingkat' => 'nullable',
-            'rekomendasi_mwc' => 'nullable',
+            
+            // Identitas Diri
+            'nama_lengkap' => 'required|string|max:255',
+            'nisn' => 'nullable|string',
+            'nik' => 'required|string',
+            'jenis_kelamin' => 'required|in:l,p',
+            'tempat_lahir' => 'required|string',
+            'tanggal_lahir' => 'required|date_format:Y-m-d',
+            'jumlah_saudara_kandung' => 'required|integer|min:0',
+            'anak_ke' => 'required|integer|min:1',
+            'status_anak' => 'required|string',
+            'alamat_lengkap' => 'required|string',
+            'agama' => 'required|string',
+            
+            // Riwayat Pendidikan & Dokumen
+            'pernah_paud' => 'required|boolean',
+            'pernah_tk' => 'required|boolean',
+            'pas_foto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'scan_ijazah_paud_tk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'scan_kk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'scan_akta_kelahiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+
+            // Data Orang Tua
+            'nama_ayah' => 'required|string',
+            'nik_ayah' => 'nullable|string',
+            'pendidikan_ayah' => 'nullable|string',
+            'pekerjaan_ayah' => 'nullable|string',
+            
+            'nama_ibu' => 'required|string',
+            'nik_ibu' => 'nullable|string',
+            'pendidikan_ibu' => 'nullable|string',
+            'pekerjaan_ibu' => 'nullable|string',
+
+            'penghasilan_ortu' => 'nullable|string',
+            'no_kip' => 'nullable|string',
+            'no_kip_kks_pkh' => 'nullable|string',
+            'no_hp' => 'required|string', 
+
+            // Sekolah Asal
+            'asal_sekolah' => 'nullable|string',
+            'npsn_sekolah_asal' => 'nullable|string',
+            'alamat_sekolah_asal' => 'nullable|string',
+            'tahun_lulus' => 'nullable|string',
+
+            // Bakat / Tambahan
+            'prestasi_diraih' => 'nullable|string',
+            'pengalaman_berkesan' => 'nullable|string',
+            'cita_cita' => 'nullable|string',
+            'no_hp_pribadi' => 'nullable|string',
+            'ekstrakurikuler' => 'nullable|array',
         ];
     }
 }

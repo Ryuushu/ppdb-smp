@@ -11,7 +11,7 @@ const navLinks = [
 	{ href: "/#ekskul", label: "Ekstrakurikuler" },
 ];
 
-export function Navbar({ onShowBrosur }: { onShowBrosur: () => void }) {
+export function Navbar({ onShowBrosur }: { onShowBrosur?: () => void }) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [scrolled, setScrolled] = useState(false);
 	const { url } = usePage();

@@ -10,13 +10,10 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class SeragamExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping
 {
-    public $jurusan;
-
     public $tahun;
 
-    public function __construct($jurusan, $tahun)
+    public function __construct($tahun)
     {
-        $this->jurusan = $jurusan;
         $this->tahun = $tahun;
     }
 
@@ -26,10 +23,7 @@ class SeragamExport implements FromCollection, ShouldAutoSize, WithHeadings, Wit
     public function collection()
     {
         return PesertaPPDB::with('ukuranSeragam')
-            ->when(! empty($this->jurusan), function ($query) {
-                return $query->where('program_id', $this->jurusan);
-            })
-            ->whereDiterima(1)
+            ->where('diterima', 1)
             ->whereYear('created_at', $this->tahun)
             ->get();
     }

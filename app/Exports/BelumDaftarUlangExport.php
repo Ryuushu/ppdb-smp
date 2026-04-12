@@ -24,9 +24,8 @@ class BelumDaftarUlangExport implements FromCollection, WithHeadings, WithMappin
      */
     public function collection()
     {
-        return PesertaPPDB::with('program')
+        return PesertaPPDB::query()
             ->doesntHave('kwitansi')
-            ->when($this->jurusan != null, fn($q) => $q->where('program_id', $this->jurusan))
             ->whereYear('created_at', $this->tahun)
             ->get();
     }
@@ -37,9 +36,6 @@ class BelumDaftarUlangExport implements FromCollection, WithHeadings, WithMappin
             'No',
             'No Pendaftaran',
             'Nama Lengkap',
-            'Program',
-            'Asal Sekolah',
-            'Tahun Lulus',
             'Status',
             'No HP',
             'Alamat Lengkap',
@@ -55,9 +51,6 @@ class BelumDaftarUlangExport implements FromCollection, WithHeadings, WithMappin
             $index,
             $row->no_pendaftaran,
             $row->nama_lengkap,
-            $row->program->nama ?? '-',
-            $row->asal_sekolah,
-            $row->tahun_lulus,
             $row->diterima == 1 ? 'Diterima' : ($row->diterima == 2 ? 'Ditolak' : 'Belum Diverifikasi'),
             $row->no_hp,
             $row->alamat_lengkap,
