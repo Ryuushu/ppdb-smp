@@ -6,7 +6,7 @@
 
 @foreach ($pesertappdb->kwitansi as $kwitansi)
 <div style="display: block; margin-bottom:66px;">
-    @include('pdf.parts.kwitansi', ['kwitansi' => $kwitansi])
+    @include('pdf.parts.kwitansi', ['kwitansi' => $kwitansi, 'adminItems' => $adminItems])
 </div>
 
 

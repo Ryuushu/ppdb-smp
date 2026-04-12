@@ -13,12 +13,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { Plus, Trash2, Receipt } from "lucide-react";
+import { Plus, Trash2, Receipt, Pencil, X } from "lucide-react";
+import { useState } from "react";
 
 interface AdminItem {
 	id: number;
 	name: string;
-	amount: number;
+	amount_male: number;
+	amount_female: number;
 	description: string | null;
 }
 
@@ -31,17 +33,46 @@ export default function AdminItems({
 }) {
 	const { flash } = usePage<any>().props;
 
-	const { data, setData, post, processing, reset, errors } = useForm({
+	const { data, setData, post, put, processing, reset, errors, clearErrors } = useForm({
 		name: "",
-		amount: "",
+		amount_male: "",
+		amount_female: "",
 		description: "",
 	});
 
+	const [editId, setEditId] = useState<number | null>(null);
+
+	const handleEdit = (item: AdminItem) => {
+		setEditId(item.id);
+		clearErrors();
+		setData({
+			name: item.name,
+			amount_male: item.amount_male.toString(),
+			amount_female: item.amount_female.toString(),
+			description: item.description || "",
+		});
+	};
+
+	const cancelEdit = () => {
+		setEditId(null);
+		reset();
+		clearErrors();
+	};
+
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		post(route("admin.admin-items.store"), {
-			onSuccess: () => reset(),
-		});
+		if (editId) {
+			put(route("admin.admin-items.update", editId), {
+				onSuccess: () => {
+					setEditId(null);
+					reset();
+				},
+			});
+		} else {
+			post(route("admin.admin-items.store"), {
+				onSuccess: () => reset(),
+			});
+		}
 	};
 
 	const handleDelete = (id: number) => {
@@ -59,9 +90,9 @@ export default function AdminItems({
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<Card className="col-span-1 h-fit">
 						<CardHeader>
-							<CardTitle>Tambah Biaya</CardTitle>
+							<CardTitle>{editId ? "Edit Biaya" : "Tambah Biaya"}</CardTitle>
 							<CardDescription>
-								Tambahkan item biaya administrasi baru.
+								{editId ? "Perbarui detail biaya administrasi ini." : "Tambahkan item biaya administrasi baru."}
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -77,17 +108,31 @@ export default function AdminItems({
 									/>
 									{errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
 								</div>
-								<div className="space-y-2">
-									<Label htmlFor="amount">Nominal (Rp)</Label>
-									<Input
-										id="amount"
-										type="number"
-										placeholder="50000"
-										value={data.amount}
-										onChange={(e) => setData("amount", e.target.value)}
-										required
-									/>
-									{errors.amount && <p className="text-red-500 text-xs">{errors.amount}</p>}
+								<div className="grid grid-cols-2 gap-4">
+									<div className="space-y-2">
+										<Label htmlFor="amount_male">Pria (Rp)</Label>
+										<Input
+											id="amount_male"
+											type="number"
+											placeholder="Pria"
+											value={data.amount_male}
+											onChange={(e) => setData("amount_male", e.target.value)}
+											required
+										/>
+										{errors.amount_male && <p className="text-red-500 text-xs">{errors.amount_male}</p>}
+									</div>
+									<div className="space-y-2">
+										<Label htmlFor="amount_female">Wanita (Rp)</Label>
+										<Input
+											id="amount_female"
+											type="number"
+											placeholder="Wanita"
+											value={data.amount_female}
+											onChange={(e) => setData("amount_female", e.target.value)}
+											required
+										/>
+										{errors.amount_female && <p className="text-red-500 text-xs">{errors.amount_female}</p>}
+									</div>
 								</div>
 								<div className="space-y-2">
 									<Label htmlFor="description">Keterangan (Opsional)</Label>
@@ -99,9 +144,17 @@ export default function AdminItems({
 									/>
 									{errors.description && <p className="text-red-500 text-xs">{errors.description}</p>}
 								</div>
-								<Button type="submit" className="w-full" disabled={processing}>
-									<Plus className="w-4 h-4 mr-2" /> Simpan Biaya
-								</Button>
+								<div className={editId ? "grid grid-cols-2 gap-2" : "flex gap-2"}>
+									{editId && (
+										<Button type="button" variant="outline" className="w-full" onClick={cancelEdit} disabled={processing}>
+											<X className="w-4 h-4 mr-2" /> Batal
+										</Button>
+									)}
+									<Button type="submit" className="w-full" disabled={processing}>
+										{editId ? <Pencil className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+										{editId ? "Simpan Perubahan" : "Simpan Biaya"}
+									</Button>
+								</div>
 							</form>
 						</CardContent>
 					</Card>
@@ -116,7 +169,8 @@ export default function AdminItems({
 									<TableHeader>
 										<TableRow>
 											<TableHead>Nama Biaya</TableHead>
-											<TableHead>Nominal</TableHead>
+											<TableHead>Pria</TableHead>
+											<TableHead>Wanita</TableHead>
 											<TableHead>Keterangan</TableHead>
 											<TableHead className="text-right">Aksi</TableHead>
 										</TableRow>
@@ -124,7 +178,7 @@ export default function AdminItems({
 									<TableBody>
 										{items.length === 0 ? (
 											<TableRow>
-												<TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+												<TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
 													Belum ada data biaya administrasi.
 												</TableCell>
 											</TableRow>
@@ -137,20 +191,37 @@ export default function AdminItems({
 															style: "currency",
 															currency: "IDR",
 															maximumFractionDigits: 0,
-														}).format(item.amount)}
+														}).format(item.amount_male)}
+													</TableCell>
+													<TableCell>
+														{new Intl.NumberFormat("id-ID", {
+															style: "currency",
+															currency: "IDR",
+															maximumFractionDigits: 0,
+														}).format(item.amount_female)}
 													</TableCell>
 													<TableCell className="text-xs text-muted-foreground">
 														{item.description || "-"}
 													</TableCell>
 													<TableCell className="text-right">
-														<Button
-															variant="ghost"
-															size="icon"
-															className="text-red-500 hover:text-red-600 hover:bg-red-50"
-															onClick={() => handleDelete(item.id)}
-														>
-															<Trash2 className="w-4 h-4" />
-														</Button>
+														<div className="flex items-center justify-end gap-1">
+															<Button
+																variant="ghost"
+																size="icon"
+																className="text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+																onClick={() => handleEdit(item)}
+															>
+																<Pencil className="w-4 h-4" />
+															</Button>
+															<Button
+																variant="ghost"
+																size="icon"
+																className="text-red-500 hover:text-red-600 hover:bg-red-50"
+																onClick={() => handleDelete(item.id)}
+															>
+																<Trash2 className="w-4 h-4" />
+															</Button>
+														</div>
 													</TableCell>
 												</TableRow>
 											))

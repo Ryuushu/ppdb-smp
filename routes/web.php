@@ -71,6 +71,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         // Admin Items (Fees)
         Route::get('/setting/admin-items', [AdminItemController::class, 'index'])->name('admin.admin-items.index');
         Route::post('/setting/admin-items', [AdminItemController::class, 'store'])->name('admin.admin-items.store');
+        Route::put('/setting/admin-items/{id}', [AdminItemController::class, 'update'])->name('admin.admin-items.update');
         Route::delete('/setting/admin-items/{id}', [AdminItemController::class, 'destroy'])->name('admin.admin-items.destroy');
     });
 

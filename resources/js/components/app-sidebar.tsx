@@ -273,22 +273,6 @@ export function AppSidebar() {
 										</Link>
 									</SidebarMenuSubButton>
 								</SidebarMenuSubItem>
-								{visiblePrograms.map((program) => (
-									<SidebarMenuSubItem key={program.id}>
-										<SidebarMenuSubButton
-											asChild
-											isActive={url.includes(`/kwitansi/show/${program.id}`)}
-										>
-											<Link
-												href={route("ppdb.kwitansi.show.program", {
-													program: program.id,
-												})}
-											>
-												{program.name}
-											</Link>
-										</SidebarMenuSubButton>
-									</SidebarMenuSubItem>
-								))}
 								<SidebarMenuSubItem>
 									<SidebarMenuSubButton
 										asChild

@@ -1,117 +1,203 @@
 
-<div class="row">
-    <div class="col-2 p-0">
-        <img src="/img/logo.png" width="65%" height="75%" class="float-left" style="object-fit: contain;"/>
+@php
+    $peserta = $kwitansi->pesertaPpdb;
+    $tahunAkademik = $peserta->semester ?? (date('Y') . '/' . (date('Y') + 1));
+@endphp
+
+<style>
+    .kwitansi-container {
+        font-family: Arial, sans-serif;
+        border: 2px solid #000;
+        padding: 10px;
+        max-width: 800px;
+        margin: 0 auto;
+        color: #000;
+    }
+    .header {
+        display: flex;
+        align-items: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+    .logo {
+        width: 80px;
+        height: 80px;
+        margin-right: 20px;
+    }
+    .title-box {
+        flex: 1;
+        text-align: center;
+    }
+    .title-box h1 {
+        margin: 0;
+        font-size: 18px;
+        text-transform: uppercase;
+    }
+    .title-box h2 {
+        margin: 5px 0;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+    .title-box p {
+        margin: 0;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .info-table {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .info-table td {
+        padding: 2px 0;
+        font-size: 14px;
+    }
+    .input-line {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        min-width: 300px;
+        padding-left: 5px;
+    }
+    .amount-box {
+        border: 1px solid #000;
+        padding: 5px 10px;
+        min-width: 250px;
+        display: inline-block;
+        font-style: italic;
+        background-color: #f0f0f0;
+    }
+    .main-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+    }
+    .main-table th, .main-table td {
+        border: 1px solid #000;
+        padding: 5px;
+        text-align: left;
+        font-size: 13px;
+    }
+    .main-table th {
+        background-color: #e0e0e0;
+        text-align: center;
+    }
+    .text-center { text-align: center !important; }
+    .text-right { text-align: right !important; }
+    .font-bold { font-weight: bold; }
+    
+    .footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+    .signature-area {
+        text-align: center;
+        width: 300px;
+    }
+    .notes {
+        font-size: 12px;
+        margin-top: 20px;
+    }
+    .notes p { margin: 2px 0; }
+
+    @media print {
+        .kwitansi-container {
+            border: 2px solid #000 !important;
+        }
+        .main-table th {
+            background-color: #e0e0e0 !important;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>
+
+<div class="kwitansi-container">
+    <div class="header">
+        <img src="/img/logo.png" class="logo" alt="Logo">
+        <div class="title-box">
+            <h1>KWITANSI PEMBAYARAN</h1>
+            <h2>ATRIBUT SISWA BARU</h2>
+            <h2>MIS NURUL ULUM CINDOGO</h2>
+            <p>Tahun Pelajaran {{ $tahunAkademik }}</p>
+        </div>
     </div>
 
-    <div class="col-6 p-0">
-        <p class="text-center">
-            <strong class="d-block" style="font-size: 22px;">PANITIA PENERIMAAN PESERTA DIDIK BARU</strong>
-            <strong class="d-block">SMK DIPONEGORO KARANGANYAR</strong>
-            <span style="font-size: 18px;">Jl. Karanganyar Km. 1,5 Kayugeritan – Karanganyar kab. Pekalongan 51182</span>
-        </p>
-    </div>
+    <table class="info-table">
+        <tr>
+            <td width="20%">Sudah Terima dari</td>
+            <td width="2%">:</td>
+            <td><span class="input-line">{{ $peserta->nama_lengkap }}</span></td>
+        </tr>
+        <tr>
+            <td>Jumlah Uang</td>
+            <td>:</td>
+            <td><div class="amount-box">Rp {{ number_format($kwitansi->nominal, 0, ',', '.') }},- / ({{ (new App\Helper\Terbilang)->convert($kwitansi->nominal) }} rupiah)</div></td>
+        </tr>
+        <tr>
+            <td>Untuk Pembayaran/ No</td>
+            <td>:</td>
+            <td><span class="input-line">{{ $kwitansi->jenis_pembayaran }} / No: {{ $peserta->no_pendaftaran }}</span></td>
+        </tr>
+    </table>
 
-    <div class="col-4 text-center" style="height: 100%;">
-        <div style="display: flex;align-items: center;justify-content: center;">
-
-            <strong class="d-inline mr-2">No.</strong>
+    <table class="main-table">
+        <thead>
+            <tr>
+                <th rowspan="2" width="40%">Jenis Kelengkapan</th>
+                <th colspan="2">Harga Atribut</th>
+                <th colspan="2">Keterangan</th>
+            </tr>
+            <tr>
+                <th width="15%">Laki-Laki</th>
+                <th width="15%">Perempuan</th>
+                <th width="15%">Sudah</th>
+                <th width="15%">Belum</th>
+            </tr>
+        </thead>
+        <tbody>
             @php
-                $jurusanAbbr = $kwitansi->pesertaPpdb->program->abbreviation ?? '';
-                $bgColor = '#FFFFFF';
-                $borderColor = '#000000';
-                $textColor = '#000000';
-                
-                switch ($jurusanAbbr) {
-                    case 'TBSM':
-                    case 'TSM':
-                        $bgColor = '#87CEFA'; 
-                        $borderColor = '#00689e';
-                        $textColor = '#000000';
-                        break;
-                    case 'TKR':
-                    case 'TKRO':
-                        $bgColor = '#00008B'; 
-                        $borderColor = '#000000';
-                        $textColor = '#FFFFFF';
-                        break;
-                    case 'TKJ':
-                    case 'TJKT':
-                        $bgColor = '#FF69B4'; 
-                        $borderColor = '#C71585';
-                        $textColor = '#FFFFFF';
-                        break;
-                    case 'ACP':
-                        $bgColor = '#800000'; 
-                        $borderColor = '#000000';
-                        $textColor = '#FFFFFF';
-                        break;
-                    case 'AT':
-                    case 'ATPH':
-                        $bgColor = '#008000'; 
-                        $borderColor = '#004d00';
-                        $textColor = '#FFFFFF';
-                        break;
-                    case 'BCF':
-                        $bgColor = '#FFD700'; 
-                        $borderColor = '#B8860B';
-                        $textColor = '#000000';
-                        break;
-                }
+                $totalL = 0;
+                $totalP = 0;
             @endphp
-            <div class="px-3 py-1 d-inline" style="background-color: {{ $bgColor }}; border: 5px solid {{ $borderColor }}; border-radius: 5px; color: {{ $textColor }}; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;">{{ $kwitansi->pesertaPpdb->no_pendaftaran }}</div>
+            @foreach($adminItems as $item)
+                @php
+                    $totalL += $item->amount_male;
+                    $totalP += $item->amount_female;
+                @endphp
+                <tr>
+                    <td>{{ $item->name }}</td>
+                    <td class="text-right">Rp {{ number_format($item->amount_male, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($item->amount_female, 0, ',', '.') }}</td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                </tr>
+            @endforeach
+            <tr class="font-bold">
+                <td rowspan="2" class="text-center">Jumlah Total</td>
+                <td class="text-center">Laki-Laki</td>
+                <td class="text-right" colspan="3">Rp {{ number_format($totalL, 0, ',', '.') }}</td>
+            </tr>
+            <tr class="font-bold">
+                <td class="text-center">Perempuan</td>
+                <td class="text-right" colspan="3">Rp {{ number_format($totalP, 0, ',', '.') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <div class="signature-area">
+            <p>Bondowoso, {{ date('d F Y') }}</p>
+            <p>Panitia PPDBM MIS Nurul Ulum Cindogo</p>
+            <br><br><br>
+            <p>__________________________</p>
         </div>
     </div>
-</div>
 
-<hr style="border: 1px solid black;" class="m-0 p-0">
-<div class="text-center">
-    <strong style="font-size: 28px; font-weight: bold;">KWITANSI</strong>
-</div>
-
-<table class="table table-borderless text-left">
-    <tr>
-        <td width="18%">Sudah Terima Dari</td>
-        <td width="2%">:</td>
-        <td> {{ $kwitansi->pesertaPpdb->nama_lengkap }} </td>
-    </tr>
-    <tr>
-        <td width="18%">Banyaknya Uang</td>
-        <td width="2%">:</td>
-        <td class="w-full" style="position: relative
-        ;"> <img src="/img/kwitansi/image003.png" style="position: absolute; z-index: 0; top: 0; left: 0; right: 0; bottom: 0;" >
-            <span class="px-5" style="position: absolute;z-index: 1;">{{ (new App\Helper\Terbilang)->convert($kwitansi->nominal) }} rupiah</span>
-        </td>
-    </tr>
-    </tr>
-    <tr>
-        <td width="18%">Untuk Pembayaran</td>
-        <td width="2%">:</td>
-        <td> {{ $kwitansi->jenis_pembayaran }} </td>
-    </tr>
-</table>
-
-<div class="text-right w-full px-5">
-    Pekalongan, {{ $kwitansi->created_at->format('d-m-Y') }}
-</div>
-
-<div class="px-3 d-flex mt-2">
-    <strong class="mr-2">Terbilang Rp.</strong>
-
-    <div style="position: relative;" class="text-center p-2">
-        <img src="/img/kwitansi/image005.png" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
-            <span class="px-5" style="position: absolute; z-index: 1;">{{ number_format($kwitansi->nominal, 2, ',', '.') }}</span>
-        </div>
-</div>
-
-<div class="row mt-5">
-    <div class="col-6 text-right">
-        <strong>Penerima</strong>
-    </div>
-    <div class="col-6 text-right" style="padding-right: 120px;">
-        <strong class="d-block">Penyetor</strong>
-
+    <div class="notes">
+        <p class="font-bold">Keterangan :</p>
+        <p>- Kwitansi jangan sampai hilang.</p>
+        <p>- Sebagai persyaratan pengambilan atribut.</p>
+        <p>- Harga seragam M*</p>
+        <p>- Ukuran L Tambah 10.000 & Ukuran XL Tambah 20.000</p>
     </div>
 </div>
-
-<span style="font-size: 12px;">*kwitansi ini berlaku apabila terdapat stampel panitia</span>

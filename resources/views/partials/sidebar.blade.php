@@ -537,57 +537,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 3]) }}"
-                                class="nav-link {{ request()->is('dashboard/kwitansi/show/3') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kwitansi AT</p>
-                            </a>
-                        </li>
-                        @if (request()->query('tahun', now()->year) < 2025)
-                            <li class="nav-item">
-                                <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 2]) }}"
-                                    class="nav-link {{ request()->is('dashboard/kwitansi/show/2') ? 'active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Kwitansi TO</p>
-                                </a>
-                            </li>
-                        @endif
-                        <li class="nav-item">
-                            <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 1]) }}"
-                                class="nav-link {{ request()->is('dashboard/kwitansi/show/1') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kwitansi TJKT</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 4]) }}"
-                                class="nav-link {{ request()->is('dashboard/kwitansi/show/4') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kwitansi BCF</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 6]) }}"
-                                class="nav-link {{ request()->is('dashboard/kwitansi/show/6') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kwitansi TSM</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 7]) }}"
-                                class="nav-link {{ request()->is('dashboard/kwitansi/show/7') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kwitansi TKR</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('ppdb.kwitansi.show.jurusan', ['jurusan' => 8]) }}"
-                                class="nav-link {{ request()->is('dashboard/kwitansi/show/8') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kwitansi ACP</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="{{ route('ppdb.rekap.kwitansi') }}"
                                 class="nav-link {{ request()->routeIs('ppdb.rekap.kwitansi') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
