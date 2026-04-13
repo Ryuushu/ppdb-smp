@@ -38,14 +38,4 @@ class ExportController extends Controller
     {
         return bacK()->with('error', 'Fitur Rekap Sekolah telah dinonaktifkan.');
     }
-
-    public function exportBelumDaftarUlang(ExportPesertaRequest $request)
-    {
-        $tahun = $request->input('tahun', now()->year);
-
-        $filename = 'peserta_snpmb_belum_daftar_ulang_Semua-' . $tahun . '.xlsx';
-
-        // 2 in the updated PesertaPPDBExport means 'Accepted but not yet re-registered'
-        return Excel::download(new PesertaPPDBExport($tahun, 2), $filename);
-    }
 }

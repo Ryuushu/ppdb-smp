@@ -17,7 +17,7 @@ class PemetaanKelasController extends Controller
         $totalBillMale = (float) $adminItems->sum('amount_male');
         $totalBillFemale = (float) $adminItems->sum('amount_female');
         
-        $pesertaRaw = PesertaPPDB::with(['program', 'kwitansi' => fn($q) => $q->whereNull('deleted_at')])
+        $pesertaRaw = PesertaPPDB::with(['kwitansi' => fn($q) => $q->whereNull('deleted_at')])
             ->get()
             ->filter(function ($p) use ($totalBillMale, $totalBillFemale) {
                 $totalBill = $p->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;

@@ -16,9 +16,6 @@ class AdminController extends Controller
         $tahun = $request->input('tahun', now()->year);
 
         $pesertaCount = PesertaPPDB::whereYear('created_at', $tahun)->count();
-        $pesertaDuCount = PesertaPPDB::where('status_daftar_ulang', 'sudah')
-            ->whereYear('created_at', $tahun)
-            ->count();
 
         $acc = PesertaPPDB::whereYear('created_at', $tahun);
         $penerimaan = [
@@ -35,25 +32,12 @@ class AdminController extends Controller
             'p' => PesertaPPDB::whereYear('created_at', $tahun)->where('jenis_kelamin', 'p')->count(),
         ];
 
-        $compareDx = [
-            'l' => PesertaPPDB::whereYear('created_at', $tahun)->where('status_daftar_ulang', 'sudah')->where('jenis_kelamin', 'l')->count(),
-            'p' => PesertaPPDB::whereYear('created_at', $tahun)->where('status_daftar_ulang', 'sudah')->where('jenis_kelamin', 'p')->count(),
-        ];
-
         $lastYear = now()->setYear($tahun)->subYear()->format('Y');
 
         // Perbandingan pendaftar bulanan
         $yearDiff = PesertaPPDB::select(
             DB::raw('YEAR(created_at) as tahun, MONTH(created_at) as bulan, count(*) as jumlah_pendaftar')
         )
-            ->whereRaw("YEAR(created_at) >= $lastYear")
-            ->groupBy(DB::raw('YEAR(created_at), MONTH(created_at)'))
-            ->get();
-
-        $yearDiffDaftarUlang = PesertaPPDB::select(
-            DB::raw('YEAR(created_at) as tahun, MONTH(created_at) as bulan, count(*) as jumlah_daftar_ulang')
-        )
-            ->where('status_daftar_ulang', 'sudah')
             ->whereRaw("YEAR(created_at) >= $lastYear")
             ->groupBy(DB::raw('YEAR(created_at), MONTH(created_at)'))
             ->get();
@@ -70,18 +54,6 @@ class AdminController extends Controller
 
         if (! $yearDiff->has($tahun)) {
             $yearDiff->put($tahun, collect());
-        }
-
-        $yearDiffDaftarUlang = $yearDiffDaftarUlang->map(function ($item) use ($months) {
-            return [
-                'tahun' => $item->tahun,
-                'bulan' => $months[$item->bulan - 1],
-                'jumlah_daftar_ulang' => $item->jumlah_daftar_ulang,
-            ];
-        })->groupBy('tahun');
-
-        if (! $yearDiffDaftarUlang->has($tahun)) {
-            $yearDiffDaftarUlang->put($tahun, collect());
         }
 
         // Daily trends
@@ -117,12 +89,9 @@ class AdminController extends Controller
 
         return inertia('Admin/Dashboard', [
             'count' => ['all' => $pesertaCount],
-            'du' => ['all' => $pesertaDuCount],
             'penerimaan' => $penerimaan,
             'compareSx' => $compareSx,
-            'compareDx' => $compareDx,
             'yearDiff' => $yearDiff,
-            'yearDiffDaftarUlang' => $yearDiffDaftarUlang,
             'tahun' => $tahun,
             'lastYear' => $lastYear,
             'dailyTrends' => $dailyTrends,

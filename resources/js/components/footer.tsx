@@ -23,11 +23,6 @@ const quickLinks = [
 	{ label: "Ekstrakurikuler", href: "#ekskul" },
 ];
 
-const programs = [
-	{ label: "Program Reguler", href: "#" },
-	{ label: "Program Tahfidz", href: "#" },
-	{ label: "Program Unggulan", href: "#" },
-];
 
 export function Footer() {
 	const footerRef = useRef<HTMLElement>(null);
@@ -154,19 +149,25 @@ export function Footer() {
 
 					<div>
 						<h4 className="mb-6 font-bold text-background text-lg">
-							Program Unggulan
+							Tautan Utama
 						</h4>
 						<ul className="space-y-3">
-							{programs.map((program) => (
-								<li key={program.label}>
-									<Link
-										href={program.href}
-										className="inline-block text-background/70 hover:text-primary text-sm transition-all hover:translate-x-1 duration-300"
-									>
-										{program.label}
-									</Link>
-								</li>
-							))}
+							<li key="register">
+								<Link
+									href={route('ppdb.register')}
+									className="inline-block text-background/70 hover:text-primary text-sm transition-all hover:translate-x-1 duration-300"
+								>
+									Daftar Online
+								</Link>
+							</li>
+							<li key="ranking">
+								<Link
+									href={route('ppdb.ranking')}
+									className="inline-block text-background/70 hover:text-primary text-sm transition-all hover:translate-x-1 duration-300"
+								>
+									Pengumuman Hasil
+								</Link>
+							</li>
 						</ul>
 					</div>
 

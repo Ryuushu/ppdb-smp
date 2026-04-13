@@ -126,17 +126,8 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
     // edit pendaftar
     Route::get('/ppdb/edit/{id}', [PendaftaranPPDB::class, 'edit'])->name('ppdb.edit.peserta');
     Route::post('/terima-peserta/{uuid}', [PendaftaranPPDB::class, 'terimaPeserta'])->name('ppdb.terima.peserta');
-    Route::post('/konfirmasi-daftar-ulang/{uuid}', [PendaftaranPPDB::class, 'konfirmasiDaftarUlang'])->name('ppdb.konfirmasi.daftar_ulang');
-    Route::get('/hapus-peserta/{uuid}', [PendaftaranPPDB::class, 'hapusPeserta'])->name('ppdb.hapus.peserta');
     Route::put('/ppdb/edit/{id}', [PendaftaranPPDB::class, 'update'])->name('ppdb.edit.peserta');
     Route::delete('/ppdb/delete/{id}', [PendaftaranPPDB::class, 'hapusPeserta'])->name('ppdb.delete.peserta');
-
-    // daftar ulanng
-
-    Route::post('/ppdb/daftar-ulang/{uuid}', [PendaftaranPPDB::class, 'terimaPeserta'])->name('ppdb.terima.peserta');
-
-    Route::get('/ppdb/list/terdaftar-ulang', [PendaftaranPPDB::class, 'listDaftarUlang'])->name('ppdb.daftar.ulang.list');
-    Route::get('/ppdb/list/belum-daftar-ulang', [PendaftaranPPDB::class, 'listBelumDaftarUlang'])->name('ppdb.belum.daftar.ulang.list');
 
     Route::prefix('kwitansi')->group(function () {
         Route::get('show', [KwitansiController::class, 'showPesertaDiterima'])->name('ppdb.kwitansi.show');
@@ -192,9 +183,6 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
 
         // export rekap sekolah
         Route::get('rekap-sekolah', [ExportController::class, 'exportRekapSekolah'])->name('export.rekap-sekolah');
-
-        // export belum daftar ulang
-        Route::get('belum-daftar-ulang', [ExportController::class, 'exportBelumDaftarUlang'])->name('export.belum.daftar.ulang');
     });
 
 });

@@ -15,7 +15,7 @@ class UkuranSeragamController extends Controller
         $search = $request->input('search');
 
         $pesertappdb = PesertaPPDB::with(['ukuranSeragam'])
-            ->where('status_daftar_ulang', 'sudah')
+            ->where('status_seleksi', 'lolos')
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where('nama_lengkap', 'like', "%{$search}%")

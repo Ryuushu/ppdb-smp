@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            ProgramSeeder::class,
             PesertaPPDBSeeder::class,
+            MasterDocumentSeeder::class,
         ]);
         // \App\Models\User::factory(10)->create();
     }

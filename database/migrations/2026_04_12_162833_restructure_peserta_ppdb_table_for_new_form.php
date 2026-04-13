@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('peserta_ppdb', function (Blueprint $table) {
             // Drop old columns
-            $table->dropColumn(['program_id', 'asal_sekolah', 'tahun_lulus']);
+            $table->dropColumn(['jurusan_id', 'asal_sekolah', 'tahun_lulus']);
 
             // New identitas diri columns
             $table->integer('jumlah_saudara_kandung')->nullable()->after('tanggal_lahir');
@@ -41,25 +41,14 @@ return new class extends Migration
             $table->text('pengalaman_berkesan')->nullable();
             $table->string('cita_cita')->nullable();
         });
-
-        // Drop the programs table since it's no longer used
-        Schema::dropIfExists('programs');
     }
 
     public function down(): void
     {
-        Schema::create('programs', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('abbreviation', 5)->nullable();
-            $table->string('deskripsi')->nullable();
-            $table->timestamps();
-        });
-
         Schema::table('peserta_ppdb', function (Blueprint $table) {
-            $table->integer('program_id')->nullable();
-            $table->string('asal_sekolah')->nullable();
-            $table->year('tahun_lulus')->nullable();
+            $table->integer('jurusan_id')->after('id');
+            $table->string('asal_sekolah')->after('alamat_lengkap');
+            $table->year('tahun_lulus')->after('asal_sekolah');
 
             $table->dropColumn([
                 'jumlah_saudara_kandung',
@@ -79,7 +68,7 @@ return new class extends Migration
                 'penghasilan_ortu',
                 'prestasi_diraih',
                 'pengalaman_berkesan',
-                'cita_cita'
+                'cita_cita',
             ]);
         });
     }

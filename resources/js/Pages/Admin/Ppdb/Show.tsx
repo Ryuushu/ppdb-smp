@@ -92,11 +92,7 @@ export default function Show({ peserta }: Props) {
 		router.post(route("ppdb.terima.peserta", { uuid: peserta.id }), { status });
 	};
 
-	const handleKonfirmasiDaftarUlang = () => {
-		if (confirm(`Konfirmasi daftar ulang untuk ${peserta.nama_lengkap}?`)) {
-			router.post(route("ppdb.konfirmasi.daftar_ulang", { uuid: peserta.id }));
-		}
-	};
+
 
 	const StatusBadge = ({ status }: { status: number }) => {
 		switch (status) {
@@ -227,14 +223,6 @@ export default function Show({ peserta }: Props) {
 								label="Ranking / Skor"
 								value={peserta.ranking ? `${peserta.ranking} (${parseFloat(peserta.skor_spk || "0").toFixed(4)})` : "-"}
 							/>
-							<InfoRow
-								label="Daftar Ulang"
-								value={
-									<Badge variant={peserta.status_daftar_ulang === 'sudah' ? 'default' : 'outline'}>
-										{peserta.status_daftar_ulang === 'sudah' ? 'SUDAH DAFTAR ULANG' : 'BELUM DAFTAR ULANG'}
-									</Badge>
-								}
-							/>
 							<InfoRow label="Saran Dari" value={peserta.saran_dari} />
                             <InfoRow label="Ekstrakurikuler" value={peserta.ekstrakurikuler?.join(", ")} />
 						</div>
@@ -289,7 +277,7 @@ export default function Show({ peserta }: Props) {
 
 						<Separator />
 
-						{peserta.status_daftar_ulang === 'sudah' && (
+						{peserta.ukuran_seragam && (
 							<>
 								<Separator />
 								<div>
@@ -324,14 +312,6 @@ export default function Show({ peserta }: Props) {
 					</CardContent>
 					<CardFooter className="flex flex-col items-start gap-4">
 						<div className="flex flex-wrap gap-2">
-							{peserta.status_seleksi === 'lolos' && peserta.status_daftar_ulang === 'belum' && (
-								<Button 
-									onClick={handleKonfirmasiDaftarUlang}
-									className="bg-primary text-primary-foreground hover:bg-primary/90"
-								>
-									Konfirmasi Daftar Ulang
-								</Button>
-							)}
 						</div>
 					</CardFooter>
 				</Card>

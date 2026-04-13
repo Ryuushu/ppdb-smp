@@ -70,55 +70,6 @@ class PendaftaranPPDB extends Controller
         return redirect()->route('admin.spk.input_nilai', $peserta->id);
     }
 
-    // show daftar ulang
-    public function listDaftarUlang(DocumentFilterRequest $request)
-    {
-        $tahun = $request->input('tahun', now()->year);
-        $search = $request->input('search');
-
-        $pesertappdb = PesertaPPDB::with(['gelombang'])
-            ->where('status_seleksi', 'lolos')
-            ->where('status_daftar_ulang', 'sudah')
-            ->whereYear('created_at', $tahun)
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate($request->input('per_page', 10))
-            ->withQueryString();
-
-        $years = range(now()->year, now()->year - 5);
-
-        return inertia('Admin/Ppdb/ListDaftarUlang', compact('pesertappdb', 'tahun', 'years'));
-    }
-
-    public function listBelumDaftarUlang(DocumentFilterRequest $request)
-    {
-        $tahun = $request->input('tahun', now()->year);
-        $search = $request->input('search');
-
-        $pesertappdb = PesertaPPDB::with(['gelombang'])
-            ->where('status_seleksi', 'lolos')
-            ->where('status_daftar_ulang', 'belum')
-            ->whereYear('created_at', $tahun)
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama_lengkap', 'like', "%{$search}%")
-                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate($request->input('per_page', 10))
-            ->withQueryString();
-
-        $years = range(now()->year, now()->year - 5);
-
-        return inertia('Admin/Ppdb/ListBelumDaftarUlang', compact('pesertappdb', 'tahun', 'years'));
-    }
-
     public function showPeserta($id)
     {
         $peserta = PesertaPPDB::with(['documents.masterDocument', 'gelombang', 'ukuranSeragam'])->findOrFail($id);
@@ -230,23 +181,6 @@ class PendaftaranPPDB extends Controller
         $msg = $request->input('status') == 'y' ? 'Peserta Diterima' : 'Peserta Ditolak';
 
         session()->flash('success', $msg);
-
-        return back();
-    }
-
-    public function konfirmasiDaftarUlang($uuid)
-    {
-        $peserta = PesertaPPDB::findOrFail($uuid);
-        
-        if ($peserta->status_seleksi !== 'lolos') {
-            return back()->with('error', 'Hanya peserta yang sudah LOLOS seleksi yang dapat melakukan daftar ulang.');
-        }
-
-        $peserta->update([
-            'status_daftar_ulang' => 'sudah'
-        ]);
-
-        session()->flash('success', 'Konfirmasi daftar ulang berhasil untuk ' . $peserta->nama_lengkap);
 
         return back();
     }

@@ -26,8 +26,8 @@ const advantages = [
 	},
 	{
 		icon: Award,
-		title: "Program Tahfidz",
-		description: "Program hafalan Al-Qur'an dengan bimbingan ustadz ahli",
+		title: "Pembiasaan Ibadah",
+		description: "Pembentukan karakter Qur'ani melalui sholat berjamaah & dhuha",
 	},
 	{
 		icon: Users,
