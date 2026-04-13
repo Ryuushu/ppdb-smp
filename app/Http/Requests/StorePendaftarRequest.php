@@ -68,6 +68,9 @@ class StorePendaftarRequest extends FormRequest
             'cita_cita' => 'nullable|string',
             'no_hp_pribadi' => 'nullable|string',
             'ekstrakurikuler' => 'nullable|array',
+            
+            // Seragam
+            'master_ukuran_seragam_id' => 'required|exists:master_ukuran_seragams,id',
         ];
 
         // Dynamic Document Rules

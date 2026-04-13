@@ -158,6 +158,12 @@
             @php
                 $totalL = 0;
                 $totalP = 0;
+                $tambahanBaju = 0;
+                $ukuranBajuText = 'Tidak Memilih';
+                if ($peserta->ukuranSeragam && $peserta->ukuranSeragam->masterUkuran) {
+                    $tambahanBaju = $peserta->ukuranSeragam->masterUkuran->tambahan_biaya;
+                    $ukuranBajuText = $peserta->ukuranSeragam->masterUkuran->nama_ukuran;
+                }
             @endphp
             @php
                 $totalPaid = $peserta->kwitansi->filter(fn($k) => !isset($k->deleted_at))->sum('nominal');
@@ -192,6 +198,26 @@
                     <td class="text-center">{!! !$isPaid && $price > 0 ? '&#10006;' : '' !!}</td>
                 </tr>
             @endforeach
+            @if($tambahanBaju > 0)
+                @php
+                    $isBajuPaid = false;
+                    if ($remainingBalanceForAllocation >= $tambahanBaju) {
+                        $isBajuPaid = true;
+                        $remainingBalanceForAllocation -= $tambahanBaju;
+                    } else {
+                        $remainingBalanceForAllocation = 0;
+                    }
+                    $totalL += $tambahanBaju;
+                    $totalP += $tambahanBaju;
+                @endphp
+                <tr>
+                    <td>Tambahan Ukuran Baju ({{ $ukuranBajuText }})</td>
+                    <td class="text-right">Rp {{ number_format($tambahanBaju, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($tambahanBaju, 0, ',', '.') }}</td>
+                    <td class="text-center">{!! $isBajuPaid ? '&#10004;' : '' !!}</td>
+                    <td class="text-center">{!! !$isBajuPaid ? '&#10006;' : '' !!}</td>
+                </tr>
+            @endif
             <tr class="font-bold">
                 <td rowspan="2" class="text-center">Jumlah Total</td>
                 <td class="text-center">Laki-Laki</td>
@@ -217,7 +243,8 @@
         <p class="font-bold">Keterangan :</p>
         <p>- Kwitansi jangan sampai hilang.</p>
         <p>- Sebagai persyaratan pengambilan atribut.</p>
-        <p>- Harga seragam M*</p>
-        <p>- Ukuran L Tambah 10.000 & Ukuran XL Tambah 20.000</p>
+        @if($peserta->ukuranSeragam && $peserta->ukuranSeragam->masterUkuran)
+        <p>- Pilihan Ukuran Baju Siswa: <b>{{ $ukuranBajuText }}</b></p>
+        @endif
     </div>
 </div>

@@ -28,6 +28,7 @@ interface Gelombang {
 interface Props {
 	gelombang: Gelombang[];
     masterDocuments: any[];
+	masterUkuranSeragams: any[];
 }
 
 const steps = [
@@ -37,10 +38,11 @@ const steps = [
     { id: 4, title: "Dokumen" },
 ];
 
-export default function Create({ gelombang, masterDocuments }: Props) {
+export default function Create({ gelombang, masterDocuments, masterUkuranSeragams }: Props) {
 	const { data, setData, post, processing, errors } = useForm({
 		// Identitas Diri
 		gelombang_id: gelombang.length > 0 ? String(gelombang[0].id) : "",
+		master_ukuran_seragam_id: "",
 		nama_lengkap: "",
 		jenis_kelamin: "l",
 		tempat_lahir: "",
@@ -189,6 +191,8 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 											</span>
 										)}
 									</div>
+
+
 
 									<div className="space-y-2">
 										<Label htmlFor="nama_lengkap">Nama Lengkap *</Label>
@@ -354,7 +358,30 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 
 
 								</div>
-							</div>
+																<div className="space-y-2">
+										<Label htmlFor="master_ukuran_seragam_id">Ukuran Seragam *</Label>
+										<Select
+											value={data.master_ukuran_seragam_id}
+											onValueChange={(v) => setData("master_ukuran_seragam_id", v)}
+										>
+											<SelectTrigger>
+												<SelectValue placeholder="Pilih Ukuran Seragam" />
+											</SelectTrigger>
+											<SelectContent>
+												{masterUkuranSeragams.map((u) => (
+													<SelectItem key={u.id} value={String(u.id)}>
+														Ukuran {u.nama_ukuran} {u.tambahan_biaya > 0 ? `(+ Rp. ${u.tambahan_biaya.toLocaleString('id-ID')})` : ''}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{errors.master_ukuran_seragam_id && (
+											<span className="text-destructive text-sm">
+												{errors.master_ukuran_seragam_id}
+											</span>
+										)}
+									</div>
+								</div>
 
 							{/* Step 2: Identitas Orang Tua */}
 							<div className={currentStep === 2 ? "block space-y-4" : "hidden"}>

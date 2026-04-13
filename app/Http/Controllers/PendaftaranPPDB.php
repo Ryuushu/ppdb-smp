@@ -37,8 +37,9 @@ class PendaftaranPPDB extends Controller
     {
         $gelombang = \App\Models\Gelombang::where('status', 'buka')->get();
         $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+        $masterUkuranSeragams = \App\Models\MasterUkuranSeragam::all();
 
-        return inertia('Admin/Ppdb/Create', compact('gelombang', 'masterDocuments'));
+        return inertia('Admin/Ppdb/Create', compact('gelombang', 'masterDocuments', 'masterUkuranSeragams'));
     }
 
     public function submitPendaftar(StorePendaftarRequest $request)
@@ -48,6 +49,10 @@ class PendaftaranPPDB extends Controller
 
         // Determine File Store Process
         $peserta = PesertaPPDB::create($data);
+
+        $peserta->ukuranSeragam()->create([
+            'master_ukuran_seragam_id' => $request->input('master_ukuran_seragam_id')
+        ]);
 
         // Handle Dynamic Documents
         $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
@@ -79,10 +84,11 @@ class PendaftaranPPDB extends Controller
 
     public function edit($id)
     {
-        $peserta = PesertaPPDB::with(['documents.masterDocument'])->findOrFail($id);
+        $peserta = PesertaPPDB::with(['documents.masterDocument', 'ukuranSeragam'])->findOrFail($id);
         $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+        $masterUkuranSeragams = \App\Models\MasterUkuranSeragam::all();
 
-        return inertia('Admin/Ppdb/Edit', compact('peserta', 'masterDocuments'));
+        return inertia('Admin/Ppdb/Edit', compact('peserta', 'masterDocuments', 'masterUkuranSeragams'));
     }
 
     public function update(UpdatePendaftarRequest $request, $id)
@@ -96,6 +102,11 @@ class PendaftaranPPDB extends Controller
         $data['bertato'] = 0;
 
         $ppdb->update($data);
+
+        $ppdb->ukuranSeragam()->updateOrCreate(
+            ['peserta_ppdb_id' => $ppdb->id],
+            ['master_ukuran_seragam_id' => $request->input('master_ukuran_seragam_id')]
+        );
 
         // Handle Dynamic Documents
         $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
@@ -147,6 +158,10 @@ class PendaftaranPPDB extends Controller
 
 
         $ppdb = PesertaPPDB::create($data);
+
+        $ppdb->ukuranSeragam()->create([
+            'master_ukuran_seragam_id' => $request->input('master_ukuran_seragam_id')
+        ]);
 
         // Handle Dynamic Documents
         $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();

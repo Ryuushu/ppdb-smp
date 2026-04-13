@@ -66,7 +66,7 @@ class KwitansiController extends Controller
 
     public function cetakKwitansi($uuid)
     {
-        $pesertappdb = PesertaPPDB::with(['kwitansi'])->findOrFail($uuid);
+        $pesertappdb = PesertaPPDB::with(['kwitansi', 'ukuranSeragam.masterUkuran'])->findOrFail($uuid);
         $adminItems = \App\Models\AdminItem::orderBy('id', 'asc')->get();
 
         $totalNominal = $pesertappdb->kwitansi->sum('nominal');
@@ -84,6 +84,7 @@ class KwitansiController extends Controller
     public function cetakKwitansiSingle($uuid, $id)
     {
         $pesertappdb = PesertaPPDB::with([
+            'ukuranSeragam.masterUkuran',
             'kwitansi' => function ($query) use ($id) {
                 $query->whereId($id);
             },
@@ -130,7 +131,7 @@ class KwitansiController extends Controller
         $search = $request->input('search');
 
         $pesertaQuery = PesertaPPDB::whereYear('created_at', $tahun)
-            ->with(['kwitansi' => fn($q) => $q->whereNull('deleted_at')]);
+            ->with(['kwitansi' => fn($q) => $q->whereNull('deleted_at'), 'ukuranSeragam.masterUkuran']);
 
         if ($search) {
             $pesertaQuery->where(function ($query) use ($search) {
@@ -141,6 +142,14 @@ class KwitansiController extends Controller
 
         $allPeserta = $pesertaQuery->get()->map(function ($p) use ($totalBillMale, $totalBillFemale) {
             $totalBill = $p->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;
+            
+            // Add Master Ukuran Seragam Cost
+            $tambahanBiayaBaju = 0;
+            if ($p->ukuranSeragam && $p->ukuranSeragam->masterUkuran) {
+                $tambahanBiayaBaju = $p->ukuranSeragam->masterUkuran->tambahan_biaya;
+            }
+            $totalBill += $tambahanBiayaBaju;
+
             $totalPaid = $p->kwitansi->sum('nominal');
             $p->total_bill = $totalBill;
             $p->total_paid = $totalPaid;

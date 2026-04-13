@@ -23,17 +23,7 @@ class UpdateUkuranSeragamRequest extends FormRequest
     {
         return [
             'uuid' => ['required', 'exists:peserta_ppdb,id'],
-            'baju' => ['nullable'],
-            'jas' => ['nullable'],
-            'sepatu' => ['nullable'],
-            'peci' => ['nullable'],
-            'seragam_praktik' => ['boolean'],
-            'baju_batik' => ['boolean'],
-            'seragam_olahraga' => ['boolean'],
-            'jas_almamater' => ['boolean'],
-            'kaos_bintalsik' => ['boolean'],
-            'atribut' => ['boolean'],
-            'kegiatan_bintalsik' => ['boolean'],
+            'master_ukuran_seragam_id' => ['required', 'exists:master_ukuran_seragams,id'],
         ];
     }
 }

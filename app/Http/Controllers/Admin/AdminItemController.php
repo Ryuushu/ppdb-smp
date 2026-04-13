@@ -12,8 +12,11 @@ class AdminItemController extends Controller
     public function index()
     {
         $items = AdminItem::latest()->get();
+        $masterUkuranSeragams = \App\Models\MasterUkuranSeragam::latest()->get();
+
         return Inertia::render('Admin/Settings/AdminItems', [
             'items' => $items,
+            'masterUkuranSeragams' => $masterUkuranSeragams,
             'title' => 'Daftar Biaya Administrasi'
         ]);
     }

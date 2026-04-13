@@ -100,11 +100,13 @@ interface Peserta {
 
 	rekomendasi_mwc: number; // boolean like
 	saran_dari: string;
+	ukuran_seragam?: { master_ukuran_seragam_id?: number };
 }
 
 interface Props {
 	peserta: Peserta;
     masterDocuments: any[];
+	masterUkuranSeragams: any[];
 }
 
 const steps = [
@@ -114,9 +116,10 @@ const steps = [
     { id: 4, title: "Dokumen" },
 ];
 
-export default function Edit({ peserta, masterDocuments }: Props) {
+export default function Edit({ peserta, masterDocuments, masterUkuranSeragams }: Props) {
 	const { data, setData, put, processing, errors } = useForm({
 		// Identitas Diri
+		master_ukuran_seragam_id: peserta.ukuran_seragam?.master_ukuran_seragam_id ? String(peserta.ukuran_seragam?.master_ukuran_seragam_id) : "",
 		nama_lengkap: peserta.nama_lengkap || "",
 		jenis_kelamin: peserta.jenis_kelamin || "l",
 		tempat_lahir: peserta.tempat_lahir || "",
@@ -313,6 +316,8 @@ export default function Edit({ peserta, masterDocuments }: Props) {
 										</RadioGroup>
 									</div>
 
+
+
 									<div className="space-y-2">
 										<Label htmlFor="tempat_lahir">Tempat Lahir *</Label>
 										<Input
@@ -447,7 +452,30 @@ export default function Edit({ peserta, masterDocuments }: Props) {
 
 
 								</div>
-							</div>
+																<div className="space-y-2">
+										<Label htmlFor="master_ukuran_seragam_id">Ukuran Seragam *</Label>
+										<Select
+											value={data.master_ukuran_seragam_id}
+											onValueChange={(v) => setData("master_ukuran_seragam_id", v)}
+										>
+											<SelectTrigger>
+												<SelectValue placeholder="Pilih Ukuran Seragam" />
+											</SelectTrigger>
+											<SelectContent>
+												{masterUkuranSeragams.map((u) => (
+													<SelectItem key={u.id} value={String(u.id)}>
+														Ukuran {u.nama_ukuran} {u.tambahan_biaya > 0 ? `(+ Rp. ${u.tambahan_biaya.toLocaleString('id-ID')})` : ''}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{errors.master_ukuran_seragam_id && (
+											<span className="text-destructive text-sm">
+												{errors.master_ukuran_seragam_id}
+											</span>
+										)}
+									</div>
+								</div>
 
 							{/* Step 2: Identitas Orang Tua */}
 							<div className={currentStep === 2 ? "block space-y-4" : "hidden"}>

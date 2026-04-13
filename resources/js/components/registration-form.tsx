@@ -40,6 +40,7 @@ import { toast } from "sonner";
 interface RegistrationFormProps {
 	gelombangAktif?: any | null;
     masterDocuments?: any[];
+	masterUkuranSeragams?: any[];
 }
 
 const steps = [
@@ -85,6 +86,7 @@ function FormField({
 export function RegistrationForm({
 	gelombangAktif = null,
     masterDocuments = [],
+	masterUkuranSeragams = [],
 }: RegistrationFormProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
@@ -120,6 +122,7 @@ export function RegistrationForm({
 
 	const { data, setData, post, processing, errors } = useInertiaForm({
 		gelombang_id: gelombangAktif ? String(gelombangAktif.id) : "",
+		master_ukuran_seragam_id: "",
 		nama_lengkap: "",
 		jenis_kelamin: "",
 		tempat_lahir: "",
@@ -206,6 +209,7 @@ export function RegistrationForm({
 			const requiredFields = [
 				{ key: "nama_lengkap", label: "Nama Lengkap" },
 				{ key: "jenis_kelamin", label: "Jenis Kelamin" },
+				{ key: "master_ukuran_seragam_id", label: "Ukuran Seragam" },
 				{ key: "tempat_lahir", label: "Tempat Lahir" },
 				{ key: "tanggal_lahir", label: "Tanggal Lahir" },
 				{ key: "nik", label: "NIK" },
@@ -413,6 +417,8 @@ export function RegistrationForm({
 													</RadioGroup>
 												</FormField>
 
+
+
                                                 <FormField id="agama" label="Agama" required error={getError("agama")}>
 													<Input id="agama" value={data.agama} onChange={(e) => { setData("agama", e.target.value); clearError("agama"); }} className="rounded-xl h-12" />
 												</FormField>
@@ -431,6 +437,21 @@ export function RegistrationForm({
 
 												<FormField id="nisn" label="NISN" error={getError("nisn")}>
 													<Input id="nisn" value={data.nisn} onChange={(e) => setData("nisn", e.target.value)} className="rounded-xl h-12" />
+												</FormField>
+
+												<FormField id="master_ukuran_seragam_id" label="Ukuran Seragam" required error={getError("master_ukuran_seragam_id")}>
+													<Select value={data.master_ukuran_seragam_id} onValueChange={(value) => { setData("master_ukuran_seragam_id", value); clearError("master_ukuran_seragam_id"); }}>
+														<SelectTrigger className="rounded-xl h-12">
+															<SelectValue placeholder="Pilih Ukuran Seragam" />
+														</SelectTrigger>
+														<SelectContent>
+															{masterUkuranSeragams.map((u: any) => (
+																<SelectItem key={u.id} value={String(u.id)}>
+																	Ukuran {u.nama_ukuran} {u.tambahan_biaya > 0 ? `(+ Rp. ${u.tambahan_biaya.toLocaleString('id-ID')})` : ''}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
 												</FormField>
 
 

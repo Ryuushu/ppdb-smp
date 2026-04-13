@@ -48,10 +48,12 @@ Route::get('/register', function () {
         ->first();
 
     $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+    $masterUkuranSeragams = \App\Models\MasterUkuranSeragam::all();
 
     return inertia('Pendaftaran', [
         'gelombangAktif' => $gelombangAktif,
-        'masterDocuments' => $masterDocuments
+        'masterDocuments' => $masterDocuments,
+        'masterUkuranSeragams' => $masterUkuranSeragams
     ]);
 })->name('ppdb.register');
 
@@ -82,6 +84,12 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::post('/setting/master-documents', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'store'])->name('admin.master-documents.store');
         Route::put('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'update'])->name('admin.master-documents.update');
         Route::delete('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'destroy'])->name('admin.master-documents.destroy');
+
+        // Master Ukuran Seragam Fees
+        Route::get('/setting/ukuran-seragam', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'index'])->name('admin.ukuran-seragam.index');
+        Route::post('/setting/ukuran-seragam', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'store'])->name('admin.ukuran-seragam.store');
+        Route::put('/setting/ukuran-seragam/{id}', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'update'])->name('admin.ukuran-seragam.update');
+        Route::delete('/setting/ukuran-seragam/{id}', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'destroy'])->name('admin.ukuran-seragam.destroy');
     });
 
     // Gelombang Pendaftaran

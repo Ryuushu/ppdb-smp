@@ -28,17 +28,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UkuranSeragam {
 	id: number;
-	baju: string | null;
-	jas: string | null;
-	sepatu: string | null;
-	peci: string | null;
-	seragam_praktik: boolean;
-	baju_batik: boolean;
-	seragam_olahraga: boolean;
-	jas_almamater: boolean;
-	kaos_bintalsik: boolean;
-	atribut: boolean;
-	kegiatan_bintalsik: boolean;
+	master_ukuran_seragam_id: number | null;
+	master_ukuran: {
+		id: number;
+		nama_ukuran: string;
+		tambahan_biaya: number;
+	} | null;
 }
 
 interface Peserta {
@@ -66,9 +61,10 @@ interface Props {
 	};
 	tahun: number;
 	years: number[];
+	masterUkuranSeragams: any[];
 }
 
-export default function Index({ pesertappdb, tahun, years }: Props) {
+export default function Index({ pesertappdb, tahun, years, masterUkuranSeragams }: Props) {
 	const { flash } = usePage<any>().props;
 
 	// Edit Modal State
@@ -84,34 +80,14 @@ export default function Index({ pesertappdb, tahun, years }: Props) {
 		reset,
 	} = useForm({
 		uuid: "",
-		baju: "",
-		jas: "",
-		sepatu: "",
-		peci: "",
-		seragam_praktik: false,
-		baju_batik: false,
-		seragam_olahraga: false,
-		jas_almamater: false,
-		kaos_bintalsik: false,
-		atribut: false,
-		kegiatan_bintalsik: false,
+		master_ukuran_seragam_id: "",
 	});
 
 	const handleEdit = (peserta: Peserta) => {
 		setSelectedPeserta(peserta);
 		setData({
 			uuid: peserta.id,
-			baju: peserta.ukuran_seragam?.baju || "",
-			jas: peserta.ukuran_seragam?.jas || "",
-			sepatu: peserta.ukuran_seragam?.sepatu || "",
-			peci: peserta.ukuran_seragam?.peci || "",
-			seragam_praktik: peserta.ukuran_seragam?.seragam_praktik || false,
-			baju_batik: peserta.ukuran_seragam?.baju_batik || false,
-			seragam_olahraga: peserta.ukuran_seragam?.seragam_olahraga || false,
-			jas_almamater: peserta.ukuran_seragam?.jas_almamater || false,
-			kaos_bintalsik: peserta.ukuran_seragam?.kaos_bintalsik || false,
-			atribut: peserta.ukuran_seragam?.atribut || false,
-			kegiatan_bintalsik: peserta.ukuran_seragam?.kegiatan_bintalsik || false,
+			master_ukuran_seragam_id: peserta.ukuran_seragam?.master_ukuran_seragam_id ? String(peserta.ukuran_seragam?.master_ukuran_seragam_id) : "",
 		});
 		setOpen(true);
 	};
@@ -161,8 +137,8 @@ export default function Index({ pesertappdb, tahun, years }: Props) {
 		},
 		{
 			id: "baju",
-			header: "Baju",
-			cell: ({ row }) => row.original.ukuran_seragam?.baju || "-",
+			header: "Ukuran Baju",
+			cell: ({ row }) => row.original.ukuran_seragam?.master_ukuran?.nama_ukuran || "-",
 		},
 		
 		{
@@ -238,98 +214,25 @@ export default function Index({ pesertappdb, tahun, years }: Props) {
 							</DialogDescription>
 						</DialogHeader>
 						<form onSubmit={submit} className="space-y-6">
-							<div className="gap-4 grid grid-cols-2">
-								<div className="space-y-2">
-									<Label htmlFor="baju">Ukuran Baju</Label>
-									<Input
-										id="baju"
-										value={formData.baju}
-										onChange={(e) => setData("baju", e.target.value)}
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="jas">Ukuran Jas</Label>
-									<Input
-										id="jas"
-										value={formData.jas}
-										onChange={(e) => setData("jas", e.target.value)}
-									/>
-								</div>
-							</div>
-
 							<div className="space-y-4">
-								<Label className="text-base font-semibold">Ceklist Kelengkapan</Label>
-								<div className="gap-4 grid grid-cols-2">
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="seragam_praktik"
-											checked={formData.seragam_praktik}
-											onCheckedChange={(checked) =>
-												setData("seragam_praktik", !!checked)
-											}
-										/>
-										<Label htmlFor="seragam_praktik">Seragam Praktik</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="baju_batik"
-											checked={formData.baju_batik}
-											onCheckedChange={(checked) =>
-												setData("baju_batik", !!checked)
-											}
-										/>
-										<Label htmlFor="baju_batik">Baju Batik</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="seragam_olahraga"
-											checked={formData.seragam_olahraga}
-											onCheckedChange={(checked) =>
-												setData("seragam_olahraga", !!checked)
-											}
-										/>
-										<Label htmlFor="seragam_olahraga">Seragam Olahraga</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="jas_almamater"
-											checked={formData.jas_almamater}
-											onCheckedChange={(checked) =>
-												setData("jas_almamater", !!checked)
-											}
-										/>
-										<Label htmlFor="jas_almamater">Jas Almamater</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="kaos_bintalsik"
-											checked={formData.kaos_bintalsik}
-											onCheckedChange={(checked) =>
-												setData("kaos_bintalsik", !!checked)
-											}
-										/>
-										<Label htmlFor="kaos_bintalsik">Kaos Bintalsik</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="atribut"
-											checked={formData.atribut}
-											onCheckedChange={(checked) =>
-												setData("atribut", !!checked)
-											}
-										/>
-										<Label htmlFor="atribut">Atribut</Label>
-									</div>
-									<div className="flex items-center space-x-2">
-										<Checkbox
-											id="kegiatan_bintalsik"
-											checked={formData.kegiatan_bintalsik}
-											onCheckedChange={(checked) =>
-												setData("kegiatan_bintalsik", !!checked)
-											}
-										/>
-										<Label htmlFor="kegiatan_bintalsik">Kegiatan Bintalsik</Label>
-									</div>
+								<div className="space-y-2">
+									<Label htmlFor="master_ukuran_seragam_id">Pilih Ukuran Baju</Label>
+									<Select
+										value={formData.master_ukuran_seragam_id}
+										onValueChange={(v) => setData("master_ukuran_seragam_id", v)}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Pilih Ukuran Seragam" />
+										</SelectTrigger>
+										<SelectContent>
+											{masterUkuranSeragams.map((u) => (
+												<SelectItem key={u.id} value={String(u.id)}>
+													Ukuran {u.nama_ukuran} {u.tambahan_biaya > 0 ? `(+ Rp. ${u.tambahan_biaya.toLocaleString('id-ID')})` : ''}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									{errors.master_ukuran_seragam_id && <p className="text-red-500 text-xs">{errors.master_ukuran_seragam_id}</p>}
 								</div>
 							</div>
 

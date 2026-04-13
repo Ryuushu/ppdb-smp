@@ -605,6 +605,17 @@
                         </p>
                     </a>
                 </li>
+                @if(auth()->user()->role === 'super_admin')
+                <li class="nav-item">
+                    <a href="{{ route('admin.ukuran-seragam.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.ukuran-seragam.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tshirt"></i>
+                        <p>
+                            Biaya Ukuran Baju
+                        </p>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item">
                     <a href="{{ route('admin.master-documents.index') }}"
                         class="nav-link {{ request()->routeIs('admin.master-documents.index') ? 'active' : '' }}">
