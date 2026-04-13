@@ -130,8 +130,7 @@ export function RegistrationForm({
         jumlah_saudara_kandung: "",
         anak_ke: "",
         status_anak: "",
-        no_kip: "",
-        no_kip_kks_pkh: "",
+
 		no_hp: "",
         no_hp_pribadi: "",
         pernah_paud: false,
@@ -434,9 +433,6 @@ export function RegistrationForm({
 													<Input id="nisn" value={data.nisn} onChange={(e) => setData("nisn", e.target.value)} className="rounded-xl h-12" />
 												</FormField>
 
-                                                <FormField id="no_kip_kks_pkh" label="No. PKH/KIP/KKS (Jika ada)" error={getError("no_kip_kks_pkh")}>
-													<Input id="no_kip_kks_pkh" value={data.no_kip_kks_pkh} onChange={(e) => setData("no_kip_kks_pkh", e.target.value)} className="rounded-xl h-12" />
-												</FormField>
 
 												<FormField id="alamat_lengkap" label="Alamat Lengkap" required error={getError("alamat_lengkap")} className="md:col-span-2">
 													<Textarea id="alamat_lengkap" value={data.alamat_lengkap} onChange={(e) => { setData("alamat_lengkap", e.target.value); clearError("alamat_lengkap"); }} className="rounded-xl min-h-[80px]" />

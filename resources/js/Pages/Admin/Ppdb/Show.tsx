@@ -43,9 +43,7 @@ interface Peserta {
 	kode_pos: string;
 
 	nisn: string;
-	penerima_kip: string;
-	no_kip: string;
-    no_kip_kks_pkh: string;
+
 	no_hp: string;
     no_hp_pribadi: string;
     asal_sekolah: string;
@@ -53,8 +51,7 @@ interface Peserta {
     alamat_sekolah_asal: string;
     tahun_lulus: string;
     ekstrakurikuler: string[];
-	bertindik: boolean;
-	bertato: boolean;
+
 	nama_ayah: string;
 	no_hp_ayah: string;
 	pekerjaan_ayah: string;
@@ -180,24 +177,6 @@ export default function Show({ peserta }: Props) {
 							<InfoRow label="Kode Pos" value={peserta.kode_pos} />
 							<InfoRow label="No. HP Ortu" value={peserta.no_hp} />
                             <InfoRow label="No. HP Pribadi" value={peserta.no_hp_pribadi} />
-							<InfoRow
-								label="Bertindik"
-								value={peserta.bertindik ? "Ya" : "Tidak"}
-							/>
-							<InfoRow
-								label="Bertato"
-								value={peserta.bertato ? "Ya" : "Tidak"}
-							/>
-							<InfoRow
-								label="Penerima KIP"
-								value={
-									peserta.penerima_kip === "y"
-										? "Penerima KIP"
-										: "Bukan penerima KIP"
-								}
-							/>
-							<InfoRow label="No. KIP" value={peserta.no_kip} />
-                            <InfoRow label="No. PKH/KKS/KIP" value={peserta.no_kip_kks_pkh} />
 						</div>
 
 						<Separator />

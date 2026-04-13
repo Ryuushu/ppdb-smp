@@ -46,7 +46,7 @@ interface Peserta {
 	no_pendaftaran: string;
 	nama_lengkap: string;
 	jenis_kelamin: "l" | "p";
-
+	status_pembayaran: string;
 	ukuran_seragam: UkuranSeragam | null;
 }
 
@@ -164,11 +164,7 @@ export default function Index({ pesertappdb, tahun, years }: Props) {
 			header: "Baju",
 			cell: ({ row }) => row.original.ukuran_seragam?.baju || "-",
 		},
-		{
-			id: "jas",
-			header: "Jas",
-			cell: ({ row }) => row.original.ukuran_seragam?.jas || "-",
-		},
+		
 		{
 			id: "actions",
 			header: "Aksi",

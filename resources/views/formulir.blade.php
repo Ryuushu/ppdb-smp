@@ -328,31 +328,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Penerima KIP --}}
-                                <div class="grid">
-                                    <div class="col-span-3 sm:col-span-2">
-                                        <div class="flex items-start">
-                                            <div class="flex h-5 items-center">
-                                                <input name="penerima_kip" type="checkbox"
-                                                    class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
-                                                    id="pkip" onclick='fkip()'>
-                                            </div>
-                                            <div class="ml-3 text-sm">
-                                                <label for="comments" class="font-medium text-gray-700">Penerima
-                                                    KIP</label>
-                                                <p class="text-gray-500">Merupakan peserta Penerima KIP.</p>
-                                            </div>
-                                        </div>
-                                        <div class="mt-1 flex rounded-md shadow-sm">
-                                            <input type="text" name="no_kip"
-                                                class="block w-full flex-1 rounded-none rounded-r-md border-gray-300 focus:border-red-500 focus:ring-red-500 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:opacity-20 sm:text-sm"
-                                                id="input-kip" placeholder="No. KIP" disabled>
-                                        </div>
-                                        <p class="mt-2 text-sm text-gray-500">
-                                            No. KIP
-                                        </p>
-                                    </div>
-                                </div>
 
 
                                 {{-- Nomer HP --}}
@@ -715,17 +690,5 @@
 
         })
 
-        function fkip() {
-            let kip = $('#pkip:checked').length;
-
-            if (kip) {
-                $('#input-kip').prop('disabled', false)
-            } else {
-
-                $('#input-kip').prop('disabled', true)
-                $('#input-kip').val('')
-            }
-
-        }
     </script>
 @endsection

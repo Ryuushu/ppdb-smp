@@ -16,7 +16,7 @@ const steps = [
 		icon: FileText,
 		title: "Siapkan Berkas",
 		description:
-			"Siapkan foto 3x4 (2 lembar), FC KK, FC Akte Kelahiran, FC KIP (jika ada), FC Ijazah/SKL, FC Raport/Piagam prestasi.",
+			"Siapkan foto 3x4 (2 lembar), FC KK, FC Akte Kelahiran, FC Ijazah/SKL, FC Raport/Piagam prestasi.",
 	},
 	{
 		icon: CreditCard,

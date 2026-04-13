@@ -72,7 +72,7 @@
                 <span class="checkbox-box" style="margin-left: 15px;">{!! !$peserta->pernah_tk ? 'V' : '&nbsp;&nbsp;' !!}</span> Tidak
             </td>
         </tr>
-        <tr><td>14.</td><td>No. PKH/KIP/KKS (Jika memiliki)</td><td>:</td><td>{{ $peserta->no_kip_kks_pkh ?? '........................................' }}</td></tr>
+
     </table>
 
     <!-- II. IDENTITAS SEKOLAH SEBELUMNYA -->

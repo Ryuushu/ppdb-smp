@@ -584,15 +584,6 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('ppdb.beasiswa.kip') }}"
-                        class="nav-link {{ request()->routeIs('ppdb.beasiswa.kip') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-medal"></i>
-                        <p>
-                            KIP
-                        </p>
-                    </a>
-                </li>
                 <li class="nav-header">PENGATURAN AKUN</li>
 
                 <li class="nav-item">

@@ -35,8 +35,6 @@
                         sebanyak 2 lembar</li>
                     <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Fotokopi Akte Kelahiran
                         sebanyak 2 lembar</li>
-                    <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Fotokopi Kartu Indonesia
-                        Pintar/KIP sebanyak 2 lembar (bagi yang punya)</li>
                     <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Fotokopi Ijazah sebanyak 2
                         lembar (jika sudah ada/menyusul)</li>
                     <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Fotokopi

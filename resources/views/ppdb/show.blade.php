@@ -204,20 +204,6 @@
                                             <span>{{ $peserta->no_hp }}</span>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <th width="30%">Penerima KIP</th>
-                                        <td width="5%">:</td>
-                                        <td>
-                                            <span>{{ $peserta->penerima_kip === 'y' ? 'Penerima KIP' : 'bukan penerima KIP' }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th width="30%">No. KIP</th>
-                                        <td width="5%">:</td>
-                                        <td>
-                                            <span>{{ $peserta->no_kip ?? '-' }}</span>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
 

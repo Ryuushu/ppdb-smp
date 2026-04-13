@@ -62,8 +62,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
         status_anak: "Kandung",
 		no_hp: "",
         no_hp_pribadi: "",
-		bertindik: false,
-		bertato: false,
+
 
 		// Orang Tua
 		nama_ayah: "",
@@ -77,7 +76,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
         pendidikan_ibu: "",
 		pekerjaan_ibu: "",
         penghasilan_ortu: "",
-        no_kip_kks_pkh: "",
+
 
         // Riwayat & Bakat
         asal_sekolah: "",
@@ -398,44 +397,7 @@ export default function Create({ gelombang, masterDocuments }: Props) {
 										/>
 									</div>
 
-									<div className="space-y-2">
-										<div className="flex items-center space-x-2">
-											<Checkbox
-												id="penerima_kip"
-												checked={!!data.no_kip_kks_pkh}
-												onCheckedChange={(c) => !c && setData("no_kip_kks_pkh", "")}
-											/>
-											<Label htmlFor="penerima_kip">Penerima PKH/KIP/KKS</Label>
-										</div>
-										{!!data.no_kip_kks_pkh || (
-											<Input
-												placeholder="No. PKH/KIP/KKS"
-												value={data.no_kip_kks_pkh}
-												onChange={(e) => setData("no_kip_kks_pkh", e.target.value)}
-											/>
-										)}
-									</div>
 
-									<div className="space-y-2 md:col-span-2">
-										<div className="flex flex-wrap items-center gap-6">
-											<div className="flex items-center space-x-2">
-												<Checkbox
-													id="bertindik"
-													checked={data.bertindik}
-													onCheckedChange={(c) => setData("bertindik", !!c)}
-												/>
-												<Label htmlFor="bertindik">Bertindik</Label>
-											</div>
-											<div className="flex items-center space-x-2">
-												<Checkbox
-													id="bertato"
-													checked={data.bertato}
-													onCheckedChange={(c) => setData("bertato", !!c)}
-												/>
-												<Label htmlFor="bertato">Bertato</Label>
-											</div>
-										</div>
-									</div>
 								</div>
 							</div>
 

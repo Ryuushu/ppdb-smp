@@ -282,21 +282,6 @@
                                                         value="{{ $peserta->nisn }}" placeholder="NISN">
                                                 </div>
 
-                                                {{-- Penerima KIP --}}
-                                                <div class="form-group">
-                                                    <label>Penerima KIP</label>
-                                                    <div class="custom-control custom-checkbox mb-2" onclick="fkip()">
-                                                        <input type="checkbox" name="penerima_kip"
-                                                            class="custom-control-input" id="pkip"
-                                                            {{ $peserta->penerima_kip == 'y' ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="pkip">Peserta
-                                                            penerima KIP</label>
-                                                    </div>
-
-                                                    <input id="input-kip" type="text" class="form-control"
-                                                        name="no_kip" value="{{ $peserta->no_kip }}"
-                                                        placeholder="No. KIP" disabled>
-                                                </div>
 
                                                 {{-- No. HP --}}
                                                 <div class="form-group">
@@ -571,17 +556,6 @@
 
         })
 
-        function fkip() {
-            let kip = $('#pkip:checked').length;
-
-            if (kip) {
-                $('#input-kip').prop('disabled', false)
-            } else {
-
-                $('#input-kip').prop('disabled', true)
-            }
-
-        }
 
         // BS-Stepper Init
         document.addEventListener('DOMContentLoaded', function() {

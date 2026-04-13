@@ -52,7 +52,7 @@ class UpdatePendaftarRequest extends FormRequest
 
             'penghasilan_ortu' => 'nullable|string',
             'no_hp' => 'required|string',
-            'no_kip_kks_pkh' => 'nullable|string',
+
 
             // Sekolah Asal
             'asal_sekolah' => 'nullable|string',

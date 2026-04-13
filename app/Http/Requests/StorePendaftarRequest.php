@@ -53,8 +53,7 @@ class StorePendaftarRequest extends FormRequest
             'pekerjaan_ibu' => 'nullable|string',
 
             'penghasilan_ortu' => 'nullable|string',
-            'no_kip' => 'nullable|string',
-            'no_kip_kks_pkh' => 'nullable|string',
+
             'no_hp' => 'required|string', 
 
             // Sekolah Asal

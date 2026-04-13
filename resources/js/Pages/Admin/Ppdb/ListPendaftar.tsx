@@ -21,8 +21,7 @@ interface Peserta {
 	tempat_lahir: string;
 	tanggal_lahir: string;
 	no_hp: string;
-	bertindik: boolean;
-	bertato: boolean;
+
 
 
 	diterima: number; // 0: proses, 1: diterima, 2: ditolak
@@ -74,14 +73,6 @@ export default function ListPendaftar({
 							{row.original.tempat_lahir},{" "}
 							{formatDate(row.original.tanggal_lahir)}
 						</span>
-					</div>
-					<div className="flex items-center gap-2 mt-1">
-						<Badge variant={row.original.bertindik ? "default" : "outline"}>
-							Bertindik: {row.original.bertindik ? "Ya" : "Tidak"}
-						</Badge>
-						<Badge variant={row.original.bertato ? "default" : "outline"}>
-							Bertato: {row.original.bertato ? "Ya" : "Tidak"}
-						</Badge>
 					</div>
 				</div>
 			),
