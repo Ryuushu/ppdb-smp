@@ -160,17 +160,12 @@ export default function Show({ peserta }: Props) {
 								value={`${peserta.tempat_lahir}, ${formatDate(peserta.tanggal_lahir)}`}
 							/>
 
+                            <InfoRow label="Agama" value={peserta.agama} />
 							<InfoRow label="NIK" value={peserta.nik} />
 							<InfoRow label="NISN" value={peserta.nisn} />
-							<InfoRow label="Alamat Jalan" value={peserta.alamat_lengkap} />
-							<InfoRow label="Dukuh" value={peserta.dukuh} />
-							<InfoRow label="RT" value={peserta.rt} />
-							<InfoRow label="RW" value={peserta.rw} />
-							<InfoRow label="Desa/Kelurahan" value={peserta.desa_kelurahan} />
-							<InfoRow label="Kecamatan" value={peserta.kecamatan} />
-							<InfoRow label="Kabupaten/Kota" value={peserta.kabupaten_kota} />
-							<InfoRow label="Provinsi" value={peserta.provinsi} />
-							<InfoRow label="Kode Pos" value={peserta.kode_pos} />
+                            <InfoRow label="Anak Ke" value={`${peserta.anak_ke} dari ${peserta.jumlah_saudara_kandung} bersaudara`} />
+                            <InfoRow label="Status Anak" value={peserta.status_anak} />
+							<InfoRow label="Alamat Lengkap" value={peserta.alamat_lengkap} />
 							<InfoRow label="No. HP Ortu" value={peserta.no_hp} />
                             <InfoRow label="No. HP Pribadi" value={peserta.no_hp_pribadi} />
 						</div>
@@ -192,42 +187,40 @@ export default function Show({ peserta }: Props) {
 								# Identitas Orang Tua
 							</h3>
 							<InfoRow label="Nama Ayah" value={peserta.nama_ayah} />
+                            <InfoRow label="NIK Ayah" value={peserta.nik_ayah} />
+                            <InfoRow label="Pendidikan Ayah" value={peserta.pendidikan_ayah} />
 							<InfoRow label="Pekerjaan Ayah" value={peserta.pekerjaan_ayah} />
 							<InfoRow label="No. HP Ayah" value={peserta.no_hp_ayah} />
 							<InfoRow label="Nama Ibu" value={peserta.nama_ibu} />
+                            <InfoRow label="NIK Ibu" value={peserta.nik_ibu} />
+                            <InfoRow label="Pendidikan Ibu" value={peserta.pendidikan_ibu} />
 							<InfoRow label="Pekerjaan Ibu" value={peserta.pekerjaan_ibu} />
 							<InfoRow label="No. HP Ibu" value={peserta.no_hp_ibu} />
+                            <InfoRow 
+                                label="Penghasilan Orang Tua" 
+                                value={
+                                    peserta.penghasilan_ortu === 'K' ? '< 1 Juta' :
+                                    peserta.penghasilan_ortu === 'A' ? '1 Juta - 3 Juta' :
+                                    peserta.penghasilan_ortu === 'B' ? '3 Juta - 5 Juta' :
+                                    peserta.penghasilan_ortu === 'C' ? '> 5 Juta' : 
+                                    peserta.penghasilan_ortu
+                                } 
+                            />
 						</div>
 
-						<Separator />
-
-						<div>
-							<h3 className="mb-3 font-semibold text-lg"># Status & Seleksi</h3>
-							<InfoRow
-								label="Gelombang"
-								value={peserta.gelombang?.nama}
-							/>
-							<InfoRow
-								label="Status Seleksi (WP/SAW)"
-								value={
-									<Badge className={`capitalize ${
-										peserta.status_seleksi === 'lolos' ? 'bg-green-500' :
-										peserta.status_seleksi === 'tidak_lolos' ? 'bg-red-500' :
-										'bg-blue-500'
-									}`}>
-										{peserta.status_seleksi || 'Pending'}
-									</Badge>
-								}
-							/>
-							<InfoRow
-								label="Ranking / Skor"
-								value={peserta.ranking ? `${peserta.ranking} (${parseFloat(peserta.skor_spk || "0").toFixed(4)})` : "-"}
-							/>
-							<InfoRow label="Saran Dari" value={peserta.saran_dari} />
-                            <InfoRow label="Ekstrakurikuler" value={peserta.ekstrakurikuler?.join(", ")} />
-						</div>
-                        
                         <Separator />
+
+                        <div>
+							<h3 className="mb-3 font-semibold text-lg">
+								# Bakat & Minat
+							</h3>
+							<InfoRow label="Prestasi" value={peserta.prestasi_diraih} />
+							<InfoRow label="Pengalaman Terkesan" value={peserta.pengalaman_berkesan} />
+							<InfoRow label="Cita-cita" value={peserta.cita_cita} />
+							<InfoRow label="Ekstrakurikuler" value={peserta.ekstrakurikuler?.join(", ")} />
+						</div>
+
+						
 
 						<div>
 							<h3 className="mb-4 font-semibold text-lg flex items-center gap-2">

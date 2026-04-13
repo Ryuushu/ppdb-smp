@@ -92,11 +92,18 @@
         <tr>
             <td valign="top">21.</td><td valign="top">Pekerjaan Ayah</td><td valign="top">:</td>
             <td>
-                @foreach(['PNS', 'Pegawai BUMN', 'TNI/POLRI', 'Pegawai Swasta/Wiraswasta', 'Pedagang', 'Petani', 'Buruh Tani', 'Lainnya'] as $job)
+                @php
+                    $jobs = ['PNS', 'Pegawai BUMN', 'TNI/POLRI', 'Pegawai Swasta/Wiraswasta', 'Pedagang', 'Petani', 'Buruh Tani'];
+                    $isOther = $peserta->pekerjaan_ayah && !in_array($peserta->pekerjaan_ayah, $jobs);
+                @endphp
+                @foreach($jobs as $job)
                     <div style="display: inline-block; width: 45%; margin-bottom: 2px;">
-                        <span class="checkbox-box">{!! $peserta->pekerjaan_ayah == $job ? 'V' : '&nbsp;&nbsp;' !!}</span> {{ $job }}
+                        <span class="checkbox-box">{!! strtolower($peserta->pekerjaan_ayah) == strtolower($job) || ($job == 'Pegawai Swasta/Wiraswasta' && str_contains(strtolower($peserta->pekerjaan_ayah ?? ''), 'wira')) ? 'V' : '&nbsp;&nbsp;' !!}</span> {{ $job }}
                     </div>
                 @endforeach
+                <div style="display: inline-block; width: 45%; margin-bottom: 2px;">
+                    <span class="checkbox-box">{!! $isOther || $peserta->pekerjaan_ayah == 'Lainnya' ? 'V' : '&nbsp;&nbsp;' !!}</span> Lainnya {{ $isOther ? '('.$peserta->pekerjaan_ayah.')' : '' }}
+                </div>
             </td>
         </tr>
         <tr><td>22.</td><td>Nama Ibu</td><td>:</td><td>{{ $peserta->nama_ibu }}</td></tr>
@@ -105,20 +112,26 @@
         <tr>
             <td valign="top">25.</td><td valign="top">Pekerjaan Ibu</td><td valign="top">:</td>
             <td>
-                @foreach(['PNS', 'Pegawai BUMN', 'TNI/POLRI', 'Pegawai Swasta/Wiraswasta', 'Pedagang', 'Petani', 'Buruh Tani', 'Lainnya'] as $job)
+                @php
+                    $isOtherIbu = $peserta->pekerjaan_ibu && !in_array($peserta->pekerjaan_ibu, $jobs);
+                @endphp
+                @foreach($jobs as $job)
                     <div style="display: inline-block; width: 45%; margin-bottom: 2px;">
-                        <span class="checkbox-box">{!! $peserta->pekerjaan_ibu == $job ? 'V' : '&nbsp;&nbsp;' !!}</span> {{ $job }}
+                        <span class="checkbox-box">{!! strtolower($peserta->pekerjaan_ibu) == strtolower($job) || ($job == 'Pegawai Swasta/Wiraswasta' && str_contains(strtolower($peserta->pekerjaan_ibu ?? ''), 'wira')) ? 'V' : '&nbsp;&nbsp;' !!}</span> {{ $job }}
                     </div>
                 @endforeach
+                <div style="display: inline-block; width: 45%; margin-bottom: 2px;">
+                    <span class="checkbox-box">{!! $isOtherIbu || $peserta->pekerjaan_ibu == 'Lainnya' ? 'V' : '&nbsp;&nbsp;' !!}</span> Lainnya {{ $isOtherIbu ? '('.$peserta->pekerjaan_ibu.')' : '' }}
+                </div>
             </td>
         </tr>
         <tr>
             <td valign="top">26.</td><td valign="top">Penghasilan Orang Tua</td><td valign="top">:</td>
             <td>
-                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! $peserta->penghasilan_ortu == 'C' ? 'V' : '&nbsp;&nbsp;' !!}</span> Lebih dari 3 Juta rupiah</div>
-                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! $peserta->penghasilan_ortu == 'B' ? 'V' : '&nbsp;&nbsp;' !!}</span> Rp. 1.500.000 s/d Rp. 3.000.000</div>
-                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! $peserta->penghasilan_ortu == 'A' ? 'V' : '&nbsp;&nbsp;' !!}</span> Rp. 500.000 s/d Rp. 1.500.000</div>
-                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! $peserta->penghasilan_ortu == 'K' ? 'V' : '&nbsp;&nbsp;' !!}</span> Rp. 0 s/d Rp. 500.000</div>
+                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! in_array($peserta->penghasilan_ortu, ['C', '> 5 Juta']) ? 'V' : '&nbsp;&nbsp;' !!}</span> Lebih dari 3 Juta rupiah</div>
+                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! in_array($peserta->penghasilan_ortu, ['B', '3 Juta - 5 Juta']) ? 'V' : '&nbsp;&nbsp;' !!}</span> Rp. 1.500.000 s/d Rp. 3.000.000</div>
+                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! in_array($peserta->penghasilan_ortu, ['A', '1 Juta - 3 Juta']) ? 'V' : '&nbsp;&nbsp;' !!}</span> Rp. 500.000 s/d Rp. 1.500.000</div>
+                <div style="margin-bottom: 2px;"><span class="checkbox-box">{!! in_array($peserta->penghasilan_ortu, ['K', '< 1 Juta']) ? 'V' : '&nbsp;&nbsp;' !!}</span> Rp. 0 s/d Rp. 500.000</div>
             </td>
         </tr>
         <tr><td>27.</td><td>No. Telepon HP/WA Orang Tua</td><td>:</td><td>{{ $peserta->no_hp }}</td></tr>

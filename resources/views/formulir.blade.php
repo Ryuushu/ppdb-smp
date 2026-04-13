@@ -205,71 +205,6 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-3 gap-6">
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="dukuh"
-                                            class="block text-sm font-medium text-gray-700">Dukuh</label>
-                                        <input type="text" name="dukuh" id="dukuh" autocomplete="dukuh"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="Dukuh">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="rt" class="block text-sm font-medium text-gray-700">RT</label>
-                                        <input type="text" name="rt" id="rt" autocomplete="rt"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="RT">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="rw" class="block text-sm font-medium text-gray-700">RW</label>
-                                        <input type="text" name="rw" id="rw" autocomplete="rw"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="RW">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="desa_kelurahan"
-                                            class="block text-sm font-medium text-gray-700">Desa/Kelurahan</label>
-                                        <input type="text" name="desa_kelurahan" id="desa_kelurahan"
-                                            autocomplete="desa_kelurahan"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="Desa/Kelurahan">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="kecamatan"
-                                            class="block text-sm font-medium text-gray-700">Kecamatan</label>
-                                        <input type="text" name="kecamatan" id="kecamatan" autocomplete="kecamatan"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="Kecamatan">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="kabupaten_kota"
-                                            class="block text-sm font-medium text-gray-700">Kabupaten/Kota</label>
-                                        <input type="text" name="kabupaten_kota" id="kabupaten_kota"
-                                            autocomplete="kabupaten_kota"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="Kabupaten/Kota">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="provinsi"
-                                            class="block text-sm font-medium text-gray-700">Provinsi</label>
-                                        <input type="text" name="provinsi" id="provinsi" autocomplete="provinsi"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="Provinsi">
-                                    </div>
-
-                                    <div class="col-span-3 sm:col-span-1">
-                                        <label for="kode_pos" class="block text-sm font-medium text-gray-700">Kode
-                                            Pos</label>
-                                        <input type="text" name="kode_pos" id="kode_pos" autocomplete="kode_pos"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                            placeholder="Kode Pos">
-                                    </div>
-                                </div>
 
                                 <div class="grid">
 
@@ -379,6 +314,20 @@
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-3">
+                                    <label class="block text-sm font-medium text-gray-700">NIK Ayah</label>
+                                    <input type="number" name="nik_ayah"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                        placeholder="NIK Ayah">
+                                </div>
+
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label class="block text-sm font-medium text-gray-700">Pendidikan Terakhir Ayah</label>
+                                    <input type="text" name="pendidikan_ayah"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                        placeholder="Pendidikan Terakhir Ayah">
+                                </div>
+
+                                <div class="col-span-6 sm:col-span-3">
                                     <label class="block text-sm font-medium text-gray-700">No. HP Ayah</label>
                                     <input type="text" name="no_ayah"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
@@ -404,6 +353,20 @@
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-3">
+                                    <label class="block text-sm font-medium text-gray-700">NIK Ibu</label>
+                                    <input type="number" name="nik_ibu"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                        placeholder="NIK Ibu">
+                                </div>
+
+                                <div class="col-span-6 sm:col-span-3">
+                                    <label class="block text-sm font-medium text-gray-700">Pendidikan Terakhir Ibu</label>
+                                    <input type="text" name="pendidikan_ibu"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                        placeholder="Pendidikan Terakhir Ibu">
+                                </div>
+
+                                <div class="col-span-6 sm:col-span-3">
                                     <label class="block text-sm font-medium text-gray-700">No. HP Ibu</label>
                                     <input type="text" name="no_ibu"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
@@ -411,13 +374,16 @@
                                 </div>
 
                                 <div class="col-span-6 sm:col-span-3">
-                                    <label class="block text-sm font-medium text-gray-700">Pekerjaan Ibu</label>
-                                    <input type="text" name="pekerjaan_ibu"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
-                                        placeholder="Pekerjaan Ibu">
+                                    <label class="block text-sm font-medium text-gray-700">Penghasilan Orang Tua</label>
+                                    <select name="penghasilan_ortu"
+                                        class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-red-500 sm:text-sm">
+                                        <option value="">-- Pilih Penghasilan --</option>
+                                        <option value="K"> < 1 Juta </option>
+                                        <option value="A"> 1 Juta - 3 Juta </option>
+                                        <option value="B"> 3 Juta - 5 Juta </option>
+                                        <option value="C"> > 5 Juta </option>
+                                    </select>
                                 </div>
-
-
                             </div>
 
                         </div>
@@ -542,7 +508,41 @@
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                                             name="saran_dari" placeholder="Dapat saran siapa?" />
                                     </div>
+                                </div>
 
+                                <div class="my-5 grid">
+                                    <div class="col-span-6">
+                                        <label class="block text-sm font-bold text-gray-700">Hobi / Bakat & Minat</label>
+                                        <div class="mt-4 grid grid-cols-2 gap-4">
+                                            <div class="col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700">Prestasi yang pernah diraih</label>
+                                                <textarea name="prestasi_diraih" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm" placeholder="Sebutkan prestasi jika ada"></textarea>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700">Pengalaman berkesan selama ini</label>
+                                                <textarea name="pengalaman_berkesan" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm" placeholder="Ceritakan pengalaman berkesan"></textarea>
+                                            </div>
+                                            <div class="col-span-1">
+                                                <label class="block text-sm font-medium text-gray-700">Cita-cita</label>
+                                                <input type="text" name="cita_cita" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm" placeholder="Cita-cita">
+                                            </div>
+                                            <div class="col-span-1">
+                                                <label class="block text-sm font-medium text-gray-700">No. HP Pribadi</label>
+                                                <input type="text" name="no_hp_pribadi" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm" placeholder="No. HP Pribadi">
+                                            </div>
+                                            <div class="col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700">Ekstrakurikuler yang ingin diikuti</label>
+                                                <div class="mt-2 grid grid-cols-2 gap-2">
+                                                    @foreach(['Pramuka', 'PBB', 'Kaligrafi', 'Tilawah', 'Seni Hadrah'] as $extra)
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" name="ekstrakurikuler[]" value="{{ $extra }}" class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                                            <label class="ml-2 block text-sm text-gray-700">{{ $extra }}</label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div> <!-- row -->
 

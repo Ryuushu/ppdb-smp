@@ -422,58 +422,13 @@ export default function Edit({ peserta, masterDocuments }: Props) {
 								</div>
 
 								<div className="space-y-2">
-									<Label htmlFor="alamat_lengkap">Alamat Jalan</Label>
+									<Label htmlFor="alamat_lengkap">Alamat Lengkap *</Label>
 									<Textarea
 										id="alamat_lengkap"
-										placeholder="Contoh: Jl. Kutilang No. 12 atau Jl. Diponegoro No. 25"
+										placeholder="Contoh: Jl. Kutilang No. 12, Kel. Klabang, Kec. Klabang, Kab. Bondowoso"
 										value={data.alamat_lengkap}
 										onChange={(e) => setData("alamat_lengkap", e.target.value)}
-									/>
-									<p className="text-muted-foreground text-xs">
-										Isi nama jalan/gang saja. Jika tidak diisi, akan otomatis digabungkan dari Dukuh, RT/RW, Desa, Kecamatan, Kabupaten, dan Provinsi.
-									</p>
-								</div>
-
-								<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-									<Input
-										placeholder="Dukuh"
-										value={data.dukuh}
-										onChange={(e) => setData("dukuh", e.target.value)}
-									/>
-									<Input
-										placeholder="RT"
-										value={data.rt}
-										onChange={(e) => setData("rt", e.target.value)}
-									/>
-									<Input
-										placeholder="RW"
-										value={data.rw}
-										onChange={(e) => setData("rw", e.target.value)}
-									/>
-									<Input
-										placeholder="Desa/Kelurahan"
-										value={data.desa_kelurahan}
-										onChange={(e) => setData("desa_kelurahan", e.target.value)}
-									/>
-									<Input
-										placeholder="Kecamatan"
-										value={data.kecamatan}
-										onChange={(e) => setData("kecamatan", e.target.value)}
-									/>
-									<Input
-										placeholder="Kab/Kota"
-										value={data.kabupaten_kota}
-										onChange={(e) => setData("kabupaten_kota", e.target.value)}
-									/>
-									<Input
-										placeholder="Provinsi"
-										value={data.provinsi}
-										onChange={(e) => setData("provinsi", e.target.value)}
-									/>
-									<Input
-										placeholder="Kode Pos"
-										value={data.kode_pos}
-										onChange={(e) => setData("kode_pos", e.target.value)}
+										required
 									/>
 								</div>
 
