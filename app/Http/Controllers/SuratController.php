@@ -23,7 +23,8 @@ class SuratController extends Controller
             ->withQueryString();
 
         $years = range(now()->year, now()->year - 5);
-        $settingBody = optional((\App\Models\PpdbSetting::latest()->first())->body);
+        $setting = \App\Models\PpdbSetting::latest()->first();
+        $settingBody = $setting ? $setting->body : [];
         $settings = [
             'no_surat' => $settingBody['no_surat'] ?? '-',
             'batas_akhir_ppdb' => $settingBody['batas_akhir_ppdb'] ?? null,

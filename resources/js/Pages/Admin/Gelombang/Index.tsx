@@ -17,7 +17,6 @@ import { formatDateFull } from "@/lib/date";
 interface Gelombang {
 	id: number;
 	nama: string;
-	tipe: string;
 	kuota: number;
 	tanggal_mulai: string;
 	tanggal_selesai: string;
@@ -71,7 +70,6 @@ export default function Index({
 								<TableHeader>
 									<TableRow>
 										<TableHead>Nama Gelombang</TableHead>
-										<TableHead>Tipe</TableHead>
 										<TableHead>Periode</TableHead>
 										<TableHead>Kuota</TableHead>
 										<TableHead>Pendaftar</TableHead>
@@ -95,7 +93,6 @@ export default function Index({
 														{g.tahun_ajaran}
 													</div>
 												</TableCell>
-												<TableCell className="capitalize">{g.tipe}</TableCell>
 												<TableCell className="text-sm">
 													{formatDateFull(g.tanggal_mulai)} -{" "}
 													{formatDateFull(g.tanggal_selesai)}

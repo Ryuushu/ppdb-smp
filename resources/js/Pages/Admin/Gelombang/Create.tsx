@@ -18,7 +18,6 @@ export default function Create({ title }: { title: string }) {
 	const { flash } = usePage<any>().props;
 	const { data, setData, post, processing, errors } = useForm({
 		nama: "",
-		tipe: "reguler",
 		deskripsi: "",
 		kuota: 100,
 		tanggal_mulai: "",
@@ -79,24 +78,7 @@ export default function Create({ title }: { title: string }) {
 									)}
 								</div>
 
-								<div className="space-y-2">
-									<Label htmlFor="tipe">Tipe Gelombang</Label>
-									<Select
-										value={data.tipe}
-										onValueChange={(v) => setData("tipe", v)}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Pilih Tipe Gelombang" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="prestasi">Prestasi (Rapor/Kejuaraan)</SelectItem>
-											<SelectItem value="reguler">Reguler</SelectItem>
-										</SelectContent>
-									</Select>
-									{errors.tipe && (
-										<p className="text-sm text-red-500">{errors.tipe}</p>
-									)}
-								</div>
+
 
 								<div className="space-y-2">
 									<Label htmlFor="kuota">Kuota Diterima</Label>

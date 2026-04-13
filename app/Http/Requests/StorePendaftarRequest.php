@@ -51,6 +51,8 @@ class StorePendaftarRequest extends FormRequest
             'nik_ibu' => 'nullable|string',
             'pendidikan_ibu' => 'nullable|string',
             'pekerjaan_ibu' => 'nullable|string',
+            'no_hp_ayah' => 'nullable|string',
+            'no_hp_ibu' => 'nullable|string',
 
             'penghasilan_ortu' => 'nullable|string',
 

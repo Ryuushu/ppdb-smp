@@ -152,12 +152,12 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 		// Orang Tua
 		nama_ayah: peserta.nama_ayah || "",
         nik_ayah: peserta.nik_ayah || "",
-		no_ayah: peserta.no_hp_ayah || "",
+		no_hp_ayah: peserta.no_hp_ayah || "",
         pendidikan_ayah: peserta.pendidikan_ayah || "",
 		pekerjaan_ayah: peserta.pekerjaan_ayah || "",
 		nama_ibu: peserta.nama_ibu || "",
         nik_ibu: peserta.nik_ibu || "",
-		no_ibu: peserta.no_hp_ibu || "",
+		no_hp_ibu: peserta.no_hp_ibu || "",
         pendidikan_ibu: peserta.pendidikan_ibu || "",
 		pekerjaan_ibu: peserta.pekerjaan_ibu || "",
         penghasilan_ortu: peserta.penghasilan_ortu || "",
@@ -364,11 +364,13 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										<Input
 											id="nik"
 											value={data.nik}
-											onChange={(e) => setData("nik", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik", val);
+											}}
 											placeholder="Masukkan 16 digit NIK"
 											minLength={16}
 											maxLength={16}
-											pattern="[0-9]{16}"
 											required
 										/>
 									</div>
@@ -379,20 +381,24 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 											id="no_hp"
 											type="tel"
 											value={data.no_hp}
-											onChange={(e) => setData("no_hp", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
-											minLength={10}
-											maxLength={15}
 											required
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="no_hp_pribadi">No. HP Pribadi (Jika ada)</Label>
+										<Label htmlFor="no_hp_pribadi">No. HP Pribadi</Label>
 										<Input
 											id="no_hp_pribadi"
 											type="tel"
 											value={data.no_hp_pribadi}
-											onChange={(e) => setData("no_hp_pribadi", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp_pribadi", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
 										/>
 									</div>
@@ -442,13 +448,15 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div className="space-y-2">
-										<Label htmlFor="nisn">NISN</Label>
+										<Label htmlFor="nisn">NISN (10 digit)</Label>
 										<Input
 											id="nisn"
 											value={data.nisn}
-											onChange={(e) => setData("nisn", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+												setData("nisn", val);
+											}}
 											placeholder="Masukkan 10 digit NISN"
-											minLength={10}
 											maxLength={10}
 										/>
 									</div>
@@ -524,12 +532,16 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="nik_ayah">NIK Ayah</Label>
+										<Label htmlFor="nik_ayah">NIK Ayah (16 digit)</Label>
 										<Input
 											id="nik_ayah"
 											value={data.nik_ayah}
-											onChange={(e) => setData("nik_ayah", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik_ayah", val);
+											}}
 											placeholder="16 digit NIK"
+											maxLength={16}
 										/>
 									</div>
                                     <div className="space-y-2">
@@ -541,12 +553,15 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="no_ayah">No. HP Ayah</Label>
+										<Label htmlFor="no_hp_ayah">No. HP Ayah</Label>
 										<Input
-											id="no_ayah"
+											id="no_hp_ayah"
 											type="tel"
-											value={data.no_ayah}
-											onChange={(e) => setData("no_ayah", e.target.value)}
+											value={data.no_hp_ayah}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp_ayah", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
 										/>
 									</div>
@@ -575,11 +590,16 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="nik_ibu">NIK Ibu</Label>
+										<Label htmlFor="nik_ibu">NIK Ibu (16 digit)</Label>
 										<Input
 											id="nik_ibu"
 											value={data.nik_ibu}
-											onChange={(e) => setData("nik_ibu", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik_ibu", val);
+											}}
+											placeholder="16 digit NIK"
+											maxLength={16}
 										/>
 									</div>
                                     <div className="space-y-2">
@@ -591,12 +611,15 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="no_ibu">No. HP Ibu</Label>
+										<Label htmlFor="no_hp_ibu">No. HP Ibu</Label>
 										<Input
-											id="no_ibu"
+											id="no_hp_ibu"
 											type="tel"
-											value={data.no_ibu}
-											onChange={(e) => setData("no_ibu", e.target.value)}
+											value={data.no_hp_ibu}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp_ibu", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
 										/>
 									</div>
@@ -638,19 +661,27 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="npsn_sekolah_asal">NPSN Sekolah</Label>
+                                            <Label htmlFor="npsn_sekolah_asal">NPSN Sekolah (8 digit)</Label>
                                             <Input
                                                 id="npsn_sekolah_asal"
                                                 value={data.npsn_sekolah_asal}
-                                                onChange={(e) => setData("npsn_sekolah_asal", e.target.value)}
+                                                onChange={(e) => {
+													const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 8);
+													setData("npsn_sekolah_asal", val);
+												}}
+												maxLength={8}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="tahun_lulus">Tahun Lulus</Label>
+                                            <Label htmlFor="tahun_lulus">Tahun Lulus (4 digit)</Label>
                                             <Input
                                                 id="tahun_lulus"
                                                 value={data.tahun_lulus}
-                                                onChange={(e) => setData("tahun_lulus", e.target.value)}
+                                                onChange={(e) => {
+													const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+													setData("tahun_lulus", val);
+												}}
+												maxLength={4}
                                             />
                                         </div>
                                         <div className="space-y-2 md:col-span-2">

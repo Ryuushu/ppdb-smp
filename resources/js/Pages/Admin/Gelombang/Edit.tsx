@@ -25,7 +25,6 @@ export default function Edit({ gelombang, title }: { gelombang: any, title: stri
 
 	const { data, setData, put, processing, errors } = useForm({
 		nama: gelombang.nama || "",
-		tipe: gelombang.tipe || "reguler",
 		deskripsi: gelombang.deskripsi || "",
 		kuota: gelombang.kuota || 100,
 		tanggal_mulai: formatDate(gelombang.tanggal_mulai),
@@ -86,24 +85,7 @@ export default function Edit({ gelombang, title }: { gelombang: any, title: stri
 									)}
 								</div>
 
-								<div className="space-y-2">
-									<Label htmlFor="tipe">Tipe Gelombang</Label>
-									<Select
-										value={data.tipe}
-										onValueChange={(v) => setData("tipe", v)}
-									>
-										<SelectTrigger>
-											<SelectValue placeholder="Pilih Tipe Gelombang" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="prestasi">Prestasi (Rapor/Kejuaraan)</SelectItem>
-											<SelectItem value="reguler">Reguler</SelectItem>
-										</SelectContent>
-									</Select>
-									{errors.tipe && (
-										<p className="text-sm text-red-500">{errors.tipe}</p>
-									)}
-								</div>
+
 
 								<div className="space-y-2">
 									<Label htmlFor="kuota">Kuota Diterima</Label>

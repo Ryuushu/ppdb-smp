@@ -138,10 +138,6 @@ export default function Show({
 								</p>
 							</div>
 
-							<div className="pt-4 border-t">
-								<div className="font-bold text-sm text-muted-foreground">Tipe</div>
-								<div className="capitalize">{gelombang.tipe}</div>
-							</div>
 							<div>
 								<div className="font-bold text-sm text-muted-foreground">Tahun Ajaran</div>
 								<div>{gelombang.tahun_ajaran}</div>

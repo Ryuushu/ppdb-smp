@@ -32,7 +32,8 @@ import {
 	User,
 	Users,
     FileText,
-    Star
+    Star,
+    Shirt
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -86,6 +87,7 @@ function FormField({
 export function RegistrationForm({
 	gelombangAktif = null,
     masterDocuments = [],
+    adminItems = [],
 }: RegistrationFormProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
@@ -131,9 +133,12 @@ export function RegistrationForm({
         jumlah_saudara_kandung: "",
         anak_ke: "",
         status_anak: "",
+        agama: "Islam",
 
 		no_hp: "",
         no_hp_pribadi: "",
+        no_hp_ayah: "",
+        no_hp_ibu: "",
         pernah_paud: false,
         pernah_tk: false,
         asal_sekolah: "",
@@ -238,6 +243,8 @@ export function RegistrationForm({
 			if (!data.nama_ibu) {
 				newErrors.nama_ibu = "Nama Ibu wajib diisi";
 			}
+            if (!data.no_hp_ayah) newErrors.no_hp_ayah = "Wajib diisi";
+            if (!data.no_hp_ibu) newErrors.no_hp_ibu = "Wajib diisi";
 		}
 
 		setClientErrors(newErrors);
@@ -430,11 +437,30 @@ export function RegistrationForm({
 												</FormField>
 
 												<FormField id="nik" label="NIK (16 digit)" required error={getError("nik")}>
-													<Input id="nik" value={data.nik} onChange={(e) => { setData("nik", e.target.value); clearError("nik"); }} className="rounded-xl h-12" maxLength={16} />
+													<Input 
+														id="nik" 
+														value={data.nik} 
+														onChange={(e) => { 
+															const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+															setData("nik", val); 
+															clearError("nik"); 
+														}} 
+														className="rounded-xl h-12" 
+														maxLength={16} 
+													/>
 												</FormField>
 
-												<FormField id="nisn" label="NISN" error={getError("nisn")}>
-													<Input id="nisn" value={data.nisn} onChange={(e) => setData("nisn", e.target.value)} className="rounded-xl h-12" />
+												<FormField id="nisn" label="NISN (10 digit)" error={getError("nisn")}>
+													<Input 
+														id="nisn" 
+														value={data.nisn} 
+														onChange={(e) => {
+															const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+															setData("nisn", val);
+														}} 
+														className="rounded-xl h-12" 
+														maxLength={10}
+													/>
 												</FormField>
 
 
@@ -464,7 +490,17 @@ export function RegistrationForm({
 												</FormField>
 
                                                 <FormField id="no_hp" label="No. HP Orang Tua / Wali" required error={getError("no_hp")}>
-													<Input id="no_hp" type="tel" value={data.no_hp} onChange={(e) => { setData("no_hp", e.target.value); clearError("no_hp"); }} className="rounded-xl h-12" />
+													<Input 
+														id="no_hp" 
+														type="tel" 
+														value={data.no_hp} 
+														onChange={(e) => { 
+															const val = e.target.value.replace(/[^0-9]/g, "");
+															setData("no_hp", val); 
+															clearError("no_hp"); 
+														}} 
+														className="rounded-xl h-12" 
+													/>
 												</FormField>
 
                                                 {adminItems && adminItems.length > 0 && adminItems.some(item => item.extras && item.extras.length > 0) && (
@@ -531,11 +567,32 @@ export function RegistrationForm({
 													<FormField id="nama_ayah" label="Nama Ayah" required error={getError("nama_ayah")} className="md:col-span-2">
 														<Input id="nama_ayah" value={data.nama_ayah} onChange={(e) => { setData("nama_ayah", e.target.value); clearError("nama_ayah"); }} className="rounded-xl h-12" />
 													</FormField>
-                                                    <FormField id="nik_ayah" label="NIK Ayah">
-														<Input id="nik_ayah" value={data.nik_ayah} onChange={(e) => setData("nik_ayah", e.target.value)} className="rounded-xl h-12" />
+                                                    <FormField id="nik_ayah" label="NIK Ayah (16 digit)">
+														<Input 
+															id="nik_ayah" 
+															value={data.nik_ayah} 
+															onChange={(e) => {
+																const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+																setData("nik_ayah", val);
+															}} 
+															className="rounded-xl h-12" 
+															maxLength={16}
+														/>
 													</FormField>
                                                     <FormField id="pendidikan_ayah" label="Pendidikan Terakhir Ayah">
 														<Input id="pendidikan_ayah" value={data.pendidikan_ayah} onChange={(e) => setData("pendidikan_ayah", e.target.value)} className="rounded-xl h-12" />
+													</FormField>
+                                                    <FormField id="no_hp_ayah" label="No. HP Ayah">
+														<Input 
+                                                            id="no_hp_ayah" 
+                                                            value={data.no_hp_ayah} 
+                                                            onChange={(e) => {
+                                                                const val = e.target.value.replace(/[^0-9]/g, "");
+                                                                setData("no_hp_ayah", val);
+                                                            }} 
+                                                            placeholder="Contoh: 08xxxxxxxxxx"
+                                                            className="rounded-xl h-12" 
+                                                        />
 													</FormField>
 													<FormField id="pekerjaan_ayah" label="Pekerjaan Ayah">
 														<Input id="pekerjaan_ayah" value={data.pekerjaan_ayah} onChange={(e) => setData("pekerjaan_ayah", e.target.value)} className="rounded-xl h-12" />
@@ -549,11 +606,32 @@ export function RegistrationForm({
 													<FormField id="nama_ibu" label="Nama Ibu" required error={getError("nama_ibu")} className="md:col-span-2">
 														<Input id="nama_ibu" value={data.nama_ibu} onChange={(e) => { setData("nama_ibu", e.target.value); clearError("nama_ibu"); }} className="rounded-xl h-12" />
 													</FormField>
-                                                    <FormField id="nik_ibu" label="NIK Ibu">
-														<Input id="nik_ibu" value={data.nik_ibu} onChange={(e) => setData("nik_ibu", e.target.value)} className="rounded-xl h-12" />
+                                                    <FormField id="nik_ibu" label="NIK Ibu (16 digit)">
+														<Input 
+															id="nik_ibu" 
+															value={data.nik_ibu} 
+															onChange={(e) => {
+																const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+																setData("nik_ibu", val);
+															}} 
+															className="rounded-xl h-12" 
+															maxLength={16}
+														/>
 													</FormField>
                                                     <FormField id="pendidikan_ibu" label="Pendidikan Terakhir Ibu">
 														<Input id="pendidikan_ibu" value={data.pendidikan_ibu} onChange={(e) => setData("pendidikan_ibu", e.target.value)} className="rounded-xl h-12" />
+													</FormField>
+                                                    <FormField id="no_hp_ibu" label="No. HP Ibu">
+														<Input 
+                                                            id="no_hp_ibu" 
+                                                            value={data.no_hp_ibu} 
+                                                            onChange={(e) => {
+                                                                const val = e.target.value.replace(/[^0-9]/g, "");
+                                                                setData("no_hp_ibu", val);
+                                                            }} 
+                                                            placeholder="Contoh: 08xxxxxxxxxx"
+                                                            className="rounded-xl h-12" 
+                                                        />
 													</FormField>
 													<FormField id="pekerjaan_ibu" label="Pekerjaan Ibu">
 														<Input id="pekerjaan_ibu" value={data.pekerjaan_ibu} onChange={(e) => setData("pekerjaan_ibu", e.target.value)} className="rounded-xl h-12" />
@@ -588,11 +666,29 @@ export function RegistrationForm({
                                                     <FormField id="asal_sekolah" label="Nama Sekolah Asal" className="md:col-span-2">
 														<Input id="asal_sekolah" value={data.asal_sekolah} onChange={(e) => setData("asal_sekolah", e.target.value)} className="rounded-xl h-12" />
 													</FormField>
-                                                    <FormField id="npsn_sekolah_asal" label="NPSN Sekolah">
-														<Input id="npsn_sekolah_asal" value={data.npsn_sekolah_asal} onChange={(e) => setData("npsn_sekolah_asal", e.target.value)} className="rounded-xl h-12" />
+                                                    <FormField id="npsn_sekolah_asal" label="NPSN Sekolah (8 digit)">
+														<Input 
+															id="npsn_sekolah_asal" 
+															value={data.npsn_sekolah_asal} 
+															onChange={(e) => {
+																const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 8);
+																setData("npsn_sekolah_asal", val);
+															}} 
+															className="rounded-xl h-12" 
+															maxLength={8}
+														/>
 													</FormField>
-                                                    <FormField id="tahun_lulus" label="Tahun Lulus">
-														<Input id="tahun_lulus" value={data.tahun_lulus} onChange={(e) => setData("tahun_lulus", e.target.value)} className="rounded-xl h-12" />
+                                                    <FormField id="tahun_lulus" label="Tahun Lulus (4 digit)">
+														<Input 
+															id="tahun_lulus" 
+															value={data.tahun_lulus} 
+															onChange={(e) => {
+																const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+																setData("tahun_lulus", val);
+															}} 
+															className="rounded-xl h-12" 
+															maxLength={4}
+														/>
 													</FormField>
                                                     <FormField id="alamat_sekolah_asal" label="Alamat Sekolah Asal" className="md:col-span-2">
 														<Input id="alamat_sekolah_asal" value={data.alamat_sekolah_asal} onChange={(e) => setData("alamat_sekolah_asal", e.target.value)} className="rounded-xl h-12" />
@@ -624,7 +720,16 @@ export function RegistrationForm({
                                                     </FormField>
 
                                                     <FormField id="no_hp_pribadi" label="Nomor HP/WA Pribadi">
-                                                        <Input id="no_hp_pribadi" type="tel" value={data.no_hp_pribadi} onChange={(e) => setData("no_hp_pribadi", e.target.value)} className="rounded-xl h-12" />
+                                                        <Input 
+															id="no_hp_pribadi" 
+															type="tel" 
+															value={data.no_hp_pribadi} 
+															onChange={(e) => {
+																const val = e.target.value.replace(/[^0-9]/g, "");
+																setData("no_hp_pribadi", val);
+															}} 
+															className="rounded-xl h-12" 
+														/>
                                                     </FormField>
 
                                                     <FormField id="ekstrakurikuler" label="Ekstrakurikuler yang Ingin Diikuti" className="md:col-span-2">

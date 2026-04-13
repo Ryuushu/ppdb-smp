@@ -10,6 +10,7 @@ use App\Http\Controllers\KartuPendaftaranController;
 use App\Http\Controllers\KwitansiController;
 use App\Http\Controllers\PendaftaranPPDB;
 use App\Http\Controllers\PpdbSettingController;
+use App\Http\Controllers\Admin\SPKController;
 use App\Http\Controllers\SuratController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,7 +48,7 @@ Route::get('/register', function () {
         ->first();
 
     $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
-    $adminItems = \App\Models\AdminItem::whereNull('parent_id')->with('children')->get();
+    $adminItems = \App\Models\AdminItem::with('extras')->get();
     
     return inertia('Pendaftaran', [
         'gelombangAktif' => $gelombangAktif,
@@ -109,6 +110,13 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::delete('/setting-ranges/{id}', [PemetaanKelasController::class, 'deleteRange'])->name('admin.pemetaan-kelas.delete_range');
         Route::put('/{id}/score', [PemetaanKelasController::class, 'saveScore'])->name('admin.pemetaan-kelas.save_score');
         Route::put('/setting-ranges/{id}', [PemetaanKelasController::class, 'updateRange'])->name('admin.pemetaan-kelas.update_range');
+    });
+
+    // SPK Input Nilai
+    Route::prefix('spk')->group(function () {
+        Route::get('/{pesertaId}/nilai', [SPKController::class, 'inputNilai'])->name('admin.spk.input_nilai');
+        Route::post('/{pesertaId}/nilai', [SPKController::class, 'storeNilai'])->name('admin.spk.store_nilai');
+        Route::post('/{gelombangId}/hitung', [SPKController::class, 'hitungRankingManual'])->name('admin.spk.hitung_ranking');
     });
 
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');

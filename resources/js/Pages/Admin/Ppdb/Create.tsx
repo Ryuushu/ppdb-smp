@@ -1,6 +1,6 @@
 import { AlertMessages } from "@/components/alert-messages";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Head, useForm, usePage } from "@inertiajs/react";
-import { Shirt } from "lucide-react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
+import { CalendarPlus, Shirt } from "lucide-react";
 import { useState } from "react";
 
 
@@ -70,12 +70,12 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 		// Orang Tua
 		nama_ayah: "",
         nik_ayah: "",
-		no_ayah: "",
+		no_hp_ayah: "",
         pendidikan_ayah: "",
 		pekerjaan_ayah: "",
 		nama_ibu: "",
         nik_ibu: "",
-		no_ibu: "",
+		no_hp_ibu: "",
         pendidikan_ibu: "",
 		pekerjaan_ibu: "",
         penghasilan_ortu: "",
@@ -163,7 +163,28 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 					))}
 				</div>
 
-				<Card>
+				{gelombang.length === 0 ? (
+					<Card className="border-yellow-200 bg-yellow-50">
+						<CardContent className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+							<div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
+								<CalendarPlus className="w-8 h-8" />
+							</div>
+							<div className="space-y-2">
+								<CardTitle className="text-yellow-800">Tidak Ada Gelombang Aktif</CardTitle>
+								<p className="text-yellow-700 max-w-md mx-auto">
+									Maaf, saat ini tidak ada gelombang pendaftaran yang sedang dibuka (status: BUKA). 
+									Silakan buka gelombang pendaftaran terlebih dahulu di menu Kelola Gelombang.
+								</p>
+							</div>
+							<Button asChild variant="default" className="bg-yellow-600 hover:bg-yellow-700">
+								<Link href={route("admin.gelombang.index")}>
+									Kelola Gelombang
+								</Link>
+							</Button>
+						</CardContent>
+					</Card>
+				) : (
+					<Card>
 					<form onSubmit={submit}>
 						<CardContent className="space-y-6 py-6">
 							{/* Step 1: Identitas Diri */}
@@ -272,11 +293,13 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 										<Input
 											id="nik"
 											value={data.nik}
-											onChange={(e) => setData("nik", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik", val);
+											}}
 											placeholder="Masukkan 16 digit NIK"
 											minLength={16}
 											maxLength={16}
-											pattern="[0-9]{16}"
 											required
 										/>
 									</div>
@@ -287,18 +310,24 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 											id="no_hp"
 											type="tel"
 											value={data.no_hp}
-											onChange={(e) => setData("no_hp", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
 											required
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="no_hp_pribadi">No. HP Pribadi (Jika ada)</Label>
+										<Label htmlFor="no_hp_pribadi">No. HP Pribadi</Label>
 										<Input
 											id="no_hp_pribadi"
 											type="tel"
 											value={data.no_hp_pribadi}
-											onChange={(e) => setData("no_hp_pribadi", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp_pribadi", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
 										/>
 									</div>
@@ -348,17 +377,21 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div className="space-y-2">
-										<Label htmlFor="nisn">NISN</Label>
+										<Label htmlFor="nisn">NISN (10 digit)</Label>
 										<Input
 											id="nisn"
 											value={data.nisn}
-											onChange={(e) => setData("nisn", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+												setData("nisn", val);
+											}}
 											placeholder="Masukkan 10 digit NISN"
+											maxLength={10}
 										/>
 									</div>
 
                                 {adminItems && adminItems.length > 0 && adminItems.some(item => item.extras && item.extras.length > 0) && (
-                                    <div className="pt-6 space-y-6">
+                                    <div className="pt-6 space-y-6 md:col-span-2 border-t mt-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Shirt className="w-5 h-5 text-primary" />
                                             <h3 className="font-bold text-lg text-foreground">Pilihan Variasi / Ukuran</h3>
@@ -428,12 +461,16 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="nik_ayah">NIK Ayah</Label>
+										<Label htmlFor="nik_ayah">NIK Ayah (16 digit)</Label>
 										<Input
 											id="nik_ayah"
 											value={data.nik_ayah}
-											onChange={(e) => setData("nik_ayah", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik_ayah", val);
+											}}
 											placeholder="16 digit NIK"
+											maxLength={16}
 										/>
 									</div>
                                     <div className="space-y-2">
@@ -445,12 +482,12 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="no_ayah">No. HP Ayah</Label>
+										<Label htmlFor="no_hp_ayah">No. HP Ayah</Label>
 										<Input
-											id="no_ayah"
+											id="no_hp_ayah"
 											type="tel"
-											value={data.no_ayah}
-											onChange={(e) => setData("no_ayah", e.target.value)}
+											value={data.no_hp_ayah}
+											onChange={(e) => setData("no_hp_ayah", e.target.value)}
 											placeholder="Contoh: 08xxxxxxxxxx"
 										/>
 									</div>
@@ -479,11 +516,15 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="nik_ibu">NIK Ibu</Label>
+										<Label htmlFor="nik_ibu">NIK Ibu (16 digit)</Label>
 										<Input
 											id="nik_ibu"
 											value={data.nik_ibu}
-											onChange={(e) => setData("nik_ibu", e.target.value)}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik_ibu", val);
+											}}
+											maxLength={16}
 										/>
 									</div>
                                     <div className="space-y-2">
@@ -495,12 +536,15 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="no_ibu">No. HP Ibu</Label>
+										<Label htmlFor="no_hp_ibu">No. HP Ibu</Label>
 										<Input
-											id="no_ibu"
+											id="no_hp_ibu"
 											type="tel"
-											value={data.no_ibu}
-											onChange={(e) => setData("no_ibu", e.target.value)}
+											value={data.no_hp_ibu}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "");
+												setData("no_hp_ibu", val);
+											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
 										/>
 									</div>
@@ -542,19 +586,27 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="npsn_sekolah_asal">NPSN Sekolah</Label>
+                                            <Label htmlFor="npsn_sekolah_asal">NPSN Sekolah (8 digit)</Label>
                                             <Input
                                                 id="npsn_sekolah_asal"
                                                 value={data.npsn_sekolah_asal}
-                                                onChange={(e) => setData("npsn_sekolah_asal", e.target.value)}
+                                                onChange={(e) => {
+													const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 8);
+													setData("npsn_sekolah_asal", val);
+												}}
+												maxLength={8}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="tahun_lulus">Tahun Lulus</Label>
+                                            <Label htmlFor="tahun_lulus">Tahun Lulus (4 digit)</Label>
                                             <Input
                                                 id="tahun_lulus"
                                                 value={data.tahun_lulus}
-                                                onChange={(e) => setData("tahun_lulus", e.target.value)}
+                                                onChange={(e) => {
+													const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+													setData("tahun_lulus", val);
+												}}
+												maxLength={4}
                                             />
                                         </div>
                                         <div className="space-y-2 md:col-span-2">
@@ -679,6 +731,7 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 					</CardFooter>
 					</form>
 				</Card>
+				)}
 			</div>
 		</>
 	);

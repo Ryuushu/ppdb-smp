@@ -37,7 +37,7 @@
         {
             $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
             $adminItems = \App\Models\AdminItem::with('extras')->get();
- $gelombang = \App\Models\Gelombang::where('status', 'buka')->get();
+ $gelombang = \App\Models\Gelombang::whereIn('status', ['buka', 'pengumuman', 'daftar_ulang'])->get();
             return inertia('Admin/Ppdb/Create', compact('gelombang', 'masterDocuments', 'adminItems'));
         }
 
@@ -45,9 +45,17 @@
         {
             $data = $request->validated();
 
+            // Exclude non-column fields before mass assignment
+            $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+            $excludeKeys = ['admin_item_ids'];
+            foreach ($masterDocuments as $doc) {
+                $excludeKeys[] = $doc->slug;
+            }
+            
+            $insertData = array_diff_key($data, array_flip($excludeKeys));
 
             // Determine File Store Process
-            $peserta = PesertaPPDB::create($data);
+            $peserta = PesertaPPDB::create($insertData);
 
             // Sync selected fee variations
             if (!empty($data['admin_item_ids'])) {
@@ -101,7 +109,16 @@
             $data['bertindik'] = 0;
             $data['bertato'] = 0;
 
-            $ppdb->update($data);
+            // Exclude non-column fields before mass assignment
+            $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+            $excludeKeys = ['admin_item_ids'];
+            foreach ($masterDocuments as $doc) {
+                $excludeKeys[] = $doc->slug;
+            }
+            
+            $updateData = array_diff_key($data, array_flip($excludeKeys));
+
+            $ppdb->update($updateData);
 
             // Sync selected fee variations
             if (!empty($data['admin_item_ids'])) {
@@ -156,8 +173,16 @@
                 return back()->withErrors(['gelombang_id' => 'Gelombang pendaftaran sudah ditutup atau tidak tersedia.']);
             }
 
+            // Exclude non-column fields before mass assignment
+            $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+            $excludeKeys = ['admin_item_ids'];
+            foreach ($masterDocuments as $doc) {
+                $excludeKeys[] = $doc->slug;
+            }
+            
+            $insertData = array_diff_key($data, array_flip($excludeKeys));
 
-            $ppdb = PesertaPPDB::create($data);
+            $ppdb = PesertaPPDB::create($insertData);
 
             // Sync selected fee variations
             if (!empty($data['admin_item_ids'])) {

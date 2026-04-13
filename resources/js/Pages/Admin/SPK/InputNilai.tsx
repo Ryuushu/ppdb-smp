@@ -96,64 +96,59 @@ export default function InputNilai({
 						</CardContent>
 					</Card>
 
-					<Card className="col-span-1 md:col-span-2">
-						<CardHeader>
-							<CardTitle>Form Input Nilai Kriteria</CardTitle>
-							<CardDescription>
-								Masukkan nilai mentah untuk masing-masing kriteria. Sistem SPK (SAW) akan melakukan normalisasi dan perkalian bobot secara otomatis setelah disimpan.
-                                <br />
-                                <span className="text-[10px] text-muted-foreground italic">
-                                    Tips: Benefit (Nilai Tinggi = Bagus), Cost (Nilai Rendah = Bagus).
-                                </span>
-							</CardDescription>
-						</CardHeader>
-						<form onSubmit={submit}>
+
+					{kriteria.length > 0 && (
+						<Card className="col-span-1 md:col-span-2">
+							<CardHeader>
+								<CardTitle>Form Input Nilai Kriteria</CardTitle>
+								<CardDescription>
+									Masukkan nilai mentah untuk masing-masing kriteria. Sistem SPK (SAW) akan melakukan normalisasi dan perkalian bobot secara otomatis setelah disimpan.
+									<br />
+									<span className="text-[10px] text-muted-foreground italic">
+										Tips: Benefit (Nilai Tinggi = Bagus), Cost (Nilai Rendah = Bagus).
+									</span>
+								</CardDescription>
+							</CardHeader>
+							<form onSubmit={submit}>
 							<CardContent className="space-y-4">
-								{kriteria.length === 0 ? (
-									<div className="p-4 bg-yellow-50 text-yellow-800 rounded-md border border-yellow-200">
-										<strong>Peringatan!</strong> Gelombang ini belum memiliki kriteria SPK yang dikonfigurasi. Hubungi administrator database untuk menambahkan kriteria_spk untuk gelombang_id {peserta.gelombang_id}.
-									</div>
-								) : (
-									<div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-										{kriteria.map(k => (
-											<div key={k.id} className="space-y-2">
-												<Label htmlFor={`nilai_${k.id}`} className="flex justify-between">
-													<span>{k.nama}</span>
-													<span className="text-xs text-muted-foreground">
-														Bobot: {parseFloat(k.bobot).toFixed(2)} ({k.tipe})
-													</span>
-												</Label>
-												<Input
-													id={`nilai_${k.id}`}
-													type="number"
-													step="0.01"
-													min="0"
-													max="100"
-													value={data[`nilai_${k.id}`]}
-													onChange={(e) => setData(`nilai_${k.id}`, parseFloat(e.target.value) || 0)}
-													required
-												/>
-												{/* Menampilkan pesan error jika ada menggunakan key dinamis */}
-												{Object.keys(errors).includes(`nilai_${k.id}`) && (
-													<p className="text-sm text-red-500">
-														{errors[`nilai_${k.id}` as keyof typeof errors]}
-													</p>
-												)}
-											</div>
-										))}
-									</div>
-								)}
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+									{kriteria.map(k => (
+										<div key={k.id} className="space-y-2">
+											<Label htmlFor={`nilai_${k.id}`} className="flex justify-between">
+												<span>{k.nama}</span>
+												<span className="text-xs text-muted-foreground">
+													Bobot: {parseFloat(k.bobot).toFixed(2)} ({k.tipe})
+												</span>
+											</Label>
+											<Input
+												id={`nilai_${k.id}`}
+												type="number"
+												step="0.01"
+												min="0"
+												max="100"
+												value={data[`nilai_${k.id}`]}
+												onChange={(e) => setData(`nilai_${k.id}`, parseFloat(e.target.value) || 0)}
+												required
+											/>
+											{/* Menampilkan pesan error jika ada menggunakan key dinamis */}
+											{Object.keys(errors).includes(`nilai_${k.id}`) && (
+												<p className="text-sm text-red-500">
+													{errors[`nilai_${k.id}` as keyof typeof errors]}
+												</p>
+											)}
+										</div>
+									))}
+								</div>
 							</CardContent>
-							{kriteria.length > 0 && (
-								<CardFooter className="flex justify-end gap-2">
-									<Button type="submit" disabled={processing}>
-										<Save className="w-4 h-4 mr-2" />
-										{processing ? "Menyimpan dan Menghitung..." : "Simpan dan Hitung SPK"}
-									</Button>
-								</CardFooter>
-							)}
+							<CardFooter className="flex justify-end gap-2">
+								<Button type="submit" disabled={processing}>
+									<Save className="w-4 h-4 mr-2" />
+									{processing ? "Menyimpan dan Menghitung..." : "Simpan dan Hitung SPK"}
+								</Button>
+							</CardFooter>
 						</form>
 					</Card>
+					)}
 				</div>
 			</div>
 		</>

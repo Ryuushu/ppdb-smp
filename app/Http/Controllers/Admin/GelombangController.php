@@ -29,7 +29,6 @@ class GelombangController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'tipe' => 'required|in:prestasi,reguler',
             'deskripsi' => 'nullable|string',
             'kuota' => 'required|integer|min:1',
             'tanggal_mulai' => 'required|date',
@@ -70,7 +69,6 @@ class GelombangController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'tipe' => 'required|in:prestasi,reguler',
             'deskripsi' => 'nullable|string',
             'kuota' => 'required|integer|min:1',
             'tanggal_mulai' => 'required|date',

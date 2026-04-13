@@ -10,7 +10,6 @@ class Gelombang extends Model
 
     protected $fillable = [
         'nama',
-        'tipe',
         'deskripsi',
         'kuota',
         'tanggal_mulai',
