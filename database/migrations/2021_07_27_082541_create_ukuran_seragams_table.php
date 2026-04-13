@@ -31,6 +31,6 @@ class CreateUkuranSeragamsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ukuran_seragams');
+        Schema::dropIfExists('ukuran_seragam');
     }
 }

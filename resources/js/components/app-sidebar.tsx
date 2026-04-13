@@ -47,12 +47,6 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 
-const programItems = [
-	{ id: 1, name: "Reguler" },
-	{ id: 2, name: "Tahfidz" },
-	{ id: 3, name: "Unggulan" },
-];
-
 export function AppSidebar() {
 	const { url, props } = usePage<any>();
 	const { isMobile, setOpenMobile } = useSidebar();
@@ -67,13 +61,6 @@ export function AppSidebar() {
 	}, [url, isMobile, setOpenMobile]);
 
 	const isActive = (path: string) => url.startsWith(path);
-
-	const visiblePrograms = programItems.filter((j) => {
-		if (j.id === 2) {
-			return Number(tahun) < 2025;
-		}
-		return true;
-	});
 
 	return (
 		<Sidebar collapsible="icon" variant="inset">
@@ -161,7 +148,7 @@ export function AppSidebar() {
 									asChild
 									isActive={url.includes("/ppdb/list/terdaftar-ulang")}
 								>
-									<Link href={route("ppdb.daftar.ulang.list", { program: "semua" })}>
+									<Link href={route("ppdb.daftar.ulang.list")}>
 										<UserCheck className="size-4" />
 										<span>List Daftar Ulang</span>
 									</Link>
@@ -174,7 +161,7 @@ export function AppSidebar() {
 									asChild
 									isActive={url.includes("/ppdb/list/belum-daftar-ulang")}
 								>
-									<Link href={route("ppdb.belum.daftar.ulang.list", { program: "semua" })}>
+									<Link href={route("ppdb.belum.daftar.ulang.list")}>
 										<UserX className="size-4" />
 										<span>Belum Daftar Ulang</span>
 									</Link>
@@ -187,7 +174,7 @@ export function AppSidebar() {
 									asChild
 									isActive={url.includes("/ukuran-seragam/show")}
 								>
-									<Link href={route("ppdb.seragam.show.program", { program: "semua" })}>
+									<Link href={route("ppdb.seragam.show.program")}>
 										<Shirt className="size-4" />
 										<span>List Ukuran Baju</span>
 									</Link>
@@ -221,7 +208,7 @@ export function AppSidebar() {
 									asChild
 									isActive={url.includes("/kartu-pendaftaran/show")}
 								>
-									<Link href={route("ppdb.kartu.show.program", { program: "semua" })}>
+									<Link href={route("ppdb.kartu.show.program")}>
 										<IdCard className="size-4" />
 										<span>Kartu Pendaftaran</span>
 									</Link>
@@ -234,7 +221,7 @@ export function AppSidebar() {
 									asChild
 									isActive={url.includes("/formulir/show")}
 								>
-									<Link href={route("ppdb.formulir.show.program", { program: "semua" })}>
+									<Link href={route("ppdb.formulir.show.program")}>
 										<File className="size-4" />
 										<span>Form Pendaftaran</span>
 									</Link>
@@ -247,7 +234,7 @@ export function AppSidebar() {
 									asChild
 									isActive={url.includes("/surat/show")}
 								>
-									<Link href={route("ppdb.surat.show.program", { program: "semua" })}>
+									<Link href={route("ppdb.surat.show.program")}>
 										<FileText className="size-4" />
 										<span>Surat Diterima</span>
 									</Link>

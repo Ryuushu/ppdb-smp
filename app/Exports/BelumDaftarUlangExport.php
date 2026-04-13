@@ -11,12 +11,10 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class BelumDaftarUlangExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
     protected $tahun;
-    protected $jurusan;
 
-    public function __construct($tahun = null, $jurusan = null)
+    public function __construct($tahun = null)
     {
         $this->tahun = $tahun ?? now()->year;
-        $this->jurusan = $jurusan;
     }
 
     /**

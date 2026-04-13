@@ -144,7 +144,7 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 				>
 					{[
 						{ icon: Users, value: "500+", label: "Siswa Aktif" },
-						{ icon: Award, value: "3", label: "Program Unggulan" },
+						{ icon: Award, value: "A", label: "Akreditasi" },
 						{ icon: Calendar, value: "2008", label: "Tahun Berdiri" },
 					].map((stat) => (
 						<div
