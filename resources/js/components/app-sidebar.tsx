@@ -142,32 +142,6 @@ export function AppSidebar() {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 
-							{/* List Daftar Ulang */}
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={url.includes("/ppdb/list/terdaftar-ulang")}
-								>
-									<Link href={route("ppdb.daftar.ulang.list")}>
-										<UserCheck className="size-4" />
-										<span>List Daftar Ulang</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-
-							{/* List Belum Daftar Ulang */}
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={url.includes("/ppdb/list/belum-daftar-ulang")}
-								>
-									<Link href={route("ppdb.belum.daftar.ulang.list")}>
-										<UserX className="size-4" />
-										<span>Belum Daftar Ulang</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-
 							{/* Ukuran Baju */}
 							<SidebarMenuItem>
 								<SidebarMenuButton

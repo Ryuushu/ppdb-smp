@@ -36,15 +36,9 @@ import {
 
 interface DashboardProps {
 	count: { all: number };
-	du: { all: number };
 	penerimaan: { diterima: number; ditolak: number };
 	compareSx: { l: number; p: number };
-	compareDx: { l: number; p: number };
 	yearDiff: Record<number, { bulan: string; jumlah_pendaftar: number }[]>;
-	yearDiffDaftarUlang: Record<
-		number,
-		{ bulan: string; jumlah_daftar_ulang: number }[]
-	>;
 	genderOverTime: { bulan: string; laki: number; perempuan: number }[];
 	tahun: number;
 	lastYear: string;
@@ -56,12 +50,9 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function Dashboard({
 	count,
-	du,
 	penerimaan,
 	compareSx,
-	compareDx,
 	yearDiff,
-	yearDiffDaftarUlang,
 	genderOverTime,
 	tahun,
 	lastYear,
@@ -86,11 +77,6 @@ export default function Dashboard({
 		{ name: "Perempuan", value: compareSx.p },
 	];
 
-	const genderDuData = [
-		{ name: "Laki-laki", value: compareDx.l },
-		{ name: "Perempuan", value: compareDx.p },
-	];
-
 	const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
 	const yearDiffData = months.map((month) => {
@@ -100,16 +86,6 @@ export default function Dashboard({
 			name: month,
 			[`${tahun}`]: currentYearData?.jumlah_pendaftar || 0,
 			[`${lastYear}`]: lastYearData?.jumlah_pendaftar || 0,
-		};
-	});
-
-	const yearDiffDuData = months.map((month) => {
-		const currentYearData = yearDiffDaftarUlang[tahun]?.find((d) => d.bulan === month);
-		const lastYearData = yearDiffDaftarUlang[Number(lastYear)]?.find((d) => d.bulan === month);
-		return {
-			name: month,
-			[`${tahun}`]: currentYearData?.jumlah_daftar_ulang || 0,
-			[`${lastYear}`]: lastYearData?.jumlah_daftar_ulang || 0,
 		};
 	});
 
@@ -157,12 +133,6 @@ export default function Dashboard({
 							icon={Users}
 							iconClassName="bg-pink-500"
 						/>
-						<StatsCard
-							title="Daftar Ulang"
-							value={du.all}
-							icon={UserCheck}
-							iconClassName="bg-emerald-500"
-						/>
 					</div>
 				</section>
 
@@ -195,32 +165,7 @@ export default function Dashboard({
 							</CardContent>
 						</Card>
 
-						<Card>
-							<CardHeader>
-								<CardTitle>Gender Daftar Ulang</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<ResponsiveContainer width="100%" height={300}>
-									<PieChart>
-										<Pie
-											data={genderDuData}
-											cx="50%"
-											cy="50%"
-											innerRadius={60}
-											outerRadius={80}
-											paddingAngle={5}
-											dataKey="value"
-										>
-											{genderDuData.map((entry, index) => (
-												<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-											))}
-										</Pie>
-										<Tooltip />
-										<Legend />
-									</PieChart>
-								</ResponsiveContainer>
-							</CardContent>
-						</Card>
+
 					</div>
 				</section>
 
@@ -246,24 +191,7 @@ export default function Dashboard({
 							</CardContent>
 						</Card>
 
-						<Card>
-							<CardHeader>
-								<CardTitle>Tren Daftar Ulang Perbulan</CardTitle>
-							</CardHeader>
-							<CardContent className="px-1">
-								<ResponsiveContainer width="100%" height={300}>
-									<BarChart data={yearDiffDuData}>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="name" />
-										<YAxis />
-										<Tooltip />
-										<Legend />
-										<Bar dataKey={tahun.toString()} fill="#10b981" name={`Tahun ${tahun}`} />
-										<Bar dataKey={lastYear} fill="#94a3b8" name={`Tahun ${lastYear}`} />
-									</BarChart>
-								</ResponsiveContainer>
-							</CardContent>
-						</Card>
+
 					</div>
 				</section>
 
