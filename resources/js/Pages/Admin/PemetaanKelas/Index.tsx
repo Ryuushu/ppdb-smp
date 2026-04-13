@@ -64,7 +64,6 @@ interface Peserta {
 	id: string;
 	nama_lengkap: string;
 	no_pendaftaran: string;
-	program: { nama: string };
 	total_score_mapped: number;
 	nilai_baca: number;
 	nilai_tulis: number;
