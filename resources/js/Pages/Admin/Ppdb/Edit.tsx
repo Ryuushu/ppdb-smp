@@ -35,6 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatDateShort } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { Shirt } from "lucide-react";
 import { useState } from "react";
 
 
@@ -95,18 +96,20 @@ interface Peserta {
 	pekerjaan_ibu: string;
 	penghasilan_ortu: string;
 
+	// Variations
+	admin_item_extras?: any[];
+
 	// Documents
 	documents: any[];
 
 	rekomendasi_mwc: number; // boolean like
 	saran_dari: string;
-	ukuran_seragam?: { master_ukuran_seragam_id?: number };
 }
 
 interface Props {
 	peserta: Peserta;
     masterDocuments: any[];
-	masterUkuranSeragams: any[];
+    adminItems: any[];
 }
 
 const steps = [
@@ -116,10 +119,10 @@ const steps = [
     { id: 4, title: "Dokumen" },
 ];
 
-export default function Edit({ peserta, masterDocuments, masterUkuranSeragams }: Props) {
+export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 	const { data, setData, put, processing, errors } = useForm({
+        admin_item_ids: (peserta.admin_item_extras || []).map(i => i.id) as number[],
 		// Identitas Diri
-		master_ukuran_seragam_id: peserta.ukuran_seragam?.master_ukuran_seragam_id ? String(peserta.ukuran_seragam?.master_ukuran_seragam_id) : "",
 		nama_lengkap: peserta.nama_lengkap || "",
 		jenis_kelamin: peserta.jenis_kelamin || "l",
 		tempat_lahir: peserta.tempat_lahir || "",
@@ -450,31 +453,61 @@ export default function Edit({ peserta, masterDocuments, masterUkuranSeragams }:
 										/>
 									</div>
 
+                                {adminItems && adminItems.length > 0 && adminItems.some(item => item.extras && item.extras.length > 0) && (
+                                    <div className="pt-6 space-y-6 md:col-span-2">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Shirt className="w-5 h-5 text-primary" />
+                                            <h3 className="font-bold text-lg text-foreground">Pilihan Variasi / Ukuran</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {adminItems.filter(item => item.extras && item.extras.length > 0).map((parent) => {
+                                                // Find currently selected extra for this parent
+                                                const parentExtraIds = parent.extras.map((e: any) => e.id);
+                                                const selectedId = data.admin_item_ids.find(id => parentExtraIds.includes(id));
+
+                                                return (
+                                                    <div key={parent.id} className="space-y-2">
+                                                        <Label htmlFor={`variation-${parent.id}`} className="text-sm font-semibold text-primary/70 uppercase tracking-wider">{parent.name}</Label>
+                                                        <Select 
+                                                            value={selectedId ? String(selectedId) : "none"}
+                                                            onValueChange={(val) => {
+                                                                // Enforce only 1 extra total
+                                                                if (val !== "none") {
+                                                                    setData("admin_item_ids", [Number(val)]);
+                                                                } else {
+                                                                    setData("admin_item_ids", []);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <SelectTrigger id={`variation-${parent.id}`} className="h-10 rounded-xl bg-background border-primary/20">
+                                                                <SelectValue placeholder={`Pilih ${parent.name}...`} />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="none" className="text-muted-foreground italic">Tidak Memilih</SelectItem>
+                                                                {parent.extras.map((child: any) => {
+                                                                    const cost = data.jenis_kelamin === 'p' ? child.amount_female : child.amount_male;
+                                                                    return (
+                                                                        <SelectItem key={child.id} value={String(child.id)}>
+                                                                            <span className="font-medium">{child.name}</span>
+                                                                            {cost > 0 && (
+                                                                                <span className="ml-2 text-[10px] text-primary font-bold">
+                                                                                    (+ {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(cost)})
+                                                                                </span>
+                                                                            )}
+                                                                        </SelectItem>
+                                                                    );
+                                                                })}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
 
 								</div>
-																<div className="space-y-2">
-										<Label htmlFor="master_ukuran_seragam_id">Ukuran Seragam *</Label>
-										<Select
-											value={data.master_ukuran_seragam_id}
-											onValueChange={(v) => setData("master_ukuran_seragam_id", v)}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Pilih Ukuran Seragam" />
-											</SelectTrigger>
-											<SelectContent>
-												{masterUkuranSeragams.map((u) => (
-													<SelectItem key={u.id} value={String(u.id)}>
-														Ukuran {u.nama_ukuran} {u.tambahan_biaya > 0 ? `(+ Rp. ${u.tambahan_biaya.toLocaleString('id-ID')})` : ''}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										{errors.master_ukuran_seragam_id && (
-											<span className="text-destructive text-sm">
-												{errors.master_ukuran_seragam_id}
-											</span>
-										)}
-									</div>
+
 								</div>
 
 							{/* Step 2: Identitas Orang Tua */}

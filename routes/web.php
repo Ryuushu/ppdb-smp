@@ -11,7 +11,6 @@ use App\Http\Controllers\KwitansiController;
 use App\Http\Controllers\PendaftaranPPDB;
 use App\Http\Controllers\PpdbSettingController;
 use App\Http\Controllers\SuratController;
-use App\Http\Controllers\UkuranSeragamController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,12 +47,12 @@ Route::get('/register', function () {
         ->first();
 
     $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
-    $masterUkuranSeragams = \App\Models\MasterUkuranSeragam::all();
-
+    $adminItems = \App\Models\AdminItem::whereNull('parent_id')->with('children')->get();
+    
     return inertia('Pendaftaran', [
         'gelombangAktif' => $gelombangAktif,
         'masterDocuments' => $masterDocuments,
-        'masterUkuranSeragams' => $masterUkuranSeragams
+        'adminItems' => $adminItems,
     ]);
 })->name('ppdb.register');
 
@@ -78,6 +77,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::post('/setting/admin-items', [AdminItemController::class, 'store'])->name('admin.admin-items.store');
         Route::put('/setting/admin-items/{id}', [AdminItemController::class, 'update'])->name('admin.admin-items.update');
         Route::delete('/setting/admin-items/{id}', [AdminItemController::class, 'destroy'])->name('admin.admin-items.destroy');
+        Route::post('/setting/admin-items/bulk-delete', [AdminItemController::class, 'bulkDestroy'])->name('admin.admin-items.bulk-destroy');
 
         // Master Documents
         Route::get('/setting/master-documents', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'index'])->name('admin.master-documents.index');
@@ -85,11 +85,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::put('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'update'])->name('admin.master-documents.update');
         Route::delete('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'destroy'])->name('admin.master-documents.destroy');
 
-        // Master Ukuran Seragam Fees
-        Route::get('/setting/ukuran-seragam', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'index'])->name('admin.ukuran-seragam.index');
-        Route::post('/setting/ukuran-seragam', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'store'])->name('admin.ukuran-seragam.store');
-        Route::put('/setting/ukuran-seragam/{id}', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'update'])->name('admin.ukuran-seragam.update');
-        Route::delete('/setting/ukuran-seragam/{id}', [\App\Http\Controllers\Admin\MasterUkuranSeragamController::class, 'destroy'])->name('admin.ukuran-seragam.destroy');
+
     });
 
     // Gelombang Pendaftaran
@@ -144,6 +140,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::get('/tambah/{uuid}', [KwitansiController::class, 'tambahKwitansi'])->name('ppdb.kwitansi.tambah');
         Route::post('/tambah/{uuid}', [KwitansiController::class, 'storeKwitansi'])->name('ppdb.kwitansi.tambah');
         Route::delete('/hapus/{id}', [KwitansiController::class, 'hapusKwitansi'])->name('ppdb.kwitansi.hapus');
+        Route::put('/update-variation/{uuid}', [KwitansiController::class, 'updateVariation'])->name('ppdb.kwitansi.update-variation');
 
         // cetak
         Route::post('/cetak/kwitansi/{uuid}', [KwitansiController::class, 'cetakKwitansi'])->name('ppdb.cetak.kwitansi');
@@ -153,13 +150,10 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::get('/rekap', [KwitansiController::class, 'rekapKwitansi'])->name('ppdb.rekap.kwitansi');
         Route::get('/rekap/cetak-dana', [KwitansiController::class, 'cetakRekapDanaKwitansi'])->name('ppdb.rekap.kwitansi-dana');
         Route::get('/rekap/cetak-riwayat', [KwitansiController::class, 'cetakRekapRiwayatKwitansi'])->name('ppdb.rekap.kwitansi-riwayat');
+        Route::get('/rekap-seragam', [KwitansiController::class, 'rekapSeragam'])->name('ppdb.rekap.seragam');
     });
 
-    Route::prefix('ukuran-seragam')->group(function () {
-        Route::get('show', [UkuranSeragamController::class, 'showProgramPeserta'])->name('ppdb.seragam.show.program');
 
-        Route::post('/ubah/seragam', [UkuranSeragamController::class, 'ubahUkuranSeragam'])->name('ppdb.ubah.seragam');
-    });
 
     Route::prefix('surat')->group(function () {
         Route::get('show', [SuratController::class, 'showProgramPeserta'])->name('ppdb.surat.show.program');
@@ -186,8 +180,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         // peserta ppdb
         Route::get('peserta-ppdb', [ExportController::class, 'exportPesertaPpdb'])->name('export.peserta.ppdb');
 
-        // ukuran seragam
-        Route::get('ukuran-seragam', [ExportController::class, 'exportSeragam'])->name('export.seragam');
+
 
         // export rekap sekolah
         Route::get('rekap-sekolah', [ExportController::class, 'exportRekapSekolah'])->name('export.rekap-sekolah');

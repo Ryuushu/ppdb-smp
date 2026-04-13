@@ -142,18 +142,7 @@ export function AppSidebar() {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 
-							{/* Ukuran Baju */}
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={url.includes("/ukuran-seragam/show")}
-								>
-									<Link href={route("ppdb.seragam.show.program")}>
-										<Shirt className="size-4" />
-										<span>List Ukuran Baju</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+
 
 							{/* Pemetaan Kelas */}
 							<SidebarMenuItem>
@@ -214,7 +203,18 @@ export function AppSidebar() {
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
-
+							{/* Surat Diterima */}
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									asChild
+									isActive={url.includes("/kwitansi/rekap-seragam")}
+								>
+									<Link href={route("ppdb.rekap.seragam")}>
+										<FileText className="size-4" />
+										<span>Rekap Seragam (Ukuran)</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
 							{/* Kwitansi */}
 							<CollapsibleMenuItem
 								icon={<Receipt className="size-4" />}
@@ -243,7 +243,7 @@ export function AppSidebar() {
 											Rekap Pembayaran
 										</Link>
 									</SidebarMenuSubButton>
-								</SidebarMenuSubItem>
+								</SidebarMenuSubItem>	
 							</CollapsibleMenuItem>
 						</SidebarMenu>
 					</SidebarGroupContent>

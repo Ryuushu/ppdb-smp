@@ -14,9 +14,21 @@ class PesertaPPDBSeeder extends Seeder
      */
     public function run()
     {
-        PesertaPPDB::factory(5)->create();
+        $extras = \App\Models\AdminItemExtra::all();
 
-        // add more 300 but for the before this year
-        PesertaPPDB::factory(5)->create(['created_at' => now()->subYear()]);
+        PesertaPPDB::factory(5)->create()->each(function ($p) use ($extras) {
+            if ($extras->count() > 0) {
+                // Attach exactly 1 random extra
+                $p->adminItemExtras()->attach($extras->random()->id);
+            }
+        });
+
+        // add more but for the before this year
+        PesertaPPDB::factory(5)->create(['created_at' => now()->subYear()])->each(function ($p) use ($extras) {
+            if ($extras->count() > 0) {
+                // Attach exactly 1 random extra
+                $p->adminItemExtras()->attach($extras->random()->id);
+            }
+        });
     }
 }

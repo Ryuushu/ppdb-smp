@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('master_ukuran_seragams', function (Blueprint $table) {
+        Schema::create('peserta_admin_item_extras', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_ukuran');
-            $table->integer('tambahan_biaya')->default(0);
+            $table->foreignUuid('peserta_ppdb_id')->constrained('peserta_ppdb')->onDelete('cascade');
+            $table->foreignId('admin_item_extra_id')->constrained('admin_item_extras')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('master_ukuran_seragams');
+        Schema::dropIfExists('peserta_admin_item_extras');
     }
 };

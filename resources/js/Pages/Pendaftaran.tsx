@@ -6,16 +6,20 @@ import { Head } from "@inertiajs/react";
 interface PendaftaranPageProps {
 	gelombangAktif: any | null;
     masterDocuments: any[];
-	masterUkuranSeragams: any[];
+    adminItems: any[];
 }
 
-export default function PendaftaranPage({ gelombangAktif, masterDocuments, masterUkuranSeragams }: PendaftaranPageProps) {
+export default function PendaftaranPage({ gelombangAktif, masterDocuments, adminItems }: PendaftaranPageProps) {
 	return (
 		<>
 			<Head title="Formulir Pendaftaran | SNPMB MI Nurul Ulum" />
 			<Navbar />
 			<main className="min-h-screen bg-gradient-to-b from-secondary via-background to-accent pt-24 pb-16">
-				<RegistrationForm gelombangAktif={gelombangAktif} masterDocuments={masterDocuments} masterUkuranSeragams={masterUkuranSeragams} />
+				<RegistrationForm 
+                    gelombangAktif={gelombangAktif} 
+                    masterDocuments={masterDocuments} 
+                    adminItems={adminItems}
+                />
 			</main>
 			<Footer />
 		</>

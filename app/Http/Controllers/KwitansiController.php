@@ -8,6 +8,7 @@ use App\Http\Requests\DocumentFilterRequest;
 use App\Http\Requests\StoreKwitansiRequest;
 use App\Models\Kwitansi;
 use App\Models\PesertaPPDB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -36,8 +37,8 @@ class KwitansiController extends Controller
 
     public function tambahKwitansi($uuid)
     {
-        $peserta = PesertaPPDB::with(['kwitansi' => fn($query) => $query->latest()->with('penerima', 'deletedBy')])->findOrFail($uuid);
-        $adminItems = \App\Models\AdminItem::all();
+        $peserta = PesertaPPDB::with(['kwitansi' => fn($query) => $query->latest()->with('penerima', 'deletedBy'), 'adminItemExtras.master'])->findOrFail($uuid);
+        $adminItems = \App\Models\AdminItem::with('extras')->get();
 
         return inertia('Admin/Kwitansi/Create', compact('peserta', 'adminItems'));
     }
@@ -66,8 +67,8 @@ class KwitansiController extends Controller
 
     public function cetakKwitansi($uuid)
     {
-        $pesertappdb = PesertaPPDB::with(['kwitansi', 'ukuranSeragam.masterUkuran'])->findOrFail($uuid);
-        $adminItems = \App\Models\AdminItem::orderBy('id', 'asc')->get();
+        $pesertappdb = PesertaPPDB::with(['kwitansi', 'adminItemExtras.master'])->findOrFail($uuid);
+        $adminItems = \App\Models\AdminItem::all();
 
         $totalNominal = $pesertappdb->kwitansi->sum('nominal');
 
@@ -84,12 +85,11 @@ class KwitansiController extends Controller
     public function cetakKwitansiSingle($uuid, $id)
     {
         $pesertappdb = PesertaPPDB::with([
-            'ukuranSeragam.masterUkuran',
             'kwitansi' => function ($query) use ($id) {
                 $query->whereId($id);
             },
         ])->findOrFail($uuid);
-        $adminItems = \App\Models\AdminItem::orderBy('id', 'asc')->get();
+        $adminItems = \App\Models\AdminItem::all();
 
         return view('pdf.cetak-kwitansi', compact('pesertappdb', 'adminItems'));
     }
@@ -131,7 +131,7 @@ class KwitansiController extends Controller
         $search = $request->input('search');
 
         $pesertaQuery = PesertaPPDB::whereYear('created_at', $tahun)
-            ->with(['kwitansi' => fn($q) => $q->whereNull('deleted_at'), 'ukuranSeragam.masterUkuran']);
+            ->with(['kwitansi' => fn($q) => $q->whereNull('deleted_at'), 'adminItemExtras']);
 
         if ($search) {
             $pesertaQuery->where(function ($query) use ($search) {
@@ -141,15 +141,14 @@ class KwitansiController extends Controller
         }
 
         $allPeserta = $pesertaQuery->get()->map(function ($p) use ($totalBillMale, $totalBillFemale) {
-            $totalBill = $p->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;
+            $baseBill = $p->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;
             
-            // Add Master Ukuran Seragam Cost
-            $tambahanBiayaBaju = 0;
-            if ($p->ukuranSeragam && $p->ukuranSeragam->masterUkuran) {
-                $tambahanBiayaBaju = $p->ukuranSeragam->masterUkuran->tambahan_biaya;
-            }
-            $totalBill += $tambahanBiayaBaju;
+            // Add selected extras to the bill
+            $extrasBill = $p->adminItemExtras->sum(function ($extra) use ($p) {
+                return $p->jenis_kelamin === 'l' ? (float) $extra->amount_male : (float) $extra->amount_female;
+            });
 
+            $totalBill = $baseBill + $extrasBill;
             $totalPaid = $p->kwitansi->sum('nominal');
             $p->total_bill = $totalBill;
             $p->total_paid = $totalPaid;
@@ -201,11 +200,66 @@ class KwitansiController extends Controller
         return Excel::download(new RekapDanaKwitansiExport($danaKelola, $jenisPembayaran, $tahun), 'rekap-dana-kwitansi-ppdb-' . $tahun . '.xlsx');
     }
 
+    public function updateVariation(Request $request, $uuid)
+    {
+        $request->validate([
+            'old_extra_id' => 'required|exists:admin_item_extras,id',
+            'new_extra_id' => 'required|exists:admin_item_extras,id',
+        ]);
+
+        $peserta = PesertaPPDB::where('id', $uuid)->firstOrFail();
+        
+        // Remove old variation
+        $peserta->adminItemExtras()->detach($request->old_extra_id);
+        
+        // Add new variation
+        $peserta->adminItemExtras()->attach($request->new_extra_id);
+
+        return back()->with('success', 'Variasi berhasil diperbarui');
+    }
+
     public function cetakRekapRiwayatKwitansi(DocumentFilterRequest $request)
     {
         $tahun = $request->input('tahun', now()->year);
         $kwitansies = Kwitansi::with(['pesertaPpdb', 'penerima'])->whereYear('created_at', $tahun)->get();
 
         return Excel::download(new RekapRiwayatKwitansiExport($kwitansies, $tahun), 'rekap-riwayat-kwitansi-ppdb-' . $tahun . '.xlsx');
+    }
+
+    public function rekapSeragam(Request $request)
+    {
+        $search = $request->input('search');
+        $statusFilter = $request->input('status'); // lunas, belum_lunas
+        
+        $peserta = PesertaPPDB::with(['adminItemExtras.master', 'kwitansi'])
+            ->whereHas('adminItemExtras')
+            ->when($search, function ($query, $search) {
+                $query->where('nama_lengkap', 'like', "%{$search}%")
+                    ->orWhere('no_pendaftaran', 'like', "%{$search}%");
+            })
+            ->get();
+
+        $peserta = $peserta->map(function ($p) {
+            $totalBill = 0;
+            // Actually we only care about extras here
+            foreach ($p->adminItemExtras as $extra) {
+                $totalBill += $p->jenis_kelamin === 'l' ? $extra->amount_male : $extra->amount_female;
+            }
+            
+            // For calculating status, we need global bill
+            $p->total_paid = $p->kwitansi->whereNull('deleted_at')->sum('nominal');
+            // This is simplified for recap view
+            return $p;
+        });
+
+        if ($statusFilter === 'lunas') {
+            $peserta = $peserta->filter(fn($p) => $p->total_paid >= $p->total_bill);
+        }
+
+        return inertia('Admin/Kwitansi/RekapSeragam', [
+            'peserta' => $peserta->values(),
+            'search' => $search,
+            'status' => $statusFilter,
+        ]);
     }
 }

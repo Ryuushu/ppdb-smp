@@ -78,7 +78,7 @@ interface Peserta {
 	ranking: number | null;
 	gelombang_id: number | null;
 	gelombang?: { nama: string };
-	ukuran_seragam?: any;
+	admin_items?: any[];
 }
 
 interface Props {
@@ -171,6 +171,29 @@ export default function Show({ peserta }: Props) {
 						</div>
 
 						<Separator />
+
+                        {peserta.admin_item_extras && peserta.admin_item_extras.length > 0 && (
+                            <>
+                                <div>
+                                    <h3 className="mb-3 font-semibold text-lg"># Pilihan Biaya & Ukuran</h3>
+                                    {peserta.admin_item_extras.map((item: any) => (
+                                        <InfoRow 
+                                            key={item.id}
+                                            label={item.master?.name || "Biaya Ekstra"} 
+                                            value={
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline" className="font-bold">{item.name}</Badge>
+                                                    <span className="text-xs text-muted-foreground italic">
+                                                        ({new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(peserta.jenis_kelamin === 'p' ? item.amount_female : item.amount_male)})
+                                                    </span>
+                                                </div>
+                                            } 
+                                        />
+                                    ))}
+                                </div>
+                                <Separator />
+                            </>
+                        )}
 
                         <div>
 							<h3 className="mb-3 font-semibold text-lg"># Riwayat Pendidikan</h3>
@@ -270,38 +293,7 @@ export default function Show({ peserta }: Props) {
 
 						<Separator />
 
-						{peserta.ukuran_seragam && (
-							<>
-								<Separator />
-								<div>
-									<h3 className="mb-3 font-semibold text-lg"># Ukuran Seragam</h3>
-									{peserta.ukuran_seragam ? (
-										<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-											<div className="p-3 bg-muted rounded-xl">
-												<div className="text-xs text-muted-foreground">Baju</div>
-												<div className="font-bold">{peserta.ukuran_seragam.baju}</div>
-											</div>
-											<div className="p-3 bg-muted rounded-xl">
-												<div className="text-xs text-muted-foreground">Jas</div>
-												<div className="font-bold">{peserta.ukuran_seragam.jas}</div>
-											</div>
-											<div className="p-3 bg-muted rounded-xl">
-												<div className="text-xs text-muted-foreground">Sepatu</div>
-												<div className="font-bold">{peserta.ukuran_seragam.sepatu}</div>
-											</div>
-											<div className="p-3 bg-muted rounded-xl">
-												<div className="text-xs text-muted-foreground">Peci</div>
-												<div className="font-bold">{peserta.ukuran_seragam.peci}</div>
-											</div>
-										</div>
-									) : (
-										<div className="p-4 border border-dashed rounded-xl text-center text-muted-foreground">
-											Belum ada data ukuran seragam. <Link href={route("ukuran.seragam.index")} className="text-primary hover:underline">Input Sekarang</Link>
-										</div>
-									)}
-								</div>
-							</>
-						)}
+
 					</CardContent>
 					<CardFooter className="flex flex-col items-start gap-4">
 						<div className="flex flex-wrap gap-2">

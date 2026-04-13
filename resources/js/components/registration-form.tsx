@@ -40,7 +40,7 @@ import { toast } from "sonner";
 interface RegistrationFormProps {
 	gelombangAktif?: any | null;
     masterDocuments?: any[];
-	masterUkuranSeragams?: any[];
+    adminItems?: any[];
 }
 
 const steps = [
@@ -86,7 +86,6 @@ function FormField({
 export function RegistrationForm({
 	gelombangAktif = null,
     masterDocuments = [],
-	masterUkuranSeragams = [],
 }: RegistrationFormProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
@@ -122,7 +121,6 @@ export function RegistrationForm({
 
 	const { data, setData, post, processing, errors } = useInertiaForm({
 		gelombang_id: gelombangAktif ? String(gelombangAktif.id) : "",
-		master_ukuran_seragam_id: "",
 		nama_lengkap: "",
 		jenis_kelamin: "",
 		tempat_lahir: "",
@@ -161,6 +159,7 @@ export function RegistrationForm({
         // Dynamic documents
         ...masterDocuments.reduce((acc, doc) => ({ ...acc, [doc.slug]: null }), {}),
         ekstrakurikuler: [] as string[],
+        admin_item_ids: [] as number[],
 	});
 
 	const formRef = useRef<HTMLDivElement>(null);
@@ -209,7 +208,6 @@ export function RegistrationForm({
 			const requiredFields = [
 				{ key: "nama_lengkap", label: "Nama Lengkap" },
 				{ key: "jenis_kelamin", label: "Jenis Kelamin" },
-				{ key: "master_ukuran_seragam_id", label: "Ukuran Seragam" },
 				{ key: "tempat_lahir", label: "Tempat Lahir" },
 				{ key: "tanggal_lahir", label: "Tanggal Lahir" },
 				{ key: "nik", label: "NIK" },
@@ -439,20 +437,7 @@ export function RegistrationForm({
 													<Input id="nisn" value={data.nisn} onChange={(e) => setData("nisn", e.target.value)} className="rounded-xl h-12" />
 												</FormField>
 
-												<FormField id="master_ukuran_seragam_id" label="Ukuran Seragam" required error={getError("master_ukuran_seragam_id")}>
-													<Select value={data.master_ukuran_seragam_id} onValueChange={(value) => { setData("master_ukuran_seragam_id", value); clearError("master_ukuran_seragam_id"); }}>
-														<SelectTrigger className="rounded-xl h-12">
-															<SelectValue placeholder="Pilih Ukuran Seragam" />
-														</SelectTrigger>
-														<SelectContent>
-															{masterUkuranSeragams.map((u: any) => (
-																<SelectItem key={u.id} value={String(u.id)}>
-																	Ukuran {u.nama_ukuran} {u.tambahan_biaya > 0 ? `(+ Rp. ${u.tambahan_biaya.toLocaleString('id-ID')})` : ''}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-												</FormField>
+
 
 
 												<FormField id="alamat_lengkap" label="Alamat Lengkap" required error={getError("alamat_lengkap")} className="md:col-span-2">
@@ -481,6 +466,59 @@ export function RegistrationForm({
                                                 <FormField id="no_hp" label="No. HP Orang Tua / Wali" required error={getError("no_hp")}>
 													<Input id="no_hp" type="tel" value={data.no_hp} onChange={(e) => { setData("no_hp", e.target.value); clearError("no_hp"); }} className="rounded-xl h-12" />
 												</FormField>
+
+                                                {adminItems && adminItems.length > 0 && adminItems.some(item => item.extras && item.extras.length > 0) && (
+                                                    <div className="md:col-span-2 pt-6 space-y-6">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <Shirt className="w-5 h-5 text-primary" />
+                                                            <h3 className="font-bold text-lg text-foreground">Pilihan Variasi / Ukuran</h3>
+                                                        </div>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                            {adminItems.filter(item => item.extras && item.extras.length > 0).map((parent) => {
+                                                                // Find currently selected extra for this parent
+                                                                const parentExtraIds = parent.extras.map((e: any) => e.id);
+                                                                const selectedId = data.admin_item_ids.find(id => parentExtraIds.includes(id));
+
+                                                                return (
+                                                                    <div key={parent.id} className="space-y-2">
+                                                                        <Label htmlFor={`variation-${parent.id}`} className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{parent.name}</Label>
+                                                                        <Select 
+                                                                            value={selectedId ? String(selectedId) : "none"}
+                                                                            onValueChange={(val) => {
+                                                                                // Enforce only 1 extra total
+                                                                                if (val !== "none") {
+                                                                                    setData("admin_item_ids", [Number(val)]);
+                                                                                } else {
+                                                                                    setData("admin_item_ids", []);
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <SelectTrigger id={`variation-${parent.id}`} className="h-12 rounded-xl bg-background border-primary/20 focus:ring-primary/20 transition-all">
+                                                                                <SelectValue placeholder={`Pilih ${parent.name}...`} />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                <SelectItem value="none" className="text-muted-foreground italic">Tidak Memilih</SelectItem>
+                                                                                {parent.extras.map((child: any) => {
+                                                                                    const cost = data.jenis_kelamin === 'p' ? child.amount_female : child.amount_male;
+                                                                                    return (
+                                                                                        <SelectItem key={child.id} value={String(child.id)}>
+                                                                                            <span className="font-medium">{child.name}</span>
+                                                                                            {cost > 0 && (
+                                                                                                <span className="ml-2 text-[10px] text-primary font-bold">
+                                                                                                    (+ {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(cost)})
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </SelectItem>
+                                                                                    );
+                                                                                })}
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                )}
 											</div>
 										</div>
 									)}

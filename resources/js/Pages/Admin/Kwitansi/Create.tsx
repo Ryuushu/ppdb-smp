@@ -60,6 +60,7 @@ interface Peserta {
 	nama_lengkap: string;
 	jenis_kelamin: 'l' | 'p';
 	kwitansi: Kwitansi[];
+	admin_item_extras?: AdminItemExtra[];
 }
 
 interface AdminItem {
@@ -67,6 +68,15 @@ interface AdminItem {
 	name: string;
 	amount_male: number;
 	amount_female: number;
+}
+
+interface AdminItemExtra {
+	id: number;
+	name: string;
+	amount_male: number;
+	amount_female: number;
+	admin_item_id: number;
+	master?: AdminItem;
 }
 
 interface Props {
@@ -100,13 +110,20 @@ export default function Create({ peserta, adminItems }: Props) {
 		}).format(amount);
 	};
 
-	const totalBill = adminItems.reduce((sum, item) => {
-		const price =
-			peserta.jenis_kelamin === "l"
-				? (item.amount_male ?? 0)
-				: (item.amount_female ?? 0);
+	// Total from master biaya
+	const totalMaster = adminItems.reduce((sum, item) => {
+		const price = peserta.jenis_kelamin === "l" ? (item.amount_male ?? 0) : (item.amount_female ?? 0);
 		return sum + Number(price);
 	}, 0);
+
+	// Total from selected extras
+	const selectedExtras = peserta.admin_item_extras || [];
+	const totalExtras = selectedExtras.reduce((sum, extra) => {
+		const price = peserta.jenis_kelamin === "l" ? (extra.amount_male ?? 0) : (extra.amount_female ?? 0);
+		return sum + Number(price);
+	}, 0);
+
+	const totalBill = totalMaster + totalExtras;
 
 	const totalTerbayar = peserta.kwitansi
 		.filter((k) => !k.deleted_at)
@@ -155,23 +172,60 @@ export default function Create({ peserta, adminItems }: Props) {
 		return `Cicilan ke-${nonDeletedCount + 1}`;
 	};
 
+	// Build unified invoice items: master biaya + their selected variations
 	let remainingBalanceForAllocation = totalTerbayar;
-	const itemAllocations = adminItems.map((item) => {
-		const price = Number(peserta.jenis_kelamin === "l" ? (item.amount_male ?? 0) : (item.amount_female ?? 0));
+
+	// 1. Group master items with their extras if selected
+	const itemAllocations = adminItems.map((master) => {
+		const selectedExtra = peserta.admin_item_extras?.find(e => e.admin_item_id === master.id);
+		
+		const masterPrice = Number(peserta.jenis_kelamin === "l" ? (master.amount_male ?? 0) : (master.amount_female ?? 0));
+		const extraPrice = selectedExtra ? Number(peserta.jenis_kelamin === "l" ? (selectedExtra.amount_male ?? 0) : (selectedExtra.amount_female ?? 0)) : 0;
+		const totalRowPrice = masterPrice + extraPrice;
+
 		let paidForItem = 0;
-		if (price > 0) {
-			if (remainingBalanceForAllocation >= price) {
-				paidForItem = price;
-				remainingBalanceForAllocation -= price;
+		if (totalRowPrice > 0) {
+			if (remainingBalanceForAllocation >= totalRowPrice) {
+				paidForItem = totalRowPrice;
+				remainingBalanceForAllocation -= totalRowPrice;
 			} else {
 				paidForItem = remainingBalanceForAllocation;
 				remainingBalanceForAllocation = 0;
 			}
 		}
-		const remainder = Math.max(0, price - paidForItem);
-		const isPaid = remainder <= 0 && price > 0;
-		return { ...item, price, paidForItem, remainder, isPaid };
+
+		const remainder = Math.max(0, totalRowPrice - paidForItem);
+		const isPaid = remainder <= 0 && totalRowPrice > 0;
+		
+		// Informative name
+		const displayName = selectedExtra ? `${master.name} (Variasi: ${selectedExtra.name})` : master.name;
+
+		return { 
+			id: `master-${master.id}`, 
+			name: displayName, 
+			price: totalRowPrice, 
+			paidForItem, 
+			remainder, 
+			isPaid, 
+			type: selectedExtra ? 'extra' : 'master', // keep type=extra to trigger the dropdown UI
+			originalExtraId: selectedExtra?.id,
+			masterId: master.id
+		};
 	});
+
+	// (If there are any extras NOT associated with the master items, we could add them here, 
+	// but based on the system design, extras always belong to a master).
+
+	const handleUpdateVariation = (oldExtraId: number, newExtraId: string) => {
+		if (newExtraId === "none" || Number(newExtraId) === oldExtraId) return;
+		
+		router.put(route("ppdb.kwitansi.update-variation", { uuid: peserta.id }), {
+			old_extra_id: oldExtraId,
+			new_extra_id: Number(newExtraId)
+		}, {
+			preserveScroll: true,
+		});
+	};
 
 	return (
 		<>
@@ -281,9 +335,51 @@ export default function Create({ peserta, adminItems }: Props) {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{itemAllocations.map((item) => (
-											<TableRow key={item.id}>
-												<TableCell className="font-medium">{item.name}</TableCell>
+									{itemAllocations.map((item) => {
+										// If it's an extra, we find its parent and sibling variations
+										let variationOptions: any[] = [];
+										let originalExtraId = item.originalExtraId || 0;
+										
+										if (item.type === 'extra' && item.masterId) {
+											const master = adminItems.find(m => m.id === item.masterId);
+											variationOptions = master?.extras || [];
+										}
+
+										return (
+											<TableRow key={item.id} className={item.type === 'extra' ? 'bg-orange-50/50' : ''}>
+												<TableCell className="font-medium p-2">
+													<div className="flex flex-col gap-1">
+														<div className="flex items-center gap-2">
+															<span className="text-sm">{item.name.split(' — ')[0]}</span>
+															{item.type === 'extra' && (
+																<Badge variant="outline" className="text-[10px] text-orange-600 border-orange-200">Ekstra / Varian</Badge>
+															)}
+														</div>
+														
+														{/* Selection for Variations */}
+														{item.type === 'extra' && variationOptions.length > 0 && (
+															<div className="mt-1">
+																<Select 
+																	value={String(originalExtraId)} 
+																	onValueChange={(val) => handleUpdateVariation(originalExtraId, val)}
+																>
+																	<SelectTrigger className="h-8 text-[11px] bg-white border-orange-200 focus:ring-orange-200 w-full sm:w-[200px]">
+																		<SelectValue />
+																	</SelectTrigger>
+																	<SelectContent>
+																		{variationOptions.map(opt => (
+																			<SelectItem key={opt.id} value={String(opt.id)} className="text-xs">
+																				{opt.name} 
+																				{(peserta.jenis_kelamin === 'l' ? opt.amount_male : opt.amount_female) > 0 && 
+																					` (+ ${formatCurrency(peserta.jenis_kelamin === 'l' ? opt.amount_male : opt.amount_female)})`}
+																			</SelectItem>
+																		))}
+																	</SelectContent>
+																</Select>
+															</div>
+														)}
+													</div>
+												</TableCell>
 												<TableCell className="text-right font-mono">{formatCurrency(item.price)}</TableCell>
 												<TableCell className="text-right font-mono text-green-600">{formatCurrency(item.paidForItem)}</TableCell>
 												<TableCell className="text-right font-mono text-orange-600">{formatCurrency(item.remainder)}</TableCell>
@@ -295,7 +391,8 @@ export default function Create({ peserta, adminItems }: Props) {
 													)}
 												</TableCell>
 											</TableRow>
-									))}
+										);
+									})}
 								</TableBody>
 							</Table>
 						</div>

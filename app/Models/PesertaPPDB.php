@@ -61,10 +61,7 @@ class PesertaPPDB extends Model
         return $this->hasMany(Kwitansi::class, 'peserta_ppdb_id');
     }
 
-    public function ukuranSeragam()
-    {
-        return $this->hasOne(UkuranSeragam::class, 'peserta_ppdb_id');
-    }
+
 
     public function gelombang()
     {
@@ -74,6 +71,11 @@ class PesertaPPDB extends Model
     public function nilaiSPK()
     {
         return $this->hasMany(NilaiPeserta::class, 'peserta_id');
+    }
+
+    public function adminItemExtras()
+    {
+        return $this->belongsToMany(AdminItemExtra::class, 'peserta_admin_item_extras', 'peserta_ppdb_id', 'admin_item_extra_id')->withTimestamps();
     }
 
     public function documents()

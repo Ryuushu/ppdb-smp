@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\PesertaPPDBExport;
-use App\Exports\SeragamExport;
 use App\Http\Requests\ExportPesertaRequest;
-use App\Http\Requests\ExportSeragamRequest;
 use Illuminate\Http\Request;
 use App\Models\PesertaPPDB;
 use Illuminate\Support\Facades\DB;
@@ -25,14 +23,7 @@ class ExportController extends Controller
         return Excel::download(new PesertaPPDBExport($tahun, $diterima, $all), $filename);
     }
 
-    public function exportSeragam(ExportSeragamRequest $request)
-    {
-        $tahun = $request->input('tahun', now()->year);
 
-        $filename = 'Ukuran-seragam-snpmb-Semua-' . $tahun . '.xlsx';
-
-        return Excel::download(new SeragamExport($tahun), $filename);
-    }
 
     public function exportRekapSekolah(Request $request)
     {
