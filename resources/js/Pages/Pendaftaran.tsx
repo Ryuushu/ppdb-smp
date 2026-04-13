@@ -11,7 +11,7 @@ interface PendaftaranPageProps {
 export default function PendaftaranPage({ gelombangAktif, masterDocuments }: PendaftaranPageProps) {
 	return (
 		<>
-			<Head title="Formulir Pendaftaran | SNPMB MTs Nurul Ulum" />
+			<Head title="Formulir Pendaftaran | SNPMB MI Nurul Ulum" />
 			<Navbar />
 			<main className="min-h-screen bg-gradient-to-b from-secondary via-background to-accent pt-24 pb-16">
 				<RegistrationForm gelombangAktif={gelombangAktif} masterDocuments={masterDocuments} />

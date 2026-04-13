@@ -78,7 +78,7 @@ export function AppSidebar() {
 								</div>
 								<div className="flex flex-col gap-0.5 leading-none">
 									<span className="font-semibold text-lg">SNPMB</span>
-									<span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">MTS NURUL ULUM</span>
+									<span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">MI NURUL ULUM</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>

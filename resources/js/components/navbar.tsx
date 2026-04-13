@@ -81,12 +81,12 @@ export function Navbar({ onShowBrosur }: { onShowBrosur?: () => void }) {
 						<div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-primary/30 group-hover:scale-105 transition-all duration-300">
 							<img
 								src="/img/logo.png"
-								alt="MTs Nurul Ulum Logo"
+								alt="MI Nurul Ulum Logo"
 								className="w-full h-full object-contain"
 							/>
 						</div>
 						<span className="font-bold text-primary text-xl tracking-tight">
-							MTs NURUL ULUM
+							MI NURUL ULUM
 						</span>
 					</Link>
 

@@ -12,7 +12,7 @@ export default function Home({ gelombang, setting, masterDocuments }: { gelomban
 
 	return (
 		<main className="min-h-screen">
-			<Head title="SNPMB MTs Nurul Ulum | Pendaftaran Siswa Baru 2026/2027" />
+			<Head title="SNPMB MI Nurul Ulum | Pendaftaran Siswa Baru 2026/2027" />
 			<Navbar onShowBrosur={() => setIsBrosurOpen(true)} />
 			<HeroSection onShowBrosur={() => setIsBrosurOpen(true)} />
 			<FacilitiesSection />

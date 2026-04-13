@@ -66,7 +66,7 @@ export default function Ranking({
 
 	return (
 		<>
-			<Head title={`${title} | SNPMB MTs Nurul Ulum`} />
+			<Head title={`${title} | SNPMB MI Nurul Ulum`} />
 			<Navbar />
 			<main className="min-h-screen bg-gradient-to-b from-secondary via-background to-accent pt-24 pb-16">
 				<div className="container mx-auto px-4 max-w-5xl">
