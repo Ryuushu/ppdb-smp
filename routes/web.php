@@ -66,12 +66,12 @@ Route::view('/formulir-old', 'formulir'); // Keeping old just in case
 Route::prefix('/dashboard')->middleware('auth')->group(function () {
     // setting profile
     Route::get('setting/profile', [AdminController::class, 'pengaturanAkun'])->name('setting.profile');
-    Route::put('setting/profile', [AdminController::class, 'setAkun'])->name('setting.profile');
+    Route::put('setting/profile', [AdminController::class, 'setAkun'])->name('setting.profile.update');
 
     // snpmb setting
     Route::middleware('role:super_admin')->group(function () {
         Route::get('/setting/ppdb', [PpdbSettingController::class, 'index'])->name('snpmb.set.batas.akhir');
-        Route::put('/setting/ppdb', [PpdbSettingController::class, 'setBatasAkhir'])->name('snpmb.set.batas.akhir');
+        Route::put('/setting/ppdb', [PpdbSettingController::class, 'setBatasAkhir'])->name('snpmb.set.batas.akhir.update');
 
         // Admin Items (Fees)
         Route::get('/setting/admin-items', [AdminItemController::class, 'index'])->name('admin.admin-items.index');
@@ -129,7 +129,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
 
     Route::get('/ppdb/tambah-pendaftar', [PendaftaranPPDB::class, 'tambahPendaftar'])->name('ppdb.tambah.pendaftar');
 
-    Route::post('/ppdb/tambah-pendaftar', [PendaftaranPPDB::class, 'submitPendaftar'])->name('ppdb.tambah.pendaftar');
+    Route::post('/ppdb/tambah-pendaftar', [PendaftaranPPDB::class, 'submitPendaftar'])->name('ppdb.tambah.pendaftar.store');
 
     // -- lihat identias pendaftar
 
@@ -138,7 +138,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
     // edit pendaftar
     Route::get('/ppdb/edit/{id}', [PendaftaranPPDB::class, 'edit'])->name('ppdb.edit.peserta');
     Route::post('/terima-peserta/{uuid}', [PendaftaranPPDB::class, 'terimaPeserta'])->name('ppdb.terima.peserta');
-    Route::put('/ppdb/edit/{id}', [PendaftaranPPDB::class, 'update'])->name('ppdb.edit.peserta');
+    Route::put('/ppdb/edit/{id}', [PendaftaranPPDB::class, 'update'])->name('ppdb.edit.peserta.update');
     Route::delete('/ppdb/delete/{id}', [PendaftaranPPDB::class, 'hapusPeserta'])->name('ppdb.delete.peserta');
 
     Route::prefix('kwitansi')->group(function () {
@@ -146,7 +146,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
 
         // tambah kwitansi
         Route::get('/tambah/{uuid}', [KwitansiController::class, 'tambahKwitansi'])->name('ppdb.kwitansi.tambah');
-        Route::post('/tambah/{uuid}', [KwitansiController::class, 'storeKwitansi'])->name('ppdb.kwitansi.tambah');
+        Route::post('/tambah/{uuid}', [KwitansiController::class, 'storeKwitansi'])->name('ppdb.kwitansi.store');
         Route::delete('/hapus/{id}', [KwitansiController::class, 'hapusKwitansi'])->name('ppdb.kwitansi.hapus');
         Route::put('/update-variation/{uuid}', [KwitansiController::class, 'updateVariation'])->name('ppdb.kwitansi.update-variation');
 

@@ -36,7 +36,7 @@ export default function Ppdb({ setting }: Props) {
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		put(route("snpmb.set.batas.akhir"));
+		put(route("snpmb.set.batas.akhir.update"));
 	};
 
 	const { flash } = usePage<any>().props;

@@ -47,7 +47,7 @@
                             <h3 class="card-title">Data diri pendaftar</h3>
                         </div>
 
-                        <form action="{{ route('ppdb.tambah.pendaftar') }}" method="post">
+                        <form action="{{ route('ppdb.tambah.pendaftar.store') }}" method="post">
                             @csrf
 
                             {{-- card body --}}

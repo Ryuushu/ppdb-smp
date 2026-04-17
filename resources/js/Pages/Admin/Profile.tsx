@@ -26,7 +26,7 @@ export default function Profile({ user }: Props) {
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		put(route("setting.profile"), {
+		put(route("setting.profile.update"), {
 			onSuccess: () => reset("password", "password_confirmation"),
 		});
 	};

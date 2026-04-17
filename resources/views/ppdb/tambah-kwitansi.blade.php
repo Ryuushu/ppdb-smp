@@ -48,7 +48,7 @@
 
                         <div class="card-body p-0">
 
-                            <form action="{{ route('ppdb.kwitansi.tambah', ['uuid' => $peserta->id ]) }}" method="POST">
+                            <form action="{{ route('ppdb.kwitansi.store', ['uuid' => $peserta->id ]) }}" method="POST">
                                 @csrf
 
                              <table class="table">

@@ -49,7 +49,7 @@
                                     Pengaturan SPMB
                                 </h3>
                             </div>
-                            <form action="{{ route('ppdb.set.batas.akhir') }}" method="post">
+                            <form action="{{ route('snpmb.set.batas.akhir.update') }}" method="post">
                                 <div class="card-body">
 
                                     <div class="form-group">

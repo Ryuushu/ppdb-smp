@@ -156,7 +156,7 @@ export default function Create({ peserta, adminItems }: Props) {
 			return;
 		}
 
-		post(route("ppdb.kwitansi.tambah", { uuid: peserta.id }), {
+		post(route("ppdb.kwitansi.store", { uuid: peserta.id }), {
 			onSuccess: () => reset(),
 		});
 	};

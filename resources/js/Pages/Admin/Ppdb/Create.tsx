@@ -101,7 +101,7 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		post(route("ppdb.tambah.pendaftar"));
+		post(route("ppdb.tambah.pendaftar.store"));
 	};
 
 	const nextStep = (e: React.MouseEvent) => {

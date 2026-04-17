@@ -183,7 +183,7 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		put(route("ppdb.edit.peserta", peserta.id));
+		put(route("ppdb.edit.peserta.update", peserta.id));
 	};
 
 	const handleDelete = () => {

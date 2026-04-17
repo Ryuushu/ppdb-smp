@@ -49,7 +49,7 @@
                                 </h3>
                             </div>
 
-                            <form action="{{ route('setting.profile') }}" method="POST">
+                            <form action="{{ route('setting.profile.update') }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <div class="card-body">

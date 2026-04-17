@@ -57,7 +57,7 @@
                                 </div>
                             </div>
 
-                            <form action="{{ route('ppdb.edit.peserta', $peserta->id) }}" method="post">
+                            <form action="{{ route('ppdb.edit.peserta.update', $peserta->id) }}" method="post">
                                 @csrf
                                 @method('put')
 
