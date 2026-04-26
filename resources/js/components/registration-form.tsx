@@ -411,6 +411,20 @@ export function RegistrationForm({
 									{currentStep === 1 && (
 										<div className="space-y-6">
 											<div className="gap-6 grid md:grid-cols-2">
+												<FormField id="nik" label="NIK (16 digit)" required error={getError("nik")} className="md:col-span-2">
+													<Input 
+														id="nik" 
+														value={data.nik} 
+														onChange={(e) => { 
+															const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+															setData("nik", val); 
+															clearError("nik"); 
+														}} 
+														className="rounded-xl h-12" 
+														maxLength={16} 
+													/>
+												</FormField>
+
 												<FormField id="nama_lengkap" label="Nama Lengkap" required error={getError("nama_lengkap")} className="md:col-span-2">
 													<Input id="nama_lengkap" value={data.nama_lengkap} onChange={(e) => { setData("nama_lengkap", e.target.value); clearError("nama_lengkap"); }} className="rounded-xl h-12" />
 												</FormField>
@@ -436,19 +450,7 @@ export function RegistrationForm({
 													<Input id="tanggal_lahir" type="date" value={data.tanggal_lahir} onChange={(e) => { setData("tanggal_lahir", e.target.value); clearError("tanggal_lahir"); }} className="rounded-xl h-12" />
 												</FormField>
 
-												<FormField id="nik" label="NIK (16 digit)" required error={getError("nik")}>
-													<Input 
-														id="nik" 
-														value={data.nik} 
-														onChange={(e) => { 
-															const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
-															setData("nik", val); 
-															clearError("nik"); 
-														}} 
-														className="rounded-xl h-12" 
-														maxLength={16} 
-													/>
-												</FormField>
+
 
 												<FormField id="nisn" label="NISN (10 digit)" error={getError("nisn")}>
 													<Input 

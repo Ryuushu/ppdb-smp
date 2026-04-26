@@ -27,7 +27,7 @@ class StorePendaftarRequest extends FormRequest
             // Identitas Diri
             'nama_lengkap' => 'required|string|max:255',
             'nisn' => 'nullable|string',
-            'nik' => 'required|string',
+            'nik' => 'required|string|unique:peserta_ppdb,nik',
             'jenis_kelamin' => 'required|in:l,p',
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date_format:Y-m-d',

@@ -100,12 +100,25 @@
                                         <div id="identitas-diri" class="content" role="tabpanel" aria-labelledby="identitas-diri-part-trigger">
                                             {{-- identias diri --}}
 
+                                            {{-- NIK --}}
+                                            <div class="form-group">
+                                                <label>NIK  <strong class="text-danger"> * </strong></label>
+                                                <input type="text" class="form-control" name="nik" value="{{ old('nik') }}" placeholder="NIK" autofocus required>
+												<div class="form-text text-xs text-muted">NIK peserta</div>
+                                                @error('nik')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+
                                             {{-- nama lengkap --}}
                                             <div class="form-group">
 												<label>Nama Lengkap <strong class="text-danger"> * </strong> </label>
                                                 <input type="text" class="form-control" name="nama_lengkap" id="name" value="{{ old('nama_lengkap') }}"
-                                                    placeholder="Nama Lengkap" autofocus required>
+                                                    placeholder="Nama Lengkap" required>
 												<div class="form-text text-xs text-muted">Nama lengkap peserta sesuai yang tercantum di Ijazah</div>
+                                                @error('nama_lengkap')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
                                             </div>
 
                                             {{-- jenis kelamin --}}
@@ -141,12 +154,7 @@
                                             </div>
 
 
-                                            {{-- NIK --}}
-                                            <div class="form-group">
-                                                <label>NIK  <strong class="text-danger"> * </strong></label>
-                                                <input type="text" class="form-control" name="nik" value="{{ old('nik') }}" placeholder="NIK" required>
-												<div class="form-text text-xs text-muted">NIK peserta</div>
-                                            </div>
+
 
                                             {{-- Alamat lengkap --}}
                                             <div class="form-group">

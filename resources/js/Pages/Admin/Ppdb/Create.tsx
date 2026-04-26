@@ -216,7 +216,28 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 
 
 
-									<div className="space-y-2">
+									<div className="space-y-2 md:col-span-2">
+										<Label htmlFor="nik">NIK *</Label>
+										<Input
+											id="nik"
+											value={data.nik}
+											onChange={(e) => {
+												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
+												setData("nik", val);
+											}}
+											placeholder="Masukkan 16 digit NIK"
+											minLength={16}
+											maxLength={16}
+											required
+										/>
+										{errors.nik && (
+											<span className="text-destructive text-sm">
+												{errors.nik}
+											</span>
+										)}
+									</div>
+
+									<div className="space-y-2 md:col-span-2">
 										<Label htmlFor="nama_lengkap">Nama Lengkap *</Label>
 										<Input
 											id="nama_lengkap"
@@ -288,21 +309,7 @@ export default function Create({ gelombang, masterDocuments, adminItems }: Props
 										/>
 									</div>
 
-									<div className="space-y-2">
-										<Label htmlFor="nik">NIK *</Label>
-										<Input
-											id="nik"
-											value={data.nik}
-											onChange={(e) => {
-												const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
-												setData("nik", val);
-											}}
-											placeholder="Masukkan 16 digit NIK"
-											minLength={16}
-											maxLength={16}
-											required
-										/>
-									</div>
+
 
 									<div className="space-y-2">
 										<Label htmlFor="no_hp">No. HP Orang Tua / Wali *</Label>
