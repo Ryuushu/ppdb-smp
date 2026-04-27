@@ -83,13 +83,13 @@ export function Footer() {
 						<Link href="/" className="flex items-center gap-3 group">
 							<div className="bg-white p-2 rounded-xl w-12 h-12 overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-300">
 								<img
-									src="/img/logo.png"
-									alt="MTs Nurul Ulum Logo"
+									src="/img/logo-1.png"
+									alt="MI Nurul Ulum Logo"
 									className="w-full h-full object-contain"
 								/>
 							</div>
 							<span className="font-bold text-white text-xl tracking-tight">
-								MTs NURUL ULUM
+								MI NURUL ULUM
 							</span>
 						</Link>
 						<p className="text-background/70 text-sm leading-relaxed">
@@ -177,10 +177,10 @@ export function Footer() {
 							{[
 								{
 									icon: MapPin,
-									text: "Jl. Raya Karanganyar KM 1.5, Kayugeritan, Kec. Karanganyar, Kabupaten Pekalongan, Jawa Tengah 51182",
+									text: "Krajan Lama, Cindogo, Tapen, Kabupaten Bondowoso, Jawa Timur 68283",
 								},
 								{ icon: Phone, text: "+62 812 2000 1409" },
-								{ icon: Mail, text: "smkdipo.pekalongan@gmail.com" },
+								{ icon: Mail, text: "minurululumcindogo@gmail.co" },
 								{ icon: Clock, text: "Senin - Sabtu: 07:00 - 15:00" },
 							].map((item) => (
 								<li key={item.text} className="group flex items-start gap-3">
@@ -199,7 +199,7 @@ export function Footer() {
 				<div className="mt-12 pt-8 border-background/10 border-t">
 					<div className="flex md:flex-row flex-col justify-between items-center gap-4">
 						<p className="text-background/60 text-sm">
-							&copy; {new Date().getFullYear()} MTs Nurul Ulum. Hak
+							&copy; {new Date().getFullYear()} MI NURUL ULUM CINDOGO. Hak
 							Cipta Dilindungi.
 						</p>
 						<p className="text-background/60 text-sm">

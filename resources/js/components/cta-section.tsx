@@ -71,7 +71,7 @@ export function CTASection() {
 
 				<p className="mx-auto mb-10 max-w-2xl text-primary-foreground/90 dark:text-primary-foreground/85 text-lg md:text-xl leading-relaxed">
 					Jangan lewatkan kesempatan untuk menjadi bagian dari keluarga besar
-					MTs Nurul Ulum. Pendaftaran tahun ajaran 2026/2027 telah
+					MI Nurul Ulum. Pendaftaran tahun ajaran 2026/2027 telah
 					dibuka!
 				</p>
 

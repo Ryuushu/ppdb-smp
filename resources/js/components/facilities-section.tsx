@@ -226,7 +226,7 @@ export function FacilitiesSection() {
 				>
 					<img
 						src="/img/facilities/modern-computer-lab.png"
-						alt="Fasilitas MTs Nurul Ulum"
+						alt="Fasilitas MI Nurul Ulum"
 						className="w-full h-72 md:h-96 object-cover group-hover:scale-105 transition-transform duration-700 object-bottom"
 					/>
 					<div className="absolute inset-0 bg-linear-gradient-to-t from-black/10 via-black/20 to-transparent" />

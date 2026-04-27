@@ -15,10 +15,10 @@
 
 <!-- header -->
 <div class="header-container" style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; position: relative;">
-    <img src="/img/logo.png" style="position: absolute; left: 0; top: 0; width: 80px; height: 80px; object-fit: contain;" />
+    <img src="/img/logo-1.png" style="position: absolute; left: 0; top: 0; width: 80px; height: 80px; object-fit: contain;" />
     <div style="margin-left: 90px;">
         <strong style="font-size: 22px; display: block; text-transform: uppercase;">YAYASAN NURUL ULUM</strong>
-        <strong style="font-size: 24px; display: block; text-transform: uppercase;">MADRASAH TSANAWIYAH NURUL ULUM</strong>
+        <strong style="font-size: 24px; display: block; text-transform: uppercase;">MADRASAH IBTIDAIYAH NURUL ULUM</strong>
         <strong style="font-size: 18px; display: block; text-transform: uppercase;">CINDOGO TAPEN BONDOWOSO</strong>
         <span style="font-size: 12px; display: block;">Jl. KHR As'ad Syamsul Arifin, Krajan baru, Rt 010 / Rw 004, Cindogo Tapen Bondowoso 68283</span>
     </div>

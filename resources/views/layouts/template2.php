@@ -21,7 +21,7 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand brand" href="#"><img class="logo" src="/img/logo.png" />PPDB ONLINE</a>
+        <a class="navbar-brand brand" href="#"><img class="logo" src="/img/logo-1.png" />PPDB ONLINE</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -44,8 +44,6 @@
     <section id="banner" class="page d-flex align-items-center" style="background-image: url(/img/img.jpg);">
         <div class="container position-relative">
             <h1>Persyaratan</h1>
-            <!-- <h2>Selamat datang di web resmi Penerimaan Peserta Didik Baru SMK Diponegoro Karanganyar Tahun
-                2020/2021.</h2> -->
         </div>
     </section>
 
@@ -56,7 +54,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p class="left">
-                        &copy; 2020-<a href="https://www.smkdiponegoropekalongan.sch.id">SMEDIP CodeTeam Soft</a>
+                        &copy; 2020-<a href="https://www.minurululumcindogo.sch.id">MI NURUL ULUM CINDOGO</a>
                     </p>
                 </div>
                 <div class="col-md-6">

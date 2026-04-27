@@ -179,7 +179,7 @@ export default function RekapSeragam({
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Button asChild variant="ghost" size="xs" className="h-8 text-[10px] sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Button asChild variant="ghost" size="xs" className="h-8 text-[10px] transition-opacity">
                                                         <Link href={route("ppdb.kwitansi.tambah", { uuid: p.id })}>
                                                            Detail/Bayar
                                                         </Link>

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
 
-    <link rel="shortcut icon" href="/img/logo.png" type="image/png">
+    <link rel="shortcut icon" href="/img/logo-1.png" type="image/png">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
@@ -41,7 +41,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                        <img src="/img/logo.png" class="user-image img-circle elevation-2"
+                        <img src="/img/logo-1.png" class="user-image img-circle elevation-2"
                             alt="User Image">
                         <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
                     </a>

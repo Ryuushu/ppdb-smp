@@ -69,9 +69,9 @@ export function AppSidebar() {
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
 							<Link href="/">
-								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white text-black">
 									<img
-										src="/img/logo.png"
+										src="/img/logo-1.png"
 										alt="Logo"
 										className="size-6 rounded"
 									/>

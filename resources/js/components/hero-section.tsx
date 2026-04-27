@@ -72,7 +72,7 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 		>
 			<div className="-z-10 absolute inset-0 hero-bg">
 				<img
-					src="/img/gedung-smk-bg.png"
+					src="/img/bg-MI.jpeg"
 					alt="SMP/MTs Diponegoro Karanganyar"
 					className="w-full h-full object-cover scale-110"
 				/>
@@ -102,7 +102,7 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 						Selamat Datang di
 					</span>
 					<span className="block drop-shadow-lg mt-3 text-primary">
-						MTs Nurul Ulum
+						MI Nurul Ulum
 					</span>
 				</h1>
 
@@ -143,9 +143,9 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 					className="flex flex-wrap justify-center gap-6 md:gap-12"
 				>
 					{[
-						{ icon: Users, value: "500+", label: "Siswa Aktif" },
-						{ icon: Award, value: "A", label: "Akreditasi" },
-						{ icon: Calendar, value: "2008", label: "Tahun Berdiri" },
+						{ icon: Users, value: "540", label: "Siswa Aktif" },
+						{ icon: Award, value: "B", label: "Akreditasi" },
+						{ icon: Calendar, value: "2017", label: "Tahun Berdiri" },
 					].map((stat) => (
 						<div
 							key={stat.label}

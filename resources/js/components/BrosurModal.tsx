@@ -55,14 +55,14 @@ export function BrosurModal({ isOpen, onClose, gelombang, setting, masterDocumen
 					<div className="md:w-1/2 bg-muted relative overflow-hidden group">
 						<img 
 							src="/img/ppdb-brochure.png" 
-							alt="Brosur PPDB MTs Nurul Ulum" 
+							alt="Brosur PPDB MI Nurul Ulum" 
 							className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
 						/>
 						<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 						<div className="absolute bottom-6 left-6 right-6 text-white">
 							<Badge className="mb-2 bg-primary hover:bg-primary border-none text-white">T.A 2026/2027</Badge>
 							<h3 className="text-xl font-bold">Pendaftaran Siswa Baru</h3>
-							<p className="text-sm text-white/80">Mari bergabung bersama keluarga besar MTs Nurul Ulum.</p>
+							<p className="text-sm text-white/80">Mari bergabung bersama keluarga besar MI NURUL ULUM.</p>
 						</div>
 					</div>
 

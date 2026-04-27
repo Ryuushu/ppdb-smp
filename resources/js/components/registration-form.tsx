@@ -352,7 +352,7 @@ export function RegistrationForm({
 							Formulir Pendaftaran
 						</h1>
 						<p className="text-muted-foreground">
-							SNPMB, Seleksi Nasional Penerimaan Murid Baru MTs Nurul Ulum
+							SNPMB, Seleksi Nasional Penerimaan Murid Baru MI Nurul Ulum
 						</p>
 					</div>
 

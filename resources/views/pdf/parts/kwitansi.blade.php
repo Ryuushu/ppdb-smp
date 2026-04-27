@@ -113,7 +113,7 @@
 
 <div class="kwitansi-container">
     <div class="header">
-        <img src="/img/logo.png" class="logo" alt="Logo">
+        <img src="/img/logo-1.png" class="logo" alt="Logo">
         <div class="title-box">
             <h1>KWITANSI PEMBAYARAN</h1>
             <h2>ATRIBUT SISWA BARU</h2>

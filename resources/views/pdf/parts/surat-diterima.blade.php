@@ -1,20 +1,19 @@
 <!-- header -->
 <div class="row">
     <div class="col-2 p-0">
-        <img src="/img/logo.png" width="90%" height="100%" class="float-left" style="object-fit: contain;" />
+        <img src="/img/logo-1.png" width="90%" height="100%" class="float-left" style="object-fit: contain;" />
     </div>
 
     <div class="col-10 p-0">
         <div class="text-center">
             <strong class="d-block" style="font-size: 26px;">PANITIA PENERIMAAN PESERTA DIDIK BARU</strong>
-            <strong class="d-block" style="font-size: 26px;">LEMBAGA PENDIDIKAN MA'ARIF NU KARANGANYAR</strong>
-            <strong class="d-block" style="font-size: 24px;">SMK DIPONEGORO KARANGANYAR</strong>
+            <strong class="d-block" style="font-size: 26px;">LEMBAGA PENDIDIKAN MI NURUl ULUM CINDOGO TAPEN</strong>
+            <strong class="d-block" style="font-size: 24px;">MI NURUL ULUM</strong>
             <strong class="d-block" style="font-size: 24px;">TAHUN AJARAN
                 {{ now()->year }}/{{ now()->addYear()->year }}</strong>
-            <span class="d-block" style="font-size: 18px;">Jl. Karanganyar Km. 1,5 Kayugeritan – Karanganyar
-                51182</span>
-            <span style="font-size: 18px;">website: smkdiponegoropekalongan.sch.id e-mail:
-                smkdipo.pekalongan@gmail.com</span>
+            <span class="d-block" style="font-size: 18px;">Krajan Lama, Cindogo, Tapen, Kabupaten Bondowoso, Jawa Timur 68283</span>
+            <span style="font-size: 18px;">website: minurululumcindogo.sch.id e-mail:
+                minurululumcindogo@gmail.com</span>
         </div>
     </div>
 
@@ -88,7 +87,7 @@
     </table>
 
     <p style="margin-top: 18px;">
-        Berdasarkan hasil ujian seleksi Penerimaan Peserta Didik Baru SMK Diponegoro TA.
+        Berdasarkan hasil ujian seleksi Penerimaan Peserta Didik Baru MI NURUL ULUM.
         {{ now()->year }}/{{ now()->addYear()->year }} dinyatakan :
     </p>
     <div class="text-center" style="font-size: 20px; border: 2px solid black; padding: 14px;">
@@ -110,9 +109,9 @@
         (jumlah peserta didik yang diterima), maka dengan berat hati kami sampaikan Putra/Putri Bapak/Ibu <strong>tidak
             dapat diterima</strong>
         di kelas tersebut. <br>
-        Biaya registrasi yang telah dibayarkan ke SMK Diponegoro Karanganyar <strong>tidak dapat diambil</strong>
+        Biaya registrasi yang telah dibayarkan ke MI NURUL ULUM CINDOGO <strong>tidak dapat diambil</strong>
         kembali apabila Putra/Putri
-        Bapak/Ibu diterima di SMA/SMK lain dengan syarat dan ketentuan yang telah ditetapkan sekolah. Adapun besaran
+        Bapak/Ibu diterima di MI lain dengan syarat dan ketentuan yang telah ditetapkan sekolah. Adapun besaran
         biaya
         registrasi terlampir.
         <br><br>
@@ -129,7 +128,7 @@
 <div class="row mt-5" style="font-size: 20px">
     <div class="col-6">&nbsp;</div>
     <div class="col-6 text-center">
-        <strong class="d-block">Pekalongan, {{ now()->translatedFormat('d F Y') }}</strong>
+        <strong class="d-block">BONDOWOSO, {{ now()->translatedFormat('d F Y') }}</strong>
     </div>
 
     <div class="col-6">&nbsp;</div>

@@ -13,14 +13,15 @@
                         peserta.</li>
                     <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Calon Peserta Didik baru
                         dapat langsung datang ke
-                        SMK Diponegoro Karanganyar dengan membawa berkas persyaratan yang dibutuhkan.</li>
+                        MI NURUL ULUM CINDOGO TAPEN dengan membawa berkas persyaratan yang dibutuhkan.</li>
                     <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Setelah dinyatakan
                         diterima, peserta SPMB membayar
                         biaya daftar ulang Sebesar Rp. 250.000,-</li>
                     <li class="mb-3 py-2 bg-red-100 border-l-4 rounded border-red-400 pl-3"> Berkas Pendaftaran dan
                         Biaya Daftar Ulang
-                        diserahkan langsung ke SMK Diponegoro Karanganyar.</li>
+                        diserahkan langsung ke MI NURUL ULUM CINDOGO TAPEN.</li>
                 </ol>
+
             </div>
         </div>
         <div>

@@ -45,13 +45,13 @@
                     - Calon Peserta Didik baru dapat mendaftar secara mandiri melalui website <a href="//s.id/ppdbsmedip22" target="_blank" class="text-green-500">SPMB, Sistem Penerimaan Murid Baru Online Smedip</a> dan mengisi formulir pendaftaran sesuai data diri peserta.
                 </li>
                 <li>
-                    - Calon Peserta Didik baru dapat langsung datang ke <strong>SMK Diponegoro Karanganyar</strong> dengan membawa berkas persyaratan yang dibutuhkan.
+                    - Calon Peserta Didik baru dapat langsung datang ke <strong>MI NURUL ULUM BONDOWOSO</strong> dengan membawa berkas persyaratan yang dibutuhkan.
                 </li>
                 <li>
                     - Setelah dinyatakan diterima, peserta SPMB membayar biaya daftar ulang Sebesar Rp. 150.000,-
                 </li>
                 <li>
-                    - Berkas Pendaftaran dan Biaya Daftar Ulang diserahkan langsung ke <strong>SMK Diponegoro Karanganyar</strong>.
+                    - Berkas Pendaftaran dan Biaya Daftar Ulang diserahkan langsung ke <strong>MI NURUL ULUM CINDOGO TAPEN</strong>.
                 </li>
                 <li>
                     - Jika membutuhkan info lebih lanjut, silahkan hubungi nomor di bawah ini: <br> <br>

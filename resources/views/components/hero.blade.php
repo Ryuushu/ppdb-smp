@@ -13,7 +13,7 @@
                 Telah dibuka penerimaan peserta didik baru. Tahun Ajaran 2026/2027.
             </p>
             <p class="text-xl font-bold underline">
-                SMK Diponegoro Karanganyar
+                MI NURUL ULUM BONDOWOSO
             </p>
             <div class="mt-6 flex flex-col sm:flex-row gap-3">
                 <x-ui.link href="/formulir" target="_blank" rel="noopener">

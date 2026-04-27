@@ -128,7 +128,7 @@ export function ScholarshipSection() {
 						Program Beasiswa
 					</h2>
 					<p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-						MTs Nurul Ulum menyediakan berbagai program beasiswa
+						MI Nurul Ulum menyediakan berbagai program beasiswa
 						untuk meringankan biaya pendidikan.
 					</p>
 				</div>
