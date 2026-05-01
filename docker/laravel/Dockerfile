@@ -42,7 +42,7 @@ RUN composer install \
 # ========================
 FROM node:20-alpine AS frontend
 
-WORKDIR /app
+WORKDIR /laravel
 
 COPY ppdb-smp/package*.json ./
 RUN npm ci
@@ -128,7 +128,7 @@ RUN chown -R www-data:www-data /var/www \
 # ========================
 # ENTRYPOINT
 # ========================
-COPY docker/app/entrypoint.sh /entrypoint.sh
+COPY docker/laravel/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 USER www-data
