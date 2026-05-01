@@ -3,12 +3,12 @@
 # ========================
 FROM node:20-alpine AS frontend
 
-WORKDIR /app
+WORKDIR /laravel
 
-COPY ppdb-smp/package*.json ./
+COPY ./package*.json ./
 RUN npm ci
 
-COPY ppdb-smp/ .
+COPY .
 RUN npm run build
 
 
