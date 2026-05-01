@@ -47,7 +47,7 @@ WORKDIR /laravel
 COPY ./package*.json ./
 RUN npm ci
 
-COPY .
+COPY . .
 RUN npm run build
 
 # ========================
