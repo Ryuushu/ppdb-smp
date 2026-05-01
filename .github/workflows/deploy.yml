@@ -10,7 +10,7 @@ env:
 jobs:
 
   # =========================
-  # 1. BUILD & PUSH (CLOUD)
+  # BUILD & PUSH
   # =========================
   build:
     runs-on: ubuntu-latest
@@ -34,14 +34,36 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build Image
-      run: docker build -t $IMAGE_NAME:${{ steps.tag.outputs.tag }} .
+    # =========================
+    # BUILD LARAVEL IMAGE
+    # =========================
+    - name: Build Laravel Image
+      run: |
+        docker build \
+          -t $IMAGE_NAME:${{ steps.tag.outputs.tag }} \
+          -f dockerfile/laravel/Dockerfile \
+          .
 
-    - name: Push Image
-      run: docker push $IMAGE_NAME:${{ steps.tag.outputs.tag }}
+    - name: Push Laravel Image
+      run: |
+        docker push $IMAGE_NAME:${{ steps.tag.outputs.tag }}
+
+    # =========================
+    # BUILD NGINX IMAGE
+    # =========================
+    - name: Build Nginx Image
+      run: |
+        docker build \
+          -t $IMAGE_NAME-nginx:${{ steps.tag.outputs.tag }} \
+          -f dockerfile/nginx/Dockerfile \
+          .
+
+    - name: Push Nginx Image
+      run: |
+        docker push $IMAGE_NAME-nginx:${{ steps.tag.outputs.tag }}
 
   # =========================
-  # 2. DEPLOY (SELF-HOSTED)
+  # DEPLOY KE K3S
   # =========================
   deploy:
     runs-on: self-hosted
@@ -52,8 +74,15 @@ jobs:
       run: |
         export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
+        # Laravel deployment update
         kubectl set image deployment/laravel \
           laravel=$IMAGE_NAME:${{ needs.build.outputs.image_tag }} \
           -n default
 
+        # Nginx deployment update
+        kubectl set image deployment/nginx \
+          nginx=$IMAGE_NAME-nginx:${{ needs.build.outputs.image_tag }} \
+          -n default
+
         kubectl rollout status deployment/laravel -n default
+        kubectl rollout status deployment/nginx -n default
