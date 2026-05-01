@@ -30,7 +30,7 @@ RUN docker-php-ext-configure gd \
 RUN curl -sS https://getcomposer.org/installer | php \
  && mv composer.phar /usr/local/bin/composer
 
-COPY ppdb-smp /app
+COPY . /app
 
 RUN composer install \
     --no-dev \
@@ -44,10 +44,10 @@ FROM node:20-alpine AS frontend
 
 WORKDIR /laravel
 
-COPY ppdb-smp/package*.json ./
+COPY ./package*.json ./
 RUN npm ci
 
-COPY ppdb-smp/ .
+COPY .
 RUN npm run build
 
 # ========================
