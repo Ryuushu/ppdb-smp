@@ -90,12 +90,12 @@ jobs:
         # Laravel deployment update
         kubectl set image deployment/laravel \
           laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
-          -n default
+          -n app
 
         # Nginx deployment update
         kubectl set image deployment/nginx \
           nginx=${{ vars.IMAGE_NAME_NGINX }}:${{ needs.build.outputs.image_tag }} \
-          -n default
+          -n app
 
-        kubectl rollout status deployment/laravel -n default
-        kubectl rollout status deployment/nginx -n default
+        kubectl rollout status deployment/laravel-app -n app
+        kubectl rollout status deployment/nginx -n app
