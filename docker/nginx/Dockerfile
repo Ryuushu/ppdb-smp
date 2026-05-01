@@ -3,12 +3,12 @@
 # ========================
 FROM node:20-alpine AS frontend
 
-WORKDIR /laravel
+WORKDIR /app
 
 COPY ./package*.json ./
 RUN npm ci
 
-COPY .
+COPY . .
 RUN npm run build
 
 
