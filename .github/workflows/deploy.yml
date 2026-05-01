@@ -85,7 +85,7 @@ jobs:
     steps:
     - name: Deploy to K3s
       run: |
-        export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+        export KUBECONFIG=/home/nixie/k3s.yaml
 
         # Laravel deployment update
         kubectl set image deployment/laravel \
