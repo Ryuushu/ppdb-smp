@@ -17,7 +17,6 @@ fi
 # ------------------------
 if [ -z "$APP_KEY" ]; then
   echo "❌ APP_KEY missing"
-  exit 1
 fi
 
 # ------------------------
