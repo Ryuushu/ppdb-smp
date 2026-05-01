@@ -4,7 +4,7 @@
 # ========================
 FROM php:8.4-cli-alpine AS vendor
 
-WORKDIR /app
+WORKDIR /laravel
 
 # install deps untuk gd + zip + intl
 RUN apk add --no-cache \
