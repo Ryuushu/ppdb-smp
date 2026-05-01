@@ -4,7 +4,7 @@
 # ========================
 FROM php:8.4-cli-alpine AS vendor
 
-WORKDIR /laravel
+WORKDIR /app
 
 # install deps untuk gd + zip + intl
 RUN apk add --no-cache \
@@ -42,14 +42,14 @@ RUN composer install \
 # ========================
 FROM node:20-alpine AS frontend
 
-WORKDIR /laravel
+WORKDIR /app
 
 COPY ./package*.json ./
 RUN npm ci
 
 COPY . .
 RUN npm run build
-
+RUN ls -lah public/build
 # ========================
 # 3. PHP 8.4 RUNTIME (FINAL)
 # ========================
@@ -115,7 +115,7 @@ RUN { \
 # COPY APP (FIXED - NO DUPLICATE)
 # ========================
 COPY --from=vendor /app /var/www
-COPY --from=frontend ./app/public/build /var/www/public/build
+COPY --from=frontend /app/public/build /var/www/public/build
 
 
 # ========================
