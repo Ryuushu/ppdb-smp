@@ -53,13 +53,13 @@ jobs:
     - name: Build Laravel Image
       run: |
         docker build \
-          -t $IMAGE_NAME_LARAVEL:${{ steps.tag.outputs.tag }} \
+          -t ${{ vars.IMAGE_NAME_LARAVEL }}:${{ steps.tag.outputs.tag }} \
           -f docker/laravel/Dockerfile \
           .
 
     - name: Push Laravel Image
       run: |
-        docker push $IMAGE_NAME_LARAVEL:${{ steps.tag.outputs.tag }}
+        docker push ${{ vars.IMAGE_NAME_LARAVEL }}:${{ steps.tag.outputs.tag }}
 
     # =========================
     # BUILD NGINX IMAGE
@@ -67,13 +67,13 @@ jobs:
     - name: Build Nginx Image
       run: |
         docker build \
-          -t $IMAGE_NAME_NGINX:${{ steps.tag.outputs.tag }} \
+          -t ${{ vars.IMAGE_NAME_NGINX }}:${{ steps.tag.outputs.tag }} \
           -f docker/nginx/Dockerfile \
           .
 
     - name: Push Nginx Image
       run: |
-        docker push $IMAGE_NAME_NGINX:${{ steps.tag.outputs.tag }}
+        docker push ${{ vars.IMAGE_NAME_NGINX }}:${{ steps.tag.outputs.tag }}
 
   # =========================
   # DEPLOY KE K3S
@@ -89,12 +89,12 @@ jobs:
 
         # Laravel deployment update
         kubectl set image deployment/laravel \
-          laravel=$IMAGE_NAME_LARAVEL:${{ needs.build.outputs.image_tag }} \
+          laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
           -n default
 
         # Nginx deployment update
         kubectl set image deployment/nginx \
-          nginx=$IMAGE_NAME_NGINX:${{ needs.build.outputs.image_tag }} \
+          nginx=${{ vars.IMAGE_NAME_NGINX }}:${{ needs.build.outputs.image_tag }} \
           -n default
 
         kubectl rollout status deployment/laravel -n default
