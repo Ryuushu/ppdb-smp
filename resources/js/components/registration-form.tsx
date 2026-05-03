@@ -289,8 +289,8 @@ export function RegistrationForm({
 		<div className="mx-auto px-4 max-w-4xl">
 			{isSuccess ? (
 				<div className="py-16 text-center">
-					<div className="inline-flex justify-center items-center bg-green-100 dark:bg-green-900/30 mb-6 rounded-full w-24 h-24 animate-bounce">
-						<PartyPopper className="w-12 h-12 text-green-600 dark:text-green-400" />
+					<div className="inline-flex justify-center items-center bg-primary/10 dark:bg-primary/20 mb-6 rounded-full w-24 h-24 animate-bounce">
+						<PartyPopper className="w-12 h-12 text-primary" />
 					</div>
 					<h1 className="mb-4 font-bold text-foreground text-4xl md:text-5xl">
 						Selamat! 🎉
@@ -314,7 +314,7 @@ export function RegistrationForm({
 						<CardContent className="p-8">
 							<div className="space-y-4">
 								<div className="flex items-start gap-3 text-left">
-									<CheckCircle2 className="mt-0.5 w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+									<CheckCircle2 className="mt-0.5 w-5 h-5 text-primary shrink-0" />
 									<p className="text-muted-foreground">
 										Simpan nomor pendaftaran Anda dan segera datang ke sekolah untuk verifikasi administrasi
 									</p>

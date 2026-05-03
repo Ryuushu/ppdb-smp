@@ -98,7 +98,7 @@ export default function Show({ peserta }: Props) {
 		switch (status) {
 			case 1:
 				return (
-					<Badge className="bg-green-500 hover:bg-green-600">Diterima</Badge>
+					<Badge className="bg-primary hover:bg-primary/90">Diterima</Badge>
 				);
 			case 2:
 				return <Badge variant="destructive">Ditolak</Badge>;

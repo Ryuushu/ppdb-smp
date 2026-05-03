@@ -51,12 +51,12 @@ class StorePendaftarRequest extends FormRequest
             'nik_ibu' => 'nullable|string',
             'pendidikan_ibu' => 'nullable|string',
             'pekerjaan_ibu' => 'nullable|string',
-            'no_hp_ayah' => 'nullable|string',
-            'no_hp_ibu' => 'nullable|string',
+            'no_hp_ayah' => 'nullable|string|regex:/^(08|\+62|62)[0-9]{8,15}$/',
+            'no_hp_ibu' => 'nullable|string|regex:/^(08|\+62|62)[0-9]{8,15}$/',
 
             'penghasilan_ortu' => 'nullable|string',
 
-            'no_hp' => 'required|string', 
+            'no_hp' => 'required|string|regex:/^(08|\+62|62)[0-9]{8,15}$/', 
 
             // Sekolah Asal
             'asal_sekolah' => 'nullable|string',
@@ -68,7 +68,7 @@ class StorePendaftarRequest extends FormRequest
             'prestasi_diraih' => 'nullable|string',
             'pengalaman_berkesan' => 'nullable|string',
             'cita_cita' => 'nullable|string',
-            'no_hp_pribadi' => 'nullable|string',
+            'no_hp_pribadi' => 'nullable|string|regex:/^(08|\+62|62)[0-9]{8,15}$/',
             'ekstrakurikuler' => 'nullable|array',
             
             'admin_item_ids' => 'nullable|array',
@@ -89,5 +89,15 @@ class StorePendaftarRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'no_hp.regex' => 'Format nomor WhatsApp tidak valid (Gunakan format 08... atau 62...)',
+            'no_hp_ayah.regex' => 'Format nomor WhatsApp ayah tidak valid',
+            'no_hp_ibu.regex' => 'Format nomor WhatsApp ibu tidak valid',
+            'no_hp_pribadi.regex' => 'Format nomor WhatsApp pribadi tidak valid',
+        ];
     }
 }

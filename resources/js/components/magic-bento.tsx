@@ -275,7 +275,7 @@ const BentoCard = ({
 							</div>
 						)}
 						{badge && (
-							<span className="bg-green-100 dark:bg-green-900/20 px-3 py-1 rounded-full font-bold text-green-700 dark:text-green-400 text-xs">
+							<span className="bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full font-bold text-primary text-xs">
 								{badge}
 							</span>
 						)}

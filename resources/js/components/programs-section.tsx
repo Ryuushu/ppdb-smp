@@ -26,7 +26,7 @@ const programs = [
 			"Network Administrator",
 			"Teknisi Telekomunikasi",
 		],
-		gradient: "from-emerald-500 to-teal-600",
+		gradient: "from-blue-600 to-indigo-700",
 		colSpan: 2,
 	},
 	{
@@ -90,7 +90,7 @@ const programs = [
 			"Agribisnis",
 		],
 		prospects: ["Petani Modern", "Agripreneur", "Teknisi Pertanian"],
-		gradient: "from-green-500 to-emerald-600",
+		gradient: "from-teal-500 to-blue-600",
 		badge: "Subsidi SPP 50%",
 		colSpan: 1,
 	},
