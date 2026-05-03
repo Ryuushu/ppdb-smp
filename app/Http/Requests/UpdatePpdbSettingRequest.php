@@ -22,9 +22,12 @@ class UpdatePpdbSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batas_akhir_ppdb' => ['required'],
             'no_surat' => ['required'],
-            'hasil_seleksi' => ['required'],
+            'whatsapp' => ['nullable'],
+            'fonnte_token' => ['nullable'],
+            'jatuh_tempo_cicilan' => ['nullable'],
+            'pesan_tagihan' => ['nullable'],
+            'pesan_kelulusan' => ['nullable'],
         ];
     }
 }

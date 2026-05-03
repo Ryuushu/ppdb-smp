@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
-import { CheckCircle2, AlertCircle, Wallet, Search } from "lucide-react";
+import { CheckCircle2, AlertCircle, Wallet, Search, MessageCircle } from "lucide-react";
 
 interface User {
 	id: number;
@@ -128,6 +128,12 @@ export default function Rekap({
 			minimumFractionDigits: 0,
 		}).format(amount);
 	};
+
+    const handleSendNotif = (uuid: string) => {
+        if (confirm("Kirim notifikasi tagihan via WhatsApp?")) {
+            router.post(route("ppdb.kwitansi.kirim-notif", { uuid }));
+        }
+    };
 
 	return (
 		<>
@@ -418,11 +424,23 @@ export default function Rekap({
 															)}
 														</TableCell>
 														<TableCell className="text-right">
-															<Button asChild variant="ghost" size="sm">
-																<Link href={route("ppdb.kwitansi.tambah", { uuid: p.id })}>
-																	Bayar/Detail
-																</Link>
-															</Button>
+                                                            <div className="flex justify-end gap-2">
+                                                                {!p.is_lunas && (
+                                                                    <Button 
+                                                                        variant="outline" 
+                                                                        size="sm" 
+                                                                        className="text-green-600 border-green-200 hover:bg-green-50"
+                                                                        onClick={() => handleSendNotif(p.id)}
+                                                                    >
+                                                                        <MessageCircle className="size-4 mr-1" /> Notif WA
+                                                                    </Button>
+                                                                )}
+                                                                <Button asChild variant="ghost" size="sm">
+                                                                    <Link href={route("ppdb.kwitansi.tambah", { uuid: p.id })}>
+                                                                        Bayar/Detail
+                                                                    </Link>
+                                                                </Button>
+                                                            </div>
 														</TableCell>
 													</TableRow>
 												);

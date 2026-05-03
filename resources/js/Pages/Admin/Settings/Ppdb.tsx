@@ -15,10 +15,12 @@ import { Head, useForm, usePage } from "@inertiajs/react";
 interface PpdbSetting {
 	id: number;
 	body: {
-		batas_akhir_ppdb: string;
 		no_surat: string;
-		hasil_seleksi: string;
 		whatsapp: string;
+		fonnte_token: string;
+		jatuh_tempo_cicilan: string;
+		pesan_tagihan: string;
+		pesan_kelulusan: string;
 	};
 }
 
@@ -28,10 +30,12 @@ interface Props {
 
 export default function Ppdb({ setting }: Props) {
 	const { data, setData, put, processing, errors } = useForm({
-		batas_akhir_ppdb: setting?.body?.batas_akhir_ppdb || "",
 		no_surat: setting?.body?.no_surat || "",
-		hasil_seleksi: setting?.body?.hasil_seleksi || "",
 		whatsapp: setting?.body?.whatsapp || "",
+		fonnte_token: setting?.body?.fonnte_token || "",
+		jatuh_tempo_cicilan: setting?.body?.jatuh_tempo_cicilan || "",
+		pesan_tagihan: setting?.body?.pesan_tagihan || "",
+		pesan_kelulusan: setting?.body?.pesan_kelulusan || "",
 	});
 
 	const submit = (e: React.FormEvent) => {
@@ -82,20 +86,6 @@ export default function Ppdb({ setting }: Props) {
 								</div>
 								<div>
 									<strong className="block font-medium text-sm">
-								Batas Akhir SNPMB
-									</strong>
-									<span className="text-sm">
-										{data.batas_akhir_ppdb || "-"}
-									</span>
-								</div>
-								<div>
-									<strong className="block font-medium text-sm">
-										Pengumuman Seleksi
-									</strong>
-									<span className="text-sm">{data.hasil_seleksi || "-"}</span>
-								</div>
-								<div>
-									<strong className="block font-medium text-sm">
 										WhatsApp Panitia
 									</strong>
 									<span className="text-sm">{data.whatsapp || "-"}</span>
@@ -118,41 +108,6 @@ export default function Ppdb({ setting }: Props) {
 								)}
 							</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="batas_akhir_ppdb">
-									Batas Akhir SNPMB (dd-mm-yyyy)
-								</Label>
-								<Input
-									id="batas_akhir_ppdb"
-									value={data.batas_akhir_ppdb}
-									onChange={(e) => setData("batas_akhir_ppdb", e.target.value)}
-									placeholder="dd-mm-yyyy"
-									required
-								/>
-								{errors.batas_akhir_ppdb && (
-									<div className="text-red-500 text-sm">
-										{errors.batas_akhir_ppdb}
-									</div>
-								)}
-							</div>
-
-							<div className="space-y-2">
-								<Label htmlFor="hasil_seleksi">
-									Pengumuman Hasil Seleksi (dd-mm-yyyy)
-								</Label>
-								<Input
-									id="hasil_seleksi"
-									value={data.hasil_seleksi}
-									onChange={(e) => setData("hasil_seleksi", e.target.value)}
-									placeholder="dd-mm-yyyy"
-									required
-								/>
-								{errors.hasil_seleksi && (
-									<div className="text-red-500 text-sm">
-										{errors.hasil_seleksi}
-									</div>
-								)}
-							</div>
 
 							<div className="space-y-2">
 								<Label htmlFor="whatsapp">Nomor WhatsApp Panitia (Contoh: 628123456789)</Label>
@@ -163,6 +118,73 @@ export default function Ppdb({ setting }: Props) {
 									placeholder="628..."
 								/>
 							</div>
+
+                            <div className="border-t pt-4 mt-6">
+                                <h3 className="text-lg font-medium mb-4">Integrasi WhatsApp Fonnte</h3>
+                                
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="fonnte_token">Fonnte API Token</Label>
+                                        <Input
+                                            id="fonnte_token"
+                                            value={data.fonnte_token}
+                                            onChange={(e) => setData("fonnte_token", e.target.value)}
+                                            placeholder="Masukkan token dari fonnte.com"
+                                            type="password"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="jatuh_tempo_cicilan">Jatuh Tempo Cicilan (dd-mm-yyyy)</Label>
+                                        <Input
+                                            id="jatuh_tempo_cicilan"
+                                            value={data.jatuh_tempo_cicilan}
+                                            onChange={(e) => setData("jatuh_tempo_cicilan", e.target.value)}
+                                            placeholder="dd-mm-yyyy"
+                                        />
+                                        <p className="text-xs text-muted-foreground">Tanggal batas akhir pembayaran cicilan sebelum dianggap telat.</p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="pesan_tagihan">Template Pesan WhatsApp</Label>
+                                        <textarea
+                                            id="pesan_tagihan"
+                                            value={data.pesan_tagihan}
+                                            onChange={(e) => setData("pesan_tagihan", e.target.value)}
+                                            placeholder="Halo {nama}, tagihan Anda sebesar {tagihan} belum lunas..."
+                                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        />
+                                        <div className="text-xs text-muted-foreground space-y-1">
+                                            <p>Gunakan placeholder berikut:</p>
+                                            <ul className="list-disc list-inside">
+                                                <li><code>{'{nama}'}</code> - Nama Lengkap Siswa</li>
+                                                <li><code>{'{no_pendaftaran}'}</code> - Nomor Pendaftaran</li>
+                                                <li><code>{'{tagihan}'}</code> - Sisa Tagihan</li>
+                                                <li><code>{'{total_tagihan}'}</code> - Total Biaya</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="pesan_kelulusan">Template Bukti Terima (WhatsApp Kelulusan)</Label>
+                                        <textarea
+                                            id="pesan_kelulusan"
+                                            value={data.pesan_kelulusan}
+                                            onChange={(e) => setData("pesan_kelulusan", e.target.value)}
+                                            placeholder="Selamat {nama}! Anda dinyatakan LULUS seleksi PPDB..."
+                                            className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        />
+                                        <div className="text-xs text-muted-foreground space-y-1">
+                                            <p>Gunakan placeholder berikut:</p>
+                                            <ul className="list-disc list-inside">
+                                                <li><code>{'{nama}'}</code> - Nama Lengkap Siswa</li>
+                                                <li><code>{'{no_pendaftaran}'}</code> - Nomor Pendaftaran</li>
+                                                <li><code>{'{gelombang}'}</code> - Nama Gelombang</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 						</CardContent>
 						<CardFooter>
 							<Button type="submit" disabled={processing}>

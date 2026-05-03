@@ -7,6 +7,8 @@
     use App\Http\Requests\UpdatePendaftarRequest;
     use App\Http\Requests\UpdatePesertaStatusRequest;
     use App\Models\PesertaPPDB;
+    use App\Models\PpdbSetting;
+    use App\Services\FonnteService;
     use Illuminate\Support\Str;
     use Illuminate\Support\Facades\Storage;
 
@@ -104,10 +106,6 @@
             $data = $request->validated();
             $ppdb = PesertaPPDB::findOrFail($id);
 
-            $data['penerima_kip'] = 'n';
-            $data['rekomendasi_mwc'] = 0;
-            $data['bertindik'] = 0;
-            $data['bertato'] = 0;
 
             // Exclude non-column fields before mass assignment
             $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
@@ -214,12 +212,30 @@
         {
             $request->validated();
 
-            $peserta = PesertaPPDB::with(['kwitansi'])->findOrFail($uuid);
+            $peserta = PesertaPPDB::with(['kwitansi', 'gelombang'])->findOrFail($uuid);
 
             $peserta->diterima = $request->input('status') == 'y' ? 1 : 2;
             $peserta->save();
 
             $msg = $request->input('status') == 'y' ? 'Peserta Diterima' : 'Peserta Ditolak';
+
+            // Send WhatsApp notification if accepted
+            if ($request->input('status') == 'y') {
+                $setting = PpdbSetting::latest()->first();
+                if ($setting && !empty($setting->body['fonnte_token'])) {
+                    $fonnte = new FonnteService();
+                    $template = $setting->body['pesan_kelulusan'] ?? "Selamat {nama}! Anda dinyatakan LULUS seleksi PPDB. Silakan melakukan daftar ulang.";
+                    
+                    if ($peserta->no_hp) {
+                        $message = str_replace(
+                            ['{nama}', '{no_pendaftaran}', '{gelombang}'],
+                            [$peserta->nama_lengkap, $peserta->no_pendaftaran, $peserta->gelombang?->nama ?? ''],
+                            $template
+                        );
+                        $fonnte->sendMessage($peserta->no_hp, $message);
+                    }
+                }
+            }
 
             session()->flash('success', $msg);
 

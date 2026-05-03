@@ -35,7 +35,17 @@ class StorePendaftarRequest extends FormRequest
             'anak_ke' => 'required|integer|min:1',
             'status_anak' => 'required|string',
             'alamat_lengkap' => 'required|string',
+            'dukuh' => 'nullable|string',
+            'rt' => 'nullable|string',
+            'rw' => 'nullable|string',
+            'desa_kelurahan' => 'nullable|string',
+            'kecamatan' => 'nullable|string',
+            'kabupaten_kota' => 'nullable|string',
+            'provinsi' => 'nullable|string',
+            'kode_pos' => 'nullable|string',
             'agama' => 'required|string',
+            'saran_dari' => 'nullable|string',
+            'rekomendasi_mwc' => 'nullable',
             
             // Riwayat Pendidikan
             'pernah_paud' => 'required|boolean',
@@ -51,12 +61,12 @@ class StorePendaftarRequest extends FormRequest
             'nik_ibu' => 'nullable|string',
             'pendidikan_ibu' => 'nullable|string',
             'pekerjaan_ibu' => 'nullable|string',
-            'no_hp_ayah' => 'nullable|string|regex:/^(08|\+62|62)[0-9]{8,15}$/',
-            'no_hp_ibu' => 'nullable|string|regex:/^(08|\+62|62)[0-9]{8,15}$/',
+            'no_hp_ayah' => ['nullable', 'string', 'regex:/^(08|\+62|62)[0-9]{8,15}$/'],
+            'no_hp_ibu' => ['nullable', 'string', 'regex:/^(08|\+62|62)[0-9]{8,15}$/'],
 
             'penghasilan_ortu' => 'nullable|string',
 
-            'no_hp' => 'required|string|regex:/^(08|\+62|62)[0-9]{8,15}$/', 
+            'no_hp' => ['required', 'string', 'regex:/^(08|\+62|62)[0-9]{8,15}$/'], 
 
             // Sekolah Asal
             'asal_sekolah' => 'nullable|string',
@@ -68,7 +78,7 @@ class StorePendaftarRequest extends FormRequest
             'prestasi_diraih' => 'nullable|string',
             'pengalaman_berkesan' => 'nullable|string',
             'cita_cita' => 'nullable|string',
-            'no_hp_pribadi' => 'nullable|string|regex:/^(08|\+62|62)[0-9]{8,15}$/',
+            'no_hp_pribadi' => ['nullable', 'string', 'regex:/^(08|\+62|62)[0-9]{8,15}$/'],
             'ekstrakurikuler' => 'nullable|array',
             
             'admin_item_ids' => 'nullable|array',
