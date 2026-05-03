@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
+export function HeroSection({ onShowBrosur, settings }: { onShowBrosur: () => void, settings?: any }) {
 	const sectionRef = useRef<HTMLElement>(null);
 	const headingRef = useRef<HTMLHeadingElement>(null);
 	const descRef = useRef<HTMLParagraphElement>(null);
@@ -72,8 +72,8 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 		>
 			<div className="-z-10 absolute inset-0 hero-bg">
 				<img
-					src="/img/bg-MI.jpeg"
-					alt="SMP/MTs Diponegoro Karanganyar"
+					src={settings?.hero_image ? `/storage/${settings.hero_image}` : "/img/bg-MI.jpeg"}
+					alt="Hero Background"
 					className="w-full h-full object-cover scale-110"
 				/>
 			</div>
@@ -143,9 +143,9 @@ export function HeroSection({ onShowBrosur }: { onShowBrosur: () => void }) {
 					className="flex flex-wrap justify-center gap-6 md:gap-12"
 				>
 					{[
-						{ icon: Users, value: "540", label: "Siswa Aktif" },
-						{ icon: Award, value: "B", label: "Akreditasi" },
-						{ icon: Calendar, value: "2017", label: "Tahun Berdiri" },
+						{ icon: Users, value: settings?.hero_stats_siswa || "540", label: "Siswa Aktif" },
+						{ icon: Award, value: settings?.hero_stats_akreditasi || "B", label: "Akreditasi" },
+						{ icon: Calendar, value: settings?.hero_stats_tahun || "2017", label: "Tahun Berdiri" },
 					].map((stat) => (
 						<div
 							key={stat.label}

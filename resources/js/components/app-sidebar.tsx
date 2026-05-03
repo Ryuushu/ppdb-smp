@@ -300,6 +300,17 @@ export function AppSidebar() {
 											</Link>
 										</SidebarMenuButton>
 									</SidebarMenuItem>
+									<SidebarMenuItem>
+										<SidebarMenuButton
+											asChild
+											isActive={url.includes("/setting/landing-page")}
+										>
+											<Link href={route("admin.landing-page.index")}>
+												<MonitorCog className="size-4" />
+												<span>Landing Page</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
 								</>
 							)}
 						</SidebarMenu>

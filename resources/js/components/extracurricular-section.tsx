@@ -2,76 +2,57 @@
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import * as LucideIcons from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
-	BookOpen,
-	Flag,
-	Heart,
-	Music,
-	Palette,
-	Tent,
-	Trophy,
-	Users,
-} from "lucide-react";
-import { useEffect, useRef } from "react";
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const extracurriculars = [
-	{
-		icon: Trophy,
-		name: "Olahraga",
-		description:
-			"Futsal, Voli, Basket - raih prestasi dan beasiswa non-akademik",
-		color: "bg-orange-500",
-	},
-	{
-		icon: Palette,
-		name: "Seni Rupa",
-		description: "Melukis, desain grafis - kembangkan kreativitas visual",
-		color: "bg-pink-500",
-	},
-	{
-		icon: Music,
-		name: "Seni Musik",
-		description: "Band, hadrah - ekspresikan bakat musikmu",
-		color: "bg-purple-500",
-	},
-	{
-		icon: Tent,
-		name: "Pramuka",
-		description: "Kegiatan kepanduan untuk membentuk karakter dan kemandirian",
-		color: "bg-amber-500",
-	},
-	{
-		icon: Heart,
-		name: "PMR",
-		description: "Palang Merah Remaja untuk melatih jiwa kemanusiaan",
-		color: "bg-red-500",
-	},
-	{
-		icon: BookOpen,
-		name: "Rohis",
-		description: "Kegiatan kerohanian Islam untuk memperdalam ilmu agama",
-		color: "bg-emerald-500",
-	},
-	{
-		icon: Flag,
-		name: "Paskibra",
-		description: "Pasukan Pengibar Bendera untuk melatih kedisiplinan",
-		color: "bg-blue-500",
-	},
-	{
-		icon: Users,
-		name: "IPNU/IPPNU",
-		description: "Organisasi pelajar Nahdlatul Ulama",
-		color: "bg-teal-500",
-	},
-];
+// Helper to render Lucide Icons dynamically
+const DynamicIcon = ({ name, className }: { name: string, className?: string }) => {
+    const IconComponent = (LucideIcons as any)[name] || LucideIcons.Activity;
+    return <IconComponent className={className} />;
+};
 
-export function ExtracurricularSection() {
+const DetailModal = ({ item, isOpen, onOpenChange }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void }) => {
+    if (!item) return null;
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-2xl overflow-hidden p-0 rounded-3xl">
+                <div className="relative">
+                    {item.image ? (
+                        <div className="h-64 w-full overflow-hidden">
+                            <img src={`/storage/${item.image}`} className="w-full h-full object-cover" alt={item.title} />
+                        </div>
+                    ) : (
+                        <div className="h-32 bg-primary/10 flex items-center justify-center">
+                            {item.icon && <DynamicIcon name={item.icon} className="w-16 h-16 text-primary" />}
+                        </div>
+                    )}
+                </div>
+                <div className="p-8">
+                    <DialogHeader className="mb-4">
+                        <DialogTitle className="text-3xl font-bold text-foreground">{item.title}</DialogTitle>
+                    </DialogHeader>
+                    <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-lg">
+                        {item.description}
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+export function ExtracurricularSection({ data }: { data: any[] }) {
 	const sectionRef = useRef<HTMLElement>(null);
 	const titleRef = useRef<HTMLDivElement>(null);
 	const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+    const [selected, setSelected] = useState<any>(null);
 
 	useEffect(() => {
 		const ctx = gsap.context(() => {
@@ -106,7 +87,11 @@ export function ExtracurricularSection() {
 		}, sectionRef);
 
 		return () => ctx.revert();
-	}, []);
+	}, [data]);
+
+    if (!data || data.length === 0) return null;
+
+    const colors = ["bg-orange-500", "bg-pink-500", "bg-purple-500", "bg-amber-500", "bg-red-500", "bg-emerald-500", "bg-blue-500", "bg-teal-500"];
 
 	return (
 		<section
@@ -120,7 +105,7 @@ export function ExtracurricularSection() {
 				<div className="absolute top-1/2 left-1/4 w-16 h-16 border border-primary/10 rounded-full" />
 			</div>
 
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 				<div ref={titleRef} className="text-center mb-16">
 					<span className="inline-block px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full mb-4">
 						Kembangkan Bakatmu
@@ -135,29 +120,35 @@ export function ExtracurricularSection() {
 				</div>
 
 				<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-					{extracurriculars.map((ekskul, index) => (
+					{data.map((item, index) => (
 						<div
-							key={index}
+							key={item.id}
 							ref={(el) => {
 								cardsRef.current[index] = el;
 							}}
-							className="bg-card p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group cursor-default border border-border hover:border-primary/50"
+                            onClick={() => setSelected(item)}
+							className="bg-card p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer border border-border hover:border-primary/50"
 						>
 							<div
-								className={`w-14 h-14 ${ekskul.color} rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}
+								className={`w-14 h-14 ${colors[index % colors.length]} rounded-2xl flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 overflow-hidden`}
 							>
-								<ekskul.icon className="w-7 h-7 text-white" />
+                                {item.image ? (
+                                    <img src={`/storage/${item.image}`} className="w-full h-full object-cover" alt="" />
+                                ) : (
+                                    item.icon ? <DynamicIcon name={item.icon} className="w-7 h-7 text-white" /> : <LucideIcons.Activity className="w-7 h-7 text-white" />
+                                )}
 							</div>
 							<h3 className="font-bold text-foreground text-lg mb-2 group-hover:text-primary transition-colors">
-								{ekskul.name}
+								{item.title}
 							</h3>
-							<p className="text-sm text-muted-foreground leading-relaxed">
-								{ekskul.description}
+							<p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+								{item.description}
 							</p>
 						</div>
 					))}
 				</div>
 			</div>
+            <DetailModal item={selected} isOpen={!!selected} onOpenChange={(open) => !open && setSelected(null)} />
 		</section>
 	);
 }

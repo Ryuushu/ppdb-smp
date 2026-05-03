@@ -42,13 +42,25 @@ Route::get('/', function () {
         ->get();
     $setting = \App\Models\PpdbSetting::latest()->first();
     $masterDocuments = \App\Models\MasterDocument::where('is_active', true)->get();
+    
+    $landingSettings = \App\Models\LandingSetting::pluck('value', 'key')->toArray();
+    $landingContents = \App\Models\LandingContent::orderBy('order')->get()->groupBy('type');
 
     return inertia('Landing', [
         'gelombang' => $gelombang,
         'setting' => $setting,
-        'masterDocuments' => $masterDocuments
+        'masterDocuments' => $masterDocuments,
+        'landingSettings' => $landingSettings,
+        'landingContents' => $landingContents,
     ]);
 });
+
+Route::get('/prestasi/{id}', function ($id) {
+    $item = \App\Models\LandingContent::findOrFail($id);
+    return inertia('Landing/PrestasiDetail', [
+        'item' => $item
+    ]);
+})->name('prestasi.show');
 Route::get('/register', function () {
     $gelombangAktif = \App\Models\Gelombang::where('status', 'buka')
         ->where('tanggal_mulai', '<=', now())
@@ -94,6 +106,12 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::put('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'update'])->name('admin.master-documents.update');
         Route::delete('/setting/master-documents/{id}', [\App\Http\Controllers\Admin\MasterDocumentController::class, 'destroy'])->name('admin.master-documents.destroy');
 
+        // Landing Page Settings
+        Route::get('/setting/landing-page', [\App\Http\Controllers\Admin\LandingPageController::class, 'index'])->name('admin.landing-page.index');
+        Route::put('/setting/landing-page/settings', [\App\Http\Controllers\Admin\LandingPageController::class, 'updateSettings'])->name('admin.landing-page.settings.update');
+        Route::post('/setting/landing-page/content', [\App\Http\Controllers\Admin\LandingPageController::class, 'storeContent'])->name('admin.landing-page.content.store');
+        Route::post('/setting/landing-page/content/{id}', [\App\Http\Controllers\Admin\LandingPageController::class, 'updateContent'])->name('admin.landing-page.content.update');
+        Route::delete('/setting/landing-page/content/{id}', [\App\Http\Controllers\Admin\LandingPageController::class, 'destroyContent'])->name('admin.landing-page.content.destroy');
 
     });
 
