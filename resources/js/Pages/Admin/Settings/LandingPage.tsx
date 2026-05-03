@@ -7,9 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { Edit, Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { Edit, Plus, Trash2, Image as ImageIcon, X, Calendar as CalendarIcon } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Edit, Plus, Trash2, Image as ImageIcon, X } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { id as idLocale } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface ContentItem {
     id: number;
@@ -418,11 +422,37 @@ function ContentManager({ type, title, description, items, fields, iconPlacehold
                             {type === 'timeline' && (
                                 <div className="space-y-1">
                                     <Label>Tanggal (Opsional)</Label>
-                                    <Input 
-                                        value={data.attributes.date} 
-                                        onChange={e => setData('attributes', { ...data.attributes, date: e.target.value })} 
-                                        placeholder="Contoh: 12 - 20 Mei 2026" 
-                                    />
+                                    <div className="flex gap-2">
+                                        <div className="flex-1">
+                                            <Input 
+                                                value={data.attributes.date} 
+                                                onChange={e => setData('attributes', { ...data.attributes, date: e.target.value })} 
+                                                placeholder="Contoh: 12 - 20 Mei 2026" 
+                                            />
+                                        </div>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button variant="outline" size="icon" className="shrink-0">
+                                                    <CalendarIcon className="h-4 w-4" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="end">
+                                                <Calendar
+                                                    mode="single"
+                                                    onSelect={(date) => {
+                                                        if (date) {
+                                                            setData('attributes', { 
+                                                                ...data.attributes, 
+                                                                date: format(date, "d MMMM yyyy", { locale: idLocale }) 
+                                                            });
+                                                        }
+                                                    }}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground">Pilih dari kalender atau ketik manual (untuk rentang tanggal).</p>
                                 </div>
                             )}
 
