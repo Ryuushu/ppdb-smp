@@ -234,6 +234,11 @@ export function RegistrationForm({
 			if (data.nik && data.nik.length !== 16) {
 				newErrors.nik = "NIK harus terdiri dari 16 digit";
 			}
+
+            const waRegex = /^(08|\+62|62)[0-9]{8,15}$/;
+            if (data.no_hp && !waRegex.test(data.no_hp)) {
+                newErrors.no_hp = "Format nomor WhatsApp tidak valid (08...)";
+            }
 		}
 
 		if (step === 2) {
@@ -244,7 +249,13 @@ export function RegistrationForm({
 				newErrors.nama_ibu = "Nama Ibu wajib diisi";
 			}
             if (!data.no_hp_ayah) newErrors.no_hp_ayah = "Wajib diisi";
+            if (data.no_hp_ayah && !/^(08|\+62|62)[0-9]{8,15}$/.test(data.no_hp_ayah)) {
+                newErrors.no_hp_ayah = "Format nomor WA tidak valid";
+            }
             if (!data.no_hp_ibu) newErrors.no_hp_ibu = "Wajib diisi";
+            if (data.no_hp_ibu && !/^(08|\+62|62)[0-9]{8,15}$/.test(data.no_hp_ibu)) {
+                newErrors.no_hp_ibu = "Format nomor WA tidak valid";
+            }
 		}
 
 		setClientErrors(newErrors);
@@ -491,18 +502,20 @@ export function RegistrationForm({
                                                     </Select>
 												</FormField>
 
-                                                <FormField id="no_hp" label="No. HP Orang Tua / Wali" required error={getError("no_hp")}>
+                                                <FormField id="no_hp" label="No. HP / WhatsApp Orang Tua (Aktif) *" required error={getError("no_hp")}>
 													<Input 
 														id="no_hp" 
 														type="tel" 
+                                                        placeholder="Contoh: 081234567890"
 														value={data.no_hp} 
 														onChange={(e) => { 
-															const val = e.target.value.replace(/[^0-9]/g, "");
+															const val = e.target.value.replace(/[^0-9+]/g, "");
 															setData("no_hp", val); 
 															clearError("no_hp"); 
 														}} 
 														className="rounded-xl h-12" 
 													/>
+                                                    <p className="text-[10px] text-muted-foreground mt-1">Pastikan nomor ini aktif di WhatsApp untuk menerima informasi.</p>
 												</FormField>
 
                                                 {adminItems && adminItems.length > 0 && adminItems.some(item => item.extras && item.extras.length > 0) && (
@@ -584,12 +597,12 @@ export function RegistrationForm({
                                                     <FormField id="pendidikan_ayah" label="Pendidikan Terakhir Ayah">
 														<Input id="pendidikan_ayah" value={data.pendidikan_ayah} onChange={(e) => setData("pendidikan_ayah", e.target.value)} className="rounded-xl h-12" />
 													</FormField>
-                                                    <FormField id="no_hp_ayah" label="No. HP Ayah">
+                                                    <FormField id="no_hp_ayah" label="No. HP / WhatsApp Ayah">
 														<Input 
                                                             id="no_hp_ayah" 
                                                             value={data.no_hp_ayah} 
                                                             onChange={(e) => {
-                                                                const val = e.target.value.replace(/[^0-9]/g, "");
+                                                                const val = e.target.value.replace(/[^0-9+]/g, "");
                                                                 setData("no_hp_ayah", val);
                                                             }} 
                                                             placeholder="Contoh: 08xxxxxxxxxx"
@@ -623,12 +636,12 @@ export function RegistrationForm({
                                                     <FormField id="pendidikan_ibu" label="Pendidikan Terakhir Ibu">
 														<Input id="pendidikan_ibu" value={data.pendidikan_ibu} onChange={(e) => setData("pendidikan_ibu", e.target.value)} className="rounded-xl h-12" />
 													</FormField>
-                                                    <FormField id="no_hp_ibu" label="No. HP Ibu">
+                                                    <FormField id="no_hp_ibu" label="No. HP / WhatsApp Ibu">
 														<Input 
                                                             id="no_hp_ibu" 
                                                             value={data.no_hp_ibu} 
                                                             onChange={(e) => {
-                                                                const val = e.target.value.replace(/[^0-9]/g, "");
+                                                                const val = e.target.value.replace(/[^0-9+]/g, "");
                                                                 setData("no_hp_ibu", val);
                                                             }} 
                                                             placeholder="Contoh: 08xxxxxxxxxx"
@@ -721,13 +734,13 @@ export function RegistrationForm({
                                                         <Input id="cita_cita" value={data.cita_cita} onChange={(e) => setData("cita_cita", e.target.value)} className="rounded-xl h-12" />
                                                     </FormField>
 
-                                                    <FormField id="no_hp_pribadi" label="Nomor HP/WA Pribadi">
+                                                    <FormField id="no_hp_pribadi" label="Nomor HP / WhatsApp Pribadi">
                                                         <Input 
 															id="no_hp_pribadi" 
 															type="tel" 
 															value={data.no_hp_pribadi} 
 															onChange={(e) => {
-																const val = e.target.value.replace(/[^0-9]/g, "");
+																const val = e.target.value.replace(/[^0-9+]/g, "");
 																setData("no_hp_pribadi", val);
 															}} 
 															className="rounded-xl h-12" 

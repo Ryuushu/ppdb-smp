@@ -383,13 +383,13 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 
 
 									<div className="space-y-2">
-										<Label htmlFor="no_hp">No. HP Orang Tua / Wali *</Label>
+										<Label htmlFor="no_hp">No. HP / WhatsApp Orang Tua (Aktif) *</Label>
 										<Input
 											id="no_hp"
 											type="tel"
 											value={data.no_hp}
 											onChange={(e) => {
-												const val = e.target.value.replace(/[^0-9]/g, "");
+												const val = e.target.value.replace(/[^0-9+]/g, "");
 												setData("no_hp", val);
 											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
@@ -397,13 +397,13 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
                                     <div className="space-y-2">
-										<Label htmlFor="no_hp_pribadi">No. HP Pribadi</Label>
+										<Label htmlFor="no_hp_pribadi">No. HP / WhatsApp Pribadi</Label>
 										<Input
 											id="no_hp_pribadi"
 											type="tel"
 											value={data.no_hp_pribadi}
 											onChange={(e) => {
-												const val = e.target.value.replace(/[^0-9]/g, "");
+												const val = e.target.value.replace(/[^0-9+]/g, "");
 												setData("no_hp_pribadi", val);
 											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
@@ -560,13 +560,13 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="no_hp_ayah">No. HP Ayah</Label>
+										<Label htmlFor="no_hp_ayah">No. HP / WhatsApp Ayah</Label>
 										<Input
 											id="no_hp_ayah"
 											type="tel"
 											value={data.no_hp_ayah}
 											onChange={(e) => {
-												const val = e.target.value.replace(/[^0-9]/g, "");
+												const val = e.target.value.replace(/[^0-9+]/g, "");
 												setData("no_hp_ayah", val);
 											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
@@ -618,13 +618,13 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="no_hp_ibu">No. HP Ibu</Label>
+										<Label htmlFor="no_hp_ibu">No. HP / WhatsApp Ibu</Label>
 										<Input
 											id="no_hp_ibu"
 											type="tel"
 											value={data.no_hp_ibu}
 											onChange={(e) => {
-												const val = e.target.value.replace(/[^0-9]/g, "");
+												const val = e.target.value.replace(/[^0-9+]/g, "");
 												setData("no_hp_ibu", val);
 											}}
 											placeholder="Contoh: 08xxxxxxxxxx"
