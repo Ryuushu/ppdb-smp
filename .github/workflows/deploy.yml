@@ -29,6 +29,8 @@ jobs:
     
         LAST_TAG=$(git tag --sort=-v:refname | grep '^v' | head -n 1)
     
+        echo "Last tag: $LAST_TAG"
+    
         if [ -z "$LAST_TAG" ]; then
           NEW_TAG="v1.0.4"
         else
@@ -38,6 +40,8 @@ jobs:
           PATCH=$((PATCH + 1))
           NEW_TAG="v$MAJOR.$MINOR.$PATCH"
         fi
+    
+        echo "New tag: $NEW_TAG"
     
         echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
@@ -88,14 +92,35 @@ jobs:
         export KUBECONFIG=/home/nixie/k3s.yaml
 
         # Laravel deployment update
-        kubectl set image deployment/laravel \
-          laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
-          -n app
-
         # Nginx deployment update
         kubectl set image deployment/nginx \
           nginx=${{ vars.IMAGE_NAME_NGINX }}:${{ needs.build.outputs.image_tag }} \
           -n app
+          
+        kubectl set image deployment/laravel \
+          laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
+          -n app
 
-        kubectl rollout status deployment/laravel -n app
+        
         kubectl rollout status deployment/nginx -n app
+        kubectl rollout status deployment/laravel -n app
+    - name: Run Migration Job
+      run: |
+        cat <<EOF | kubectl apply -f -
+        apiVersion: batch/v1
+        kind: Job
+        metadata:
+          name: laravel-migrate-${{ needs.build.outputs.image_tag }}
+          namespace: app
+        spec:
+          template:
+            spec:
+              containers:
+              - name: laravel
+                image: ${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }}
+                command: ["php", "artisan", "migrate", "--seed", "--force"]
+              restartPolicy: Never
+          backoffLimit: 1
+        EOF
+
+        kubectl wait --for=condition=complete job/laravel-migrate-${{ needs.build.outputs.image_tag }} -n app --timeout=120s
