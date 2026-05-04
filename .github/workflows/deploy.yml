@@ -29,6 +29,8 @@ jobs:
     
         LAST_TAG=$(git tag --sort=-v:refname | grep '^v' | head -n 1)
     
+        echo "Last tag: $LAST_TAG"
+    
         if [ -z "$LAST_TAG" ]; then
           NEW_TAG="v1.0.4"
         else
@@ -38,6 +40,8 @@ jobs:
           PATCH=$((PATCH + 1))
           NEW_TAG="v$MAJOR.$MINOR.$PATCH"
         fi
+    
+        echo "New tag: $NEW_TAG"
     
         echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
