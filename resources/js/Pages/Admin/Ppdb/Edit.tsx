@@ -415,19 +415,47 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 											id="jumlah_saudara_kandung"
                                             type="number"
 											value={data.jumlah_saudara_kandung}
-											onChange={(e) => setData("jumlah_saudara_kandung", e.target.value)}
+											onChange={(e) => {
+                                                const val = e.target.value;
+                                                const numVal = parseInt(val);
+                                                
+                                                if (numVal === 1) {
+                                                    setData({
+                                                        ...data,
+                                                        jumlah_saudara_kandung: val,
+                                                        anak_ke: "1"
+                                                    });
+                                                } else if (!isNaN(numVal) && parseInt(String(data.anak_ke)) > numVal) {
+                                                    setData({
+                                                        ...data,
+                                                        jumlah_saudara_kandung: val,
+                                                        anak_ke: String(numVal)
+                                                    });
+                                                } else {
+                                                    setData("jumlah_saudara_kandung", val);
+                                                }
+                                            }}
 											required
 										/>
 									</div>
                                     <div className="space-y-2">
 										<Label htmlFor="anak_ke">Anak Ke *</Label>
-										<Input
-											id="anak_ke"
-                                            type="number"
-											value={data.anak_ke}
-											onChange={(e) => setData("anak_ke", e.target.value)}
-											required
-										/>
+										<Select 
+                                            value={String(data.anak_ke)} 
+                                            onValueChange={(v) => setData("anak_ke", v)}
+                                            disabled={!data.jumlah_saudara_kandung || parseInt(String(data.jumlah_saudara_kandung)) <= 0}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Pilih..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {Array.from({ length: Math.min(20, parseInt(String(data.jumlah_saudara_kandung)) || 0) }, (_, i) => (
+                                                    <SelectItem key={i + 1} value={String(i + 1)}>
+                                                        {i + 1}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
 									</div>
                                     <div className="space-y-2">
 										<Label htmlFor="status_anak">Status Anak *</Label>

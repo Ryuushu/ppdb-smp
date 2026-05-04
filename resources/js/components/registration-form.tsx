@@ -484,11 +484,55 @@ export function RegistrationForm({
 												</FormField>
 
                                                 <FormField id="jumlah_saudara_kandung" label="Jumlah Saudara Kandung" required error={getError("jumlah_saudara_kandung")}>
-													<Input id="jumlah_saudara_kandung" type="number" value={data.jumlah_saudara_kandung} onChange={(e) => { setData("jumlah_saudara_kandung", e.target.value); clearError("jumlah_saudara_kandung"); }} className="rounded-xl h-12" />
+													<Input 
+														id="jumlah_saudara_kandung" 
+														type="number" 
+														value={data.jumlah_saudara_kandung} 
+														onChange={(e) => { 
+															const val = e.target.value;
+															const numVal = parseInt(val);
+															
+															if (numVal === 1) {
+																setData({
+																	...data,
+																	jumlah_saudara_kandung: val,
+																	anak_ke: "1"
+																});
+															} else if (!isNaN(numVal) && parseInt(data.anak_ke) > numVal) {
+																setData({
+																	...data,
+																	jumlah_saudara_kandung: val,
+																	anak_ke: String(numVal)
+																});
+															} else {
+																setData("jumlah_saudara_kandung", val); 
+															}
+															clearError("jumlah_saudara_kandung"); 
+														}} 
+														className="rounded-xl h-12" 
+													/>
 												</FormField>
 
                                                 <FormField id="anak_ke" label="Anak Ke" required error={getError("anak_ke")}>
-													<Input id="anak_ke" type="number" value={data.anak_ke} onChange={(e) => { setData("anak_ke", e.target.value); clearError("anak_ke"); }} className="rounded-xl h-12" />
+													<Select 
+														value={data.anak_ke} 
+														onValueChange={(value) => { 
+															setData("anak_ke", value); 
+															clearError("anak_ke"); 
+														}}
+														disabled={!data.jumlah_saudara_kandung || parseInt(data.jumlah_saudara_kandung) <= 0}
+													>
+														<SelectTrigger className="rounded-xl h-12">
+															<SelectValue placeholder="Pilih..." />
+														</SelectTrigger>
+														<SelectContent>
+															{Array.from({ length: Math.min(20, parseInt(data.jumlah_saudara_kandung) || 0) }, (_, i) => (
+																<SelectItem key={i + 1} value={String(i + 1)}>
+																	{i + 1}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
 												</FormField>
 
                                                 <FormField id="status_anak" label="Status Anak" required error={getError("status_anak")}>
