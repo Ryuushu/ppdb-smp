@@ -87,16 +87,60 @@ class AdminController extends Controller
             return $oldest ? $oldest->created_at->year : date('Y');
         });
 
+        $gelombangStats = \App\Models\Gelombang::withCount(['peserta' => function($q) use ($tahun) {
+            $q->whereYear('created_at', $tahun);
+        }])->get()->map(function($g) {
+            return [
+                'nama' => $g->nama,
+                'jumlah' => $g->peserta_count,
+                'kuota' => $g->kuota,
+            ];
+        });
+
+        // Payment statistics calculation
+        $adminItems = \App\Models\AdminItem::all();
+        $totalBillMale = (float) $adminItems->sum('amount_male');
+        $totalBillFemale = (float) $adminItems->sum('amount_female');
+
+        $paymentStats = [
+            'lunas' => 0,
+            'nyicil' => 0,
+            'belum_bayar' => 0,
+        ];
+
+        PesertaPPDB::whereYear('created_at', $tahun)
+            ->with(['kwitansi' => fn($q) => $q->whereNull('deleted_at'), 'adminItemExtras'])
+            ->chunk(100, function($pesertas) use (&$paymentStats, $totalBillMale, $totalBillFemale) {
+                foreach ($pesertas as $p) {
+                    $baseBill = $p->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;
+                    $extrasBill = $p->adminItemExtras->sum(function ($extra) use ($p) {
+                        return $p->jenis_kelamin === 'l' ? (float) $extra->amount_male : (float) $extra->amount_female;
+                    });
+                    $totalBill = $baseBill + $extrasBill;
+                    $totalPaid = $p->kwitansi->sum('nominal');
+
+                    if ($totalPaid >= $totalBill && $totalBill > 0) {
+                        $paymentStats['lunas']++;
+                    } elseif ($totalPaid > 0) {
+                        $paymentStats['nyicil']++;
+                    } else {
+                        $paymentStats['belum_bayar']++;
+                    }
+                }
+            });
+
         return inertia('Admin/Dashboard', [
             'count' => ['all' => $pesertaCount],
             'penerimaan' => $penerimaan,
             'compareSx' => $compareSx,
             'yearDiff' => $yearDiff,
-            'tahun' => $tahun,
+            'tahun' => (int) $tahun,
             'lastYear' => $lastYear,
             'dailyTrends' => $dailyTrends,
             'genderOverTime' => $genderOverTime->values(),
             'oldestYear' => $oldestYear,
+            'gelombangStats' => $gelombangStats,
+            'paymentStats' => $paymentStats,
         ]);
     }
 

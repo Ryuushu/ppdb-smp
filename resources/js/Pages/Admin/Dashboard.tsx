@@ -43,10 +43,12 @@ interface DashboardProps {
 	tahun: number;
 	lastYear: string;
 	oldestYear: number;
-	dailyTrends: { tanggal: string; jumlah: number }[];
+	gelombangStats: { nama: string; jumlah: number; kuota: number }[];
+	paymentStats: { lunas: number; nyicil: number; belum_bayar: number };
 }
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#3b82f6", "#ec4899", "#f59e0b", "#10b981", "#8b5cf6"];
+const PAYMENT_COLORS = ["#10b981", "#f59e0b", "#ef4444"];
 
 export default function Dashboard({
 	count,
@@ -58,6 +60,8 @@ export default function Dashboard({
 	lastYear,
 	oldestYear,
 	dailyTrends,
+	gelombangStats,
+	paymentStats,
 }: DashboardProps) {
 	const currentYear = new Date().getFullYear();
 	const yearOptions: number[] = [];
@@ -77,6 +81,12 @@ export default function Dashboard({
 		{ name: "Perempuan", value: compareSx.p },
 	];
 
+	const paymentData = [
+		{ name: "Lunas", value: paymentStats.lunas },
+		{ name: "Nyicil", value: paymentStats.nyicil },
+		{ name: "Belum Bayar", value: paymentStats.belum_bayar },
+	];
+
 	const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
 	const yearDiffData = months.map((month) => {
@@ -93,13 +103,16 @@ export default function Dashboard({
 		<>
 			<Head title="Dashboard" />
 
-			<div className="space-y-6">
-				<div className="flex flex-wrap justify-between items-center gap-4">
-					<h1 className="font-bold text-2xl">Dashboard</h1>
-					<div className="flex items-center gap-2">
-						<Label htmlFor="year-filter">Data Tahun:</Label>
+			<div className="space-y-8">
+				<div className="flex flex-wrap justify-between items-center gap-4 bg-white/50 p-4 rounded-xl border border-blue-100 backdrop-blur-sm shadow-sm">
+					<div>
+						<h1 className="font-bold text-3xl text-blue-900 tracking-tight">Dashboard Admin</h1>
+						<p className="text-muted-foreground mt-1">Ringkasan pendaftaran PPDB</p>
+					</div>
+					<div className="flex items-center gap-3 bg-white p-2 rounded-lg border shadow-sm">
+						<Label htmlFor="year-filter" className="font-semibold text-blue-800">Tahun:</Label>
 						<Select value={tahun.toString()} onValueChange={handleYearChange}>
-							<SelectTrigger className="w-[120px]" id="year-filter">
+							<SelectTrigger className="w-[130px] border-none shadow-none focus:ring-0" id="year-filter">
 								<SelectValue placeholder="Pilih Tahun" />
 							</SelectTrigger>
 							<SelectContent>
@@ -114,106 +127,208 @@ export default function Dashboard({
 				</div>
 
 				<section>
-					<div className="gap-4 grid md:grid-cols-2 lg:grid-cols-4">
+					<div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 						<StatsCard
 							title="Total Pendaftar"
 							value={count.all}
 							icon={Users}
-							iconClassName="bg-amber-500"
+							iconClassName="bg-blue-600 shadow-blue-200"
+							description="Total siswa mendaftar"
 						/>
 						<StatsCard
 							title="Laki-laki"
 							value={compareSx.l}
 							icon={Users}
-							iconClassName="bg-blue-500"
+							iconClassName="bg-sky-500 shadow-sky-200"
+							description="Pendaftar laki-laki"
 						/>
 						<StatsCard
 							title="Perempuan"
 							value={compareSx.p}
 							icon={Users}
-							iconClassName="bg-pink-500"
+							iconClassName="bg-pink-500 shadow-pink-200"
+							description="Pendaftar perempuan"
+						/>
+						<StatsCard
+							title="Status Seleksi"
+							value={penerimaan.diterima}
+							icon={UserCheck}
+							iconClassName="bg-emerald-500 shadow-emerald-200"
+							description={`${penerimaan.diterima} Diterima / ${penerimaan.ditolak} Ditolak`}
 						/>
 					</div>
 				</section>
 
-				<section>
-					<div className="gap-4 grid md:grid-cols-2">
-						<Card>
-							<CardHeader>
-								<CardTitle>Gender Pendaftar</CardTitle>
+				<section className="space-y-4">
+					<h3 className="font-bold text-xl text-blue-900">Statistik Gelombang & Gender</h3>
+					<div className="gap-6 grid lg:grid-cols-2">
+						<Card className="border-none shadow-md overflow-hidden bg-white/80 backdrop-blur-sm">
+							<CardHeader className="bg-gradient-to-r from-blue-50 to-transparent border-b">
+								<CardTitle className="text-blue-800">Komposisi Gelombang</CardTitle>
 							</CardHeader>
-							<CardContent>
+							<CardContent className="pt-6">
+								<ResponsiveContainer width="100%" height={300}>
+									<BarChart data={gelombangStats} layout="vertical" margin={{ left: 20 }}>
+										<CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+										<XAxis type="number" hide />
+										<YAxis 
+											dataKey="nama" 
+											type="category" 
+											tick={{ fontSize: 12, fontWeight: 500 }}
+											width={80}
+										/>
+										<Tooltip 
+											cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+											contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+										/>
+										<Bar 
+											dataKey="jumlah" 
+											radius={[0, 4, 4, 0]} 
+											name="Pendaftar"
+										>
+											{gelombangStats.map((entry, index) => (
+												<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+											))}
+										</Bar>
+									</BarChart>
+								</ResponsiveContainer>
+							</CardContent>
+						</Card>
+
+						<Card className="border-none shadow-md overflow-hidden bg-white/80 backdrop-blur-sm">
+							<CardHeader className="bg-gradient-to-r from-pink-50 to-transparent border-b">
+								<CardTitle className="text-blue-800">Distribusi Gender</CardTitle>
+							</CardHeader>
+							<CardContent className="pt-6">
 								<ResponsiveContainer width="100%" height={300}>
 									<PieChart>
 										<Pie
 											data={genderData}
 											cx="50%"
 											cy="50%"
-											innerRadius={60}
-											outerRadius={80}
-											paddingAngle={5}
+											innerRadius={70}
+											outerRadius={100}
+											paddingAngle={8}
 											dataKey="value"
 										>
 											{genderData.map((entry, index) => (
-												<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+												<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
 											))}
 										</Pie>
-										<Tooltip />
-										<Legend />
+										<Tooltip 
+											contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+										/>
+										<Legend verticalAlign="bottom" height={36}/>
+									</PieChart>
+								</ResponsiveContainer>
+							</CardContent>
+						</Card>
+					</div>
+				</section>
+
+				<section className="space-y-4">
+					<h3 className="font-bold text-xl text-blue-900">Statistik Pembayaran</h3>
+					<div className="gap-6 grid lg:grid-cols-2">
+						<Card className="border-none shadow-md overflow-hidden bg-white/80 backdrop-blur-sm">
+							<CardHeader className="bg-gradient-to-r from-emerald-50 to-transparent border-b">
+								<CardTitle className="text-blue-800">Status Pembayaran</CardTitle>
+							</CardHeader>
+							<CardContent className="pt-6">
+								<ResponsiveContainer width="100%" height={300}>
+									<PieChart>
+										<Pie
+											data={paymentData}
+											cx="50%"
+											cy="50%"
+											innerRadius={70}
+											outerRadius={100}
+											paddingAngle={8}
+											dataKey="value"
+										>
+											{paymentData.map((entry, index) => (
+												<Cell key={`cell-${index}`} fill={PAYMENT_COLORS[index % PAYMENT_COLORS.length]} stroke="none" />
+											))}
+										</Pie>
+										<Tooltip 
+											contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+										/>
+										<Legend verticalAlign="bottom" height={36}/>
 									</PieChart>
 								</ResponsiveContainer>
 							</CardContent>
 						</Card>
 
-
+						<div className="grid grid-cols-1 gap-4">
+							<StatsCard
+								title="Lunas"
+								value={paymentStats.lunas}
+								icon={UserCheck}
+								iconClassName="bg-emerald-500 shadow-emerald-200"
+								description="Pembayaran selesai"
+							/>
+							<StatsCard
+								title="Mencicil"
+								value={paymentStats.nyicil}
+								icon={Laptop} // Using Laptop icon as a placeholder for installment
+								iconClassName="bg-amber-500 shadow-amber-200"
+								description="Pembayaran sebagian"
+							/>
+							<StatsCard
+								title="Belum Bayar"
+								value={paymentStats.belum_bayar}
+								icon={UserX}
+								iconClassName="bg-rose-500 shadow-rose-200"
+								description="Belum ada transaksi"
+							/>
+						</div>
 					</div>
 				</section>
 
-				<section>
-					<h3 className="mb-4 font-semibold text-xl">Analisis Tren Waktu</h3>
-					<div className="gap-4 grid md:grid-cols-2">
-						<Card>
-							<CardHeader>
-								<CardTitle>Tren Pendaftar Perbulan</CardTitle>
+				<section className="space-y-4">
+					<h3 className="font-bold text-xl text-blue-900">Analisis Tren Waktu</h3>
+					<div className="gap-6 grid lg:grid-cols-2">
+						<Card className="border-none shadow-md overflow-hidden bg-white/80 backdrop-blur-sm">
+							<CardHeader className="bg-gradient-to-r from-blue-50 to-transparent border-b">
+								<CardTitle className="text-blue-800">Tren Pendaftar Perbulan</CardTitle>
 							</CardHeader>
-							<CardContent className="px-1">
-								<ResponsiveContainer width="100%" height={300}>
+							<CardContent className="pt-6 px-1">
+								<ResponsiveContainer width="100%" height={320}>
 									<BarChart data={yearDiffData}>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="name" />
-										<YAxis />
-										<Tooltip />
+										<CartesianGrid strokeDasharray="3 3" vertical={false} />
+										<XAxis dataKey="name" tick={{ fontSize: 12 }} />
+										<YAxis tick={{ fontSize: 12 }} />
+										<Tooltip 
+											contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+										/>
 										<Legend />
-										<Bar dataKey={tahun.toString()} fill="#3b82f6" name={`Tahun ${tahun}`} />
-										<Bar dataKey={lastYear} fill="#94a3b8" name={`Tahun ${lastYear}`} />
+										<Bar dataKey={tahun.toString()} fill="#3b82f6" name={`Tahun ${tahun}`} radius={[4, 4, 0, 0]} />
+										<Bar dataKey={lastYear} fill="#94a3b8" name={`Tahun ${lastYear}`} radius={[4, 4, 0, 0]} />
 									</BarChart>
 								</ResponsiveContainer>
 							</CardContent>
 						</Card>
 
-
+						<Card className="border-none shadow-md overflow-hidden bg-white/80 backdrop-blur-sm">
+							<CardHeader className="bg-gradient-to-r from-purple-50 to-transparent border-b">
+								<CardTitle className="text-blue-800">Komposisi Gender over Time</CardTitle>
+							</CardHeader>
+							<CardContent className="pt-6">
+								<ResponsiveContainer width="100%" height={320}>
+									<BarChart data={genderOverTime}>
+										<CartesianGrid strokeDasharray="3 3" vertical={false} />
+										<XAxis dataKey="bulan" tick={{ fontSize: 12 }} />
+										<YAxis tick={{ fontSize: 12 }} />
+										<Tooltip 
+											contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+										/>
+										<Legend />
+										<Bar dataKey="laki" fill="#3b82f6" name="Laki-laki" stackId="a" radius={[0, 0, 0, 0]} />
+										<Bar dataKey="perempuan" fill="#ec4899" name="Perempuan" stackId="a" radius={[4, 4, 0, 0]} />
+									</BarChart>
+								</ResponsiveContainer>
+							</CardContent>
+						</Card>
 					</div>
-				</section>
-
-				<section>
-					<Card>
-						<CardHeader>
-							<CardTitle>Komposisi Gender over Time</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<ResponsiveContainer width="100%" height={350}>
-								<BarChart data={genderOverTime}>
-									<CartesianGrid strokeDasharray="3 3" />
-									<XAxis dataKey="bulan" />
-									<YAxis />
-									<Tooltip />
-									<Legend />
-									<Bar dataKey="laki" fill="#3b82f6" name="Laki-laki" stackId="a" />
-									<Bar dataKey="perempuan" fill="#ec4899" name="Perempuan" stackId="a" />
-								</BarChart>
-							</ResponsiveContainer>
-						</CardContent>
-					</Card>
 				</section>
 			</div>
 		</>
@@ -225,23 +340,28 @@ function StatsCard({
 	value,
 	icon: Icon,
 	iconClassName,
+	description,
 }: {
 	title: string;
 	value: number;
 	icon: React.ComponentType<{ className?: string }>;
 	iconClassName?: string;
+	description?: string;
 }) {
 	return (
-		<Card className="py-4">
-			<div className="flex items-center px-4 gap-4">
-				<div className={cn("p-3 rounded-lg shrink-0", iconClassName)}>
+		<Card className="border-none shadow-md overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300">
+			<div className="flex items-center p-5 gap-4">
+				<div className={cn("p-4 rounded-2xl shrink-0 shadow-lg", iconClassName)}>
 					<Icon className="w-6 h-6 text-white" />
 				</div>
-				<div>
-					<div className="text-2xl font-bold leading-none">{value}</div>
-					<div className="text-sm font-medium text-muted-foreground mt-1">
+				<div className="flex-1 overflow-hidden">
+					<div className="text-3xl font-bold leading-tight text-blue-950">{value.toLocaleString()}</div>
+					<div className="text-sm font-semibold text-blue-800/70 truncate uppercase tracking-wider">
 						{title}
 					</div>
+					{description && (
+						<p className="text-xs text-muted-foreground mt-1 truncate">{description}</p>
+					)}
 				</div>
 			</div>
 		</Card>
