@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "main" ]
 
-env:
-  IMAGE_NAME: zauzj/ppdb-smp
+permissions:
+  contents: write
 
 jobs:
 
@@ -21,30 +21,48 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
+    # =========================
+    # GENERATE TAG
+    # =========================
     - name: Generate Tag
       id: tag
       run: |
         git fetch --tags
-    
+
         LAST_TAG=$(git tag --sort=-v:refname | grep '^v' | head -n 1)
-    
+
         echo "Last tag: $LAST_TAG"
-    
+
         if [ -z "$LAST_TAG" ]; then
           NEW_TAG="v1.0.4"
         else
           VERSION=${LAST_TAG#v}
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-    
+
           PATCH=$((PATCH + 1))
           NEW_TAG="v$MAJOR.$MINOR.$PATCH"
         fi
-    
+
         echo "New tag: $NEW_TAG"
-    
         echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
+    # =========================
+    # CREATE & PUSH TAG (WAJIB)
+    # =========================
+    - name: Create & Push Git Tag
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+        git tag ${{ steps.tag.outputs.tag }} || echo "Tag exists"
+        git push origin ${{ steps.tag.outputs.tag }} || echo "Already pushed"
+
+    # =========================
+    # LOGIN DOCKER
+    # =========================
     - name: Login Docker Hub
       uses: docker/login-action@v3
       with:
@@ -52,7 +70,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     # =========================
-    # BUILD LARAVEL IMAGE
+    # BUILD & PUSH LARAVEL
     # =========================
     - name: Build Laravel Image
       run: |
@@ -66,7 +84,7 @@ jobs:
         docker push ${{ vars.IMAGE_NAME_LARAVEL }}:${{ steps.tag.outputs.tag }}
 
     # =========================
-    # BUILD NGINX IMAGE
+    # BUILD & PUSH NGINX
     # =========================
     - name: Build Nginx Image
       run: |
@@ -87,25 +105,37 @@ jobs:
     needs: build
 
     steps:
-    - name: Deploy to K3s
+    - name: Deploy + Migration
       run: |
         export KUBECONFIG=/home/nixie/k3s.yaml
 
-        # Laravel deployment update
-        # Nginx deployment update
+        echo "Deploy tag: ${{ needs.build.outputs.image_tag }}"
+
+        # =========================
+        # UPDATE IMAGE
+        # =========================
         kubectl set image deployment/nginx \
           nginx=${{ vars.IMAGE_NAME_NGINX }}:${{ needs.build.outputs.image_tag }} \
           -n app
-          
+
         kubectl set image deployment/laravel \
           laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
           -n app
 
-        
-        kubectl rollout status deployment/nginx -n app
-        kubectl rollout status deployment/laravel -n app
-    - name: Run Migration Job
-      run: |
+        # =========================
+        # WAIT ROLLOUT
+        # =========================
+        kubectl rollout status deployment/nginx -n app --timeout=180s
+        kubectl rollout status deployment/laravel -n app --timeout=180s
+
+        # =========================
+        # DELETE OLD JOB
+        # =========================
+        kubectl delete job laravel-migrate-${{ needs.build.outputs.image_tag }} -n app --ignore-not-found
+
+        # =========================
+        # RUN MIGRATION JOB
+        # =========================
         cat <<EOF | kubectl apply -f -
         apiVersion: batch/v1
         kind: Job
@@ -119,8 +149,20 @@ jobs:
               - name: laravel
                 image: ${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }}
                 command: ["php", "artisan", "migrate", "--seed", "--force"]
+                envFrom:
+                - secretRef:
+                    name: laravel-env
+                - secretRef:
+                    name: mysql-secret
               restartPolicy: Never
           backoffLimit: 1
         EOF
 
-        kubectl wait --for=condition=complete job/laravel-migrate-${{ needs.build.outputs.image_tag }} -n app --timeout=120s
+        # =========================
+        # WAIT MIGRATION
+        # =========================
+        kubectl wait \
+          --for=condition=complete \
+          job/laravel-migrate-${{ needs.build.outputs.image_tag }} \
+          -n app \
+          --timeout=300s
