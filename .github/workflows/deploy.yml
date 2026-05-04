@@ -129,10 +129,18 @@ jobs:
         kubectl rollout status deployment/laravel -n app --timeout=180s
 
         # =========================
+        # PREPARE JOB NAME
+        # =========================
+        SAFE_TAG=$(echo "${{ needs.build.outputs.image_tag }}" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
+        JOB_NAME="laravel-migrate-$SAFE_TAG"
+        
+        echo "Job name: $JOB_NAME"
+        
+        # =========================
         # DELETE OLD JOB
         # =========================
-        kubectl delete job laravel-migrate-${{ needs.build.outputs.image_tag }} -n app --ignore-not-found
-
+        kubectl delete job $JOB_NAME -n app --ignore-not-found
+        
         # =========================
         # RUN MIGRATION JOB
         # =========================
@@ -140,9 +148,11 @@ jobs:
         apiVersion: batch/v1
         kind: Job
         metadata:
-          name: laravel-migrate-${{ needs.build.outputs.image_tag }}
+          name: $JOB_NAME
           namespace: app
         spec:
+          ttlSecondsAfterFinished: 300
+          backoffLimit: 1
           template:
             spec:
               containers:
@@ -155,14 +165,18 @@ jobs:
                 - secretRef:
                     name: mysql-secret
               restartPolicy: Never
-          backoffLimit: 1
         EOF
-
+        
         # =========================
         # WAIT MIGRATION
         # =========================
         kubectl wait \
           --for=condition=complete \
-          job/laravel-migrate-${{ needs.build.outputs.image_tag }} \
+          job/$JOB_NAME \
           -n app \
           --timeout=300s
+        
+        # =========================
+        # DEBUG LOG (kalau gagal)
+        # =========================
+        kubectl logs job/$JOB_NAME -n app
