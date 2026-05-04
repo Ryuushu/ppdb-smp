@@ -150,9 +150,10 @@ class GelombangController extends Controller
             
             foreach ($acceptedPeserta as $p) {
                 if ($p->no_hp) {
+                    $downloadLink = route('ppdb.surat.download.public', $p->id);
                     $message = str_replace(
-                        ['{nama}', '{no_pendaftaran}', '{gelombang}'],
-                        [$p->nama_lengkap, $p->no_pendaftaran, $gelombang->nama],
+                        ['{nama}', '{no_pendaftaran}', '{gelombang}', '{link_surat}'],
+                        [$p->nama_lengkap, $p->no_pendaftaran, $gelombang->nama, $downloadLink],
                         $template
                     );
                     $fonnte->sendMessage($p->no_hp, $message);

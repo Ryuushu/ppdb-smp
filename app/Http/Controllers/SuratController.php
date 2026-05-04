@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DocumentFilterRequest;
 use App\Models\PesertaPPDB;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratController extends Controller
 {
@@ -12,7 +14,8 @@ class SuratController extends Controller
         $tahun = $request->input('tahun', now()->year);
         $search = $request->input('search');
 
-        $pesertappdb = PesertaPPDB::where('status_seleksi', 'lolos')
+        $pesertappdb = PesertaPPDB::with('gelombang')
+            ->where('status_seleksi', 'lolos')
             ->whereYear('created_at', $tahun)
             ->when($search, function ($query, $search) {
                 $query->where('nama_lengkap', 'like', "%{$search}%")
@@ -42,10 +45,13 @@ class SuratController extends Controller
         ]);
     }
 
-    public function cetakSurat()
+    public function cetakSurat(Request $request)
     {
-        $pesertappdb = PesertaPPDB::whereDiterima(1)
-            ->whereYear('created_at', now()->year)
+        $tahun = $request->input('tahun', now()->year);
+
+        $pesertappdb = PesertaPPDB::with('gelombang')
+            ->where('status_seleksi', 'lolos')
+            ->whereYear('created_at', $tahun)
             ->get();
 
         return view('pdf.cetak-surat', compact('pesertappdb'));
@@ -53,8 +59,20 @@ class SuratController extends Controller
 
     public function cetakSuratSingle($uuid)
     {
-        $pesertappdb = PesertaPPDB::whereId($uuid)->get();
+        $pesertappdb = PesertaPPDB::with('gelombang')->whereId($uuid)->get();
 
         return view('pdf.cetak-surat', compact('pesertappdb'));
+    }
+
+    public function downloadSurat($uuid)
+    {
+        $pesertappdb = PesertaPPDB::with('gelombang')->whereId($uuid)->get();
+        
+        $pdf = Pdf::loadView('pdf.cetak-surat', [
+            'pesertappdb' => $pesertappdb,
+            'isPdf' => true
+        ]);
+
+        return $pdf->download('Surat_Diterima_' . $pesertappdb->first()->nama_lengkap . '.pdf');
     }
 }

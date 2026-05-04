@@ -197,6 +197,8 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         Route::post('/cetak/surat/{uuid}/single', [SuratController::class, 'cetakSuratSingle'])->name('ppdb.cetak.surat');
     });
 
+    Route::get('/download/surat/{uuid}', [SuratController::class, 'downloadSurat'])->name('ppdb.surat.download.public');
+
     Route::prefix('formulir')->group(function () {
         Route::get('show', [FormulirController::class, 'showProgramPeserta'])->name('ppdb.formulir.show.program');
 

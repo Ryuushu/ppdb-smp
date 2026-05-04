@@ -227,9 +227,10 @@
                     $template = $setting->body['pesan_kelulusan'] ?? "Selamat {nama}! Anda dinyatakan LULUS seleksi PPDB. Silakan melakukan daftar ulang.";
                     
                     if ($peserta->no_hp) {
+                        $downloadLink = route('ppdb.surat.download.public', $peserta->id);
                         $message = str_replace(
-                            ['{nama}', '{no_pendaftaran}', '{gelombang}'],
-                            [$peserta->nama_lengkap, $peserta->no_pendaftaran, $peserta->gelombang?->nama ?? ''],
+                            ['{nama}', '{no_pendaftaran}', '{gelombang}', '{link_surat}'],
+                            [$peserta->nama_lengkap, $peserta->no_pendaftaran, $peserta->gelombang?->nama ?? '', $downloadLink],
                             $template
                         );
                         $fonnte->sendMessage($peserta->no_hp, $message);
