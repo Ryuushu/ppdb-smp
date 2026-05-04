@@ -16,6 +16,7 @@ import { ChevronLeft } from "lucide-react";
 
 export default function Create({ title }: { title: string }) {
 	const { flash } = usePage<any>().props;
+    const today = new Date().toISOString().split('T')[0];
 	const { data, setData, post, processing, errors } = useForm({
 		nama: "",
 		deskripsi: "",
@@ -102,6 +103,7 @@ export default function Create({ title }: { title: string }) {
 										type="date"
 										value={data.tanggal_mulai}
 										onChange={(e) => setData("tanggal_mulai", e.target.value)}
+                                        min={today}
 										required
 									/>
 									{errors.tanggal_mulai && (
@@ -116,6 +118,7 @@ export default function Create({ title }: { title: string }) {
 										type="date"
 										value={data.tanggal_selesai}
 										onChange={(e) => setData("tanggal_selesai", e.target.value)}
+                                        min={data.tanggal_mulai || today}
 										required
 									/>
 									{errors.tanggal_selesai && (
@@ -132,6 +135,7 @@ export default function Create({ title }: { title: string }) {
 										type="date"
 										value={data.tanggal_pengumuman}
 										onChange={(e) => setData("tanggal_pengumuman", e.target.value)}
+                                        min={data.tanggal_selesai || today}
 									/>
 									<p className="text-xs text-muted-foreground">
 										Dapat diisi nanti atau akan otomatis diisi jika dibiarkan kosong.

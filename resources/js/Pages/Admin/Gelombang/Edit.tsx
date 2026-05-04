@@ -16,6 +16,7 @@ import { ChevronLeft } from "lucide-react";
 
 export default function Edit({ gelombang, title }: { gelombang: any, title: string }) {
 	const { flash } = usePage<any>().props;
+    const today = new Date().toISOString().split('T')[0];
 
     // Helper to format date for input type="date" (YYYY-MM-DD)
     const formatDate = (dateString: string | null) => {
@@ -109,6 +110,7 @@ export default function Edit({ gelombang, title }: { gelombang: any, title: stri
 										type="date"
 										value={data.tanggal_mulai}
 										onChange={(e) => setData("tanggal_mulai", e.target.value)}
+                                        min={today}
 										required
 									/>
 									{errors.tanggal_mulai && (
@@ -123,6 +125,7 @@ export default function Edit({ gelombang, title }: { gelombang: any, title: stri
 										type="date"
 										value={data.tanggal_selesai}
 										onChange={(e) => setData("tanggal_selesai", e.target.value)}
+                                        min={data.tanggal_mulai || today}
 										required
 									/>
 									{errors.tanggal_selesai && (
@@ -139,6 +142,7 @@ export default function Edit({ gelombang, title }: { gelombang: any, title: stri
 										type="date"
 										value={data.tanggal_pengumuman}
 										onChange={(e) => setData("tanggal_pengumuman", e.target.value)}
+                                        min={data.tanggal_selesai || today}
 									/>
 									<p className="text-xs text-muted-foreground">
 										Dapat diisi nanti atau akan otomatis diisi jika dibiarkan kosong.
