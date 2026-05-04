@@ -64,16 +64,6 @@ class SPKController extends Controller
 
     public function hitungRankingManual($gelombangId)
     {
-        $kriteria = KriteriaSPK::where('gelombang_id', $gelombangId)->get();
-        if ($kriteria->isEmpty()) {
-            return back()->with('error', 'Kriteria belum diatur.');
-        }
-
-        $totalBobot = $kriteria->sum('bobot');
-        if (abs($totalBobot - 1.0) > 0.001) {
-            return back()->with('error', 'Total bobot kriteria harus pas 1.00 (100%). Saat ini: ' . number_format($totalBobot, 2));
-        }
-
         \App\Jobs\CalculateSPKRanking::dispatchSync($gelombangId);
 
         return back()->with('success', 'Perhitungan SPK selesai. Ranking telah diperbarui.');

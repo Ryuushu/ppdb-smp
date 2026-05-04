@@ -63,8 +63,6 @@ export default function Show({
 		}
 	};
 
-	const totalBobot = gelombang.kriteria?.reduce((acc: number, curr: any) => acc + parseFloat(curr.bobot), 0) || 0;
-
 	const handleStatusChange = (newStatus: string) => {
 		setStatusData('status', newStatus);
 		router.put(route("admin.gelombang.update_status", gelombang.id), { status: newStatus }, {
@@ -153,8 +151,6 @@ export default function Show({
 						</CardContent>
 					</Card>
 
-					{/* Kriteria SPK section removed as per refactor */}
-
 					<Card className="col-span-1 md:col-span-2">
 						<CardHeader className="flex flex-row items-center justify-between">
 							<div>
@@ -164,7 +160,25 @@ export default function Show({
 								</CardDescription>
 							</div>
 							<div className="flex gap-2">
-								{/* Ranking and Announcement buttons removed for selection phase */}
+								<Button 
+									variant="outline" 
+									size="sm" 
+									onClick={hitungRanking}
+									disabled={calculating}
+								>
+									<Calculator className="w-4 h-4 mr-2" />
+									{calculating ? "Menghitung..." : "Hitung Ranking"}
+								</Button>
+								<Button 
+									variant="default" 
+									size="sm" 
+									onClick={umumkanHasil}
+									disabled={announcing}
+									className="bg-blue-600 hover:bg-blue-700"
+								>
+									<Megaphone className="w-4 h-4 mr-2" />
+									{announcing ? "Mengumumkan..." : "Umumkan Hasil"}
+								</Button>
 							</div>
 						</CardHeader>
 						<CardContent>
@@ -209,6 +223,11 @@ export default function Show({
 															<Button variant="outline" size="sm" asChild>
 																<Link href={route("ppdb.show.peserta", p.id)}>
 																	<Eye className="w-4 h-4 mr-1" /> Identitas
+																</Link>
+															</Button>
+															<Button variant="secondary" size="sm" asChild>
+																<Link href={route("admin.spk.input_nilai", p.id)}>
+																	<PenSquare className="w-4 h-4 mr-1" /> Nilai
 																</Link>
 															</Button>
 														</div>

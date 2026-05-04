@@ -179,6 +179,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
         // cetak
         Route::post('/cetak/kwitansi/{uuid}', [KwitansiController::class, 'cetakKwitansi'])->name('ppdb.cetak.kwitansi');
         Route::post('/cetak/kwitansi/{uuid}/{id}', [KwitansiController::class, 'cetakKwitansiSingle'])->name('ppdb.cetak.kwitansi.single');
+        Route::post('/kwitansi/kirim-notif/{uuid}', [KwitansiController::class, 'kirimNotifWA'])->name('ppdb.kwitansi.kirim-notif');
 
         // rekap kwitansi
         Route::get('/rekap', [KwitansiController::class, 'rekapKwitansi'])->name('ppdb.rekap.kwitansi');

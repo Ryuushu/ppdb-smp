@@ -8,6 +8,9 @@ use App\Http\Requests\DocumentFilterRequest;
 use App\Http\Requests\StoreKwitansiRequest;
 use App\Models\Kwitansi;
 use App\Models\PesertaPPDB;
+use App\Models\PpdbSetting;
+use App\Models\AdminItem;
+use App\Services\FonnteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -46,9 +49,42 @@ class KwitansiController extends Controller
     public function storeKwitansi(StoreKwitansiRequest $request, $uuid)
     {
         $data = $request->validated();
-        $peserta = PesertaPPDB::findOrFail($uuid);
+        $peserta = PesertaPPDB::with(['gelombang', 'adminItemExtras.master', 'kwitansi'])->findOrFail($uuid);
 
         $peserta->kwitansi()->create($data + ['user_id' => $request->user()->id]);
+
+        // Auto-accept and notify if fully paid
+        $adminItems = \App\Models\AdminItem::all();
+        $totalBillMale = (float) $adminItems->sum('amount_male');
+        $totalBillFemale = (float) $adminItems->sum('amount_female');
+
+        $baseBill = $peserta->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;
+        $extrasBill = $peserta->adminItemExtras->sum(function ($extra) use ($peserta) {
+            return $peserta->jenis_kelamin === 'l' ? (float) $extra->amount_male : (float) $extra->amount_female;
+        });
+
+        $totalBill = $baseBill + $extrasBill;
+        $totalPaid = $peserta->kwitansi()->whereNull('deleted_at')->sum('nominal');
+
+        if ($totalPaid >= $totalBill && $peserta->diterima != 1) {
+            $peserta->update(['diterima' => 1]);
+
+            // Send WhatsApp notification
+            $setting = PpdbSetting::latest()->first();
+            if ($setting && !empty($setting->body['fonnte_token'])) {
+                $fonnte = new FonnteService();
+                $template = $setting->body['pesan_kelulusan'] ?? "Selamat {nama}! Pembayaran Anda telah LUNAS dan Anda dinyatakan LULUS seleksi PPDB. Terima kasih.";
+                
+                if ($peserta->no_hp) {
+                    $message = str_replace(
+                        ['{nama}', '{no_pendaftaran}', '{gelombang}'],
+                        [$peserta->nama_lengkap, $peserta->no_pendaftaran, $peserta->gelombang?->nama ?? ''],
+                        $template
+                    );
+                    $fonnte->sendMessage($peserta->no_hp, $message);
+                }
+            }
+        }
 
         session()->flash('success', 'Kwitansi Berhasil di Tambahkan');
 
@@ -261,5 +297,50 @@ class KwitansiController extends Controller
             'search' => $search,
             'status' => $statusFilter,
         ]);
+    }
+
+    public function kirimNotifWA(Request $request, $uuid)
+    {
+        $peserta = PesertaPPDB::with(['kwitansi', 'adminItemExtras'])->findOrFail($uuid);
+        $setting = PpdbSetting::latest()->first();
+        
+        if (!$setting || empty($setting->body['fonnte_token'])) {
+            return back()->with('error', 'Fonnte Token belum diatur di pengaturan.');
+        }
+
+        $adminItems = AdminItem::all();
+        $totalBillMale = (float) $adminItems->sum('amount_male');
+        $totalBillFemale = (float) $adminItems->sum('amount_female');
+
+        $baseBill = $peserta->jenis_kelamin === 'l' ? $totalBillMale : $totalBillFemale;
+        $extrasBill = $peserta->adminItemExtras->sum(function ($extra) use ($peserta) {
+            return $peserta->jenis_kelamin === 'l' ? (float) $extra->amount_male : (float) $extra->amount_female;
+        });
+
+        $totalBill = $baseBill + $extrasBill;
+        $totalPaid = $peserta->kwitansi->whereNull('deleted_at')->sum('nominal');
+
+        if ($totalPaid >= $totalBill) {
+            return back()->with('error', 'Siswa sudah lunas, tidak perlu notifikasi.');
+        }
+
+        $sisa = $totalBill - $totalPaid;
+        $template = $setting->body['pesan_tagihan'] ?? "Halo {nama}, kami menginformasikan bahwa pembayaran pendaftaran PPDB atas nama {nama} ({no_pendaftaran}) masih memiliki sisa tagihan sebesar {tagihan}. Mohon segera melakukan pelunasan. Terima kasih.";
+        
+        $message = str_replace(
+            ['{nama}', '{no_pendaftaran}', '{tagihan}', '{total_tagihan}'],
+            [$peserta->nama_lengkap, $peserta->no_pendaftaran, number_format($sisa, 0, ',', '.'), number_format($totalBill, 0, ',', '.')],
+            $template
+        );
+
+        $fonnte = new FonnteService();
+        $response = $fonnte->sendMessage($peserta->no_hp, $message);
+
+        if ($response['status'] ?? false) {
+            $peserta->update(['last_notified_at' => now()]);
+            return back()->with('success', 'Notifikasi WhatsApp berhasil dikirim.');
+        }
+
+        return back()->with('error', 'Gagal mengirim WhatsApp: ' . ($response['reason'] ?? 'Terjadi kesalahan pada API Fonnte'));
     }
 }

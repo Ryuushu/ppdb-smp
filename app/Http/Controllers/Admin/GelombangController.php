@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gelombang;
+use App\Models\PesertaPPDB;
+use App\Models\PpdbSetting;
+use App\Services\FonnteService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -136,6 +139,26 @@ class GelombangController extends Controller
 
         // Update gelombang status to pengumuman
         $gelombang->update(['status' => 'pengumuman']);
+
+        // Send WhatsApp notifications to accepted students
+        $setting = PpdbSetting::latest()->first();
+        if ($setting && !empty($setting->body['fonnte_token'])) {
+            $fonnte = new FonnteService();
+            $template = $setting->body['pesan_kelulusan'] ?? "Selamat {nama}! Anda dinyatakan LULUS seleksi PPDB Gelombang {gelombang}. Silakan melakukan daftar ulang.";
+            
+            $acceptedPeserta = PesertaPPDB::where('gelombang_id', $id)->where('status_seleksi', 'lolos')->get();
+            
+            foreach ($acceptedPeserta as $p) {
+                if ($p->no_hp) {
+                    $message = str_replace(
+                        ['{nama}', '{no_pendaftaran}', '{gelombang}'],
+                        [$p->nama_lengkap, $p->no_pendaftaran, $gelombang->nama],
+                        $template
+                    );
+                    $fonnte->sendMessage($p->no_hp, $message);
+                }
+            }
+        }
 
         return back()->with('success', "Hasil pendaftaran gelombang {$gelombang->nama} telah diumumkan. " . min($peserta->count(), $kuota) . " peserta dinyatakan lolos.");
     }

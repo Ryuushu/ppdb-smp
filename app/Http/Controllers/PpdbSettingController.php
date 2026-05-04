@@ -27,10 +27,12 @@ class PpdbSettingController extends Controller
 
         $batas->update([
             'body' => [
-                'batas_akhir_ppdb' => $request->input('batas_akhir_ppdb'),
                 'no_surat' => $request->input('no_surat'),
-                'hasil_seleksi' => $request->input('hasil_seleksi'),
                 'whatsapp' => $request->input('whatsapp'),
+                'fonnte_token' => $request->input('fonnte_token'),
+                'jatuh_tempo_cicilan' => $request->input('jatuh_tempo_cicilan'),
+                'pesan_tagihan' => $request->input('pesan_tagihan'),
+                'pesan_kelulusan' => $request->input('pesan_kelulusan'),
             ],
         ]);
 

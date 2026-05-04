@@ -78,7 +78,7 @@ export function Navbar({ onShowBrosur }: { onShowBrosur?: () => void }) {
 						href="/"
 						className="flex items-center gap-3 group"
 					>
-						<div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-primary/30 group-hover:scale-105 transition-all duration-300">
+						<div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-primary/30 group-hover:scale-105 transition-all duration-300 dark:bg-white/90 dark:p-1">
 							<img
 								src="/img/logo-1.png"
 								alt="MI Nurul Ulum Logo"

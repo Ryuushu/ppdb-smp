@@ -120,7 +120,8 @@ const steps = [
 ];
 
 export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
-	const { data, setData, put, processing, errors } = useForm({
+	const { data, setData, post, processing, errors } = useForm({
+        _method: "put",
         admin_item_ids: (peserta.admin_item_extras || []).map(i => i.id) as number[],
 		// Identitas Diri
 		nama_lengkap: peserta.nama_lengkap || "",
@@ -183,7 +184,10 @@ export default function Edit({ peserta, masterDocuments, adminItems }: Props) {
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		put(route("ppdb.edit.peserta.update", peserta.id));
+        // Use post with _method: 'put' (in data) to support file uploads in multipart/form-data
+		post(route("ppdb.edit.peserta.update", peserta.id), {
+            forceFormData: true,
+        });
 	};
 
 	const handleDelete = () => {
