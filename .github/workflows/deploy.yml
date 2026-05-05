@@ -133,8 +133,10 @@ jobs:
         # =========================
         SAFE_TAG=$(echo "${{ needs.build.outputs.image_tag }}" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
         JOB_NAME="laravel-migrate-$SAFE_TAG"
-        
-        echo "Job name: $JOB_NAME"
+        kubectl get secret mysql-secret -n infra -o yaml \
+        | sed '/resourceVersion\|uid\|creationTimestamp\|managedFields/d' \
+        | sed 's/namespace: infra/namespace: app/' \
+        | kubectl apply -f -
         
         # =========================
         # DELETE OLD JOB
