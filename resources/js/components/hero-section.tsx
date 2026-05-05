@@ -101,7 +101,7 @@ export function HeroSection({ onShowBrosur, settings }: { onShowBrosur: () => vo
 					<span className="block drop-shadow-lg">
 						Selamat Datang di
 					</span>
-					<span className="block drop-shadow-lg mt-3 text-primary">
+					<span className="block drop-shadow-lg mt-3 text-blue-400 dark:text-primary">
 						MI Nurul Ulum
 					</span>
 				</h1>

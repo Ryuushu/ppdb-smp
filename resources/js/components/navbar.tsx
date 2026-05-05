@@ -54,17 +54,22 @@ export function Navbar({ onShowBrosur }: { onShowBrosur?: () => void }) {
 	const navBackground =
 		scrolled || isRegistrationPage
 			? "bg-background/90 backdrop-blur-xl shadow-lg py-2 border-b border-border"
-			: "bg-transparent py-4";
+			: "bg-gradient-to-b from-black/50 to-transparent py-4";
 
 	const textColor =
 		scrolled || isRegistrationPage
 			? "text-muted-foreground hover:text-primary"
-			: "text-white/80 hover:text-white";
+			: "text-white/90 hover:text-white drop-shadow-md";
 
 	const logoTextColor =
 		scrolled || isRegistrationPage
-			? "text-foreground"
+			? "text-primary"
 			: "text-white drop-shadow-lg";
+
+	const logoBg =
+		scrolled || isRegistrationPage
+			? "bg-transparent dark:bg-white/90 dark:p-1"
+			: "bg-white/90 p-1 shadow-lg";
 
 	return (
 		<nav
@@ -78,14 +83,14 @@ export function Navbar({ onShowBrosur }: { onShowBrosur?: () => void }) {
 						href="/"
 						className="flex items-center gap-3 group"
 					>
-						<div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-primary/30 group-hover:scale-105 transition-all duration-300 dark:bg-white/90 dark:p-1">
+						<div className={`w-12 h-12 rounded-2xl overflow-hidden group-hover:shadow-primary/30 group-hover:scale-105 transition-all duration-300 ${logoBg}`}>
 							<img
 								src="/img/logo-1.png"
 								alt="MI Nurul Ulum Logo"
 								className="w-full h-full object-contain"
 							/>
 						</div>
-						<span className="font-bold text-primary text-xl tracking-tight">
+						<span className={`font-bold text-xl tracking-tight transition-colors duration-300 ${logoTextColor}`}>
 							MI NURUL ULUM
 						</span>
 					</Link>
