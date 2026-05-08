@@ -131,6 +131,7 @@ Route::prefix('/dashboard')->middleware('auth')->group(function () {
     // Pemetaan Kelas
     Route::prefix('pemetaan-kelas')->group(function () {
         Route::get('/', [PemetaanKelasController::class, 'index'])->name('admin.pemetaan-kelas.index');
+        Route::post('/update-weights', [PemetaanKelasController::class, 'updateWeights'])->name('admin.pemetaan-kelas.update_weights');
         Route::get('/setting-ranges', [PemetaanKelasController::class, 'settingRanges'])->name('admin.pemetaan-kelas.setting_ranges');
         Route::post('/setting-ranges', [PemetaanKelasController::class, 'storeRanges'])->name('admin.pemetaan-kelas.store_ranges');
         Route::delete('/setting-ranges/{id}', [PemetaanKelasController::class, 'deleteRange'])->name('admin.pemetaan-kelas.delete_range');

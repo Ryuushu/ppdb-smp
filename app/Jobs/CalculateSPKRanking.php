@@ -48,8 +48,13 @@ class CalculateSPKRanking implements ShouldQueue
         if ($maxTulis == 0) $maxTulis = 1;
         if ($maxHitung == 0) $maxHitung = 1;
 
-        // Bobot seimbang 33.33% tiap kriteria
-        $bobot = 1/3;
+        // Ambil bobot dari setting
+        $setting = \App\Models\PpdbSetting::latest()->first();
+        $bobotBody = $setting ? $setting->body : [];
+        
+        $bobotBaca = ($bobotBody['bobot_baca'] ?? 33.33) / 100;
+        $bobotTulis = ($bobotBody['bobot_tulis'] ?? 33.33) / 100;
+        $bobotHitung = ($bobotBody['bobot_hitung'] ?? 33.34) / 100;
 
         // 2. Hitung skor untuk masing-masing peserta
         $skorData = [];
@@ -64,11 +69,9 @@ class CalculateSPKRanking implements ShouldQueue
             $normHitung = $hitungRaw / $maxHitung;
 
             // Bobot * Normalisasi
-            $skorTotal = ($normBaca * $bobot) + ($normTulis * $bobot) + ($normHitung * $bobot);
+            $skorTotal = ($normBaca * $bobotBaca) + ($normTulis * $bobotTulis) + ($normHitung * $bobotHitung);
 
-            // Skala 0-100 (karena normalisasi max 1.0 * total bobot 1.0 = 1.0. Jadi dikali 100 biar lebih manusiawi jika diinginkan
-            // Tapi sebelumnya logic Class Mapping assumes total_score_mapped directly dari skor_spk.
-            // Biar gampang mapping 0-100, kita kalikan 100
+            // Skala 0-100
             $skorTotal100 = $skorTotal * 100;
 
             $skorData[] = [

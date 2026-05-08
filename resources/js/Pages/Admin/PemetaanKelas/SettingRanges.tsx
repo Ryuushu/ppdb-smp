@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
-import { Plus, Trash2, ChevronLeft, Pencil, Check, X } from "lucide-react";
+import { Plus, Trash2, ChevronLeft, Pencil, Check, X, Settings2, Save } from "lucide-react";
 import { useState } from "react";
 
 interface ClassRange {
@@ -130,11 +130,86 @@ function EditableRow({ range, onDelete }: { range: ClassRange; onDelete: (id: nu
 	);
 }
 
+function WeightSettings({ initialWeights }: { initialWeights: { baca: number, tulis: number, hitung: number } }) {
+	const [baca, setBaca] = useState(initialWeights.baca.toString());
+	const [tulis, setTulis] = useState(initialWeights.tulis.toString());
+	const [hitung, setHitung] = useState(initialWeights.hitung.toString());
+	const [isProcessing, setIsProcessing] = useState(false);
+
+	const total = (parseFloat(baca) || 0) + (parseFloat(tulis) || 0) + (parseFloat(hitung) || 0);
+	const isInvalid = Math.abs(total - 100) > 0.01;
+
+	const handleSave = () => {
+		setIsProcessing(true);
+		router.post(route("admin.pemetaan-kelas.update_weights"), {
+			baca,
+			tulis,
+			hitung
+		}, {
+			preserveScroll: true,
+			onFinish: () => setIsProcessing(false)
+		});
+	};
+
+	return (
+		<Card className="bg-muted/30 border-dashed">
+			<CardHeader className="py-4">
+				<CardTitle className="text-sm flex items-center gap-2">
+					<Settings2 className="w-4 h-4" /> Pengaturan Bobot SPK (B|T|H)
+				</CardTitle>
+				<CardDescription className="text-xs">
+					Tentukan persentase bobot untuk masing-masing kriteria. Total harus 100%.
+				</CardDescription>
+			</CardHeader>
+			<CardContent className="pb-4">
+				<div className="flex flex-wrap items-end gap-4">
+					<div className="space-y-1">
+						<Label className="text-[10px] font-bold uppercase text-muted-foreground">Baca (%)</Label>
+						<Input 
+							type="number" value={baca} onChange={e => setBaca(e.target.value)}
+							className="w-24 h-9 text-center font-mono"
+						/>
+					</div>
+					<div className="space-y-1">
+						<Label className="text-[10px] font-bold uppercase text-muted-foreground">Tulis (%)</Label>
+						<Input 
+							type="number" value={tulis} onChange={e => setTulis(e.target.value)}
+							className="w-24 h-9 text-center font-mono"
+						/>
+					</div>
+					<div className="space-y-1">
+						<Label className="text-[10px] font-bold uppercase text-muted-foreground">Hitung (%)</Label>
+						<Input 
+							type="number" value={hitung} onChange={e => setHitung(e.target.value)}
+							className="w-24 h-9 text-center font-mono"
+						/>
+					</div>
+					<div className="flex flex-col gap-1">
+						<Button 
+							onClick={handleSave} 
+							disabled={isProcessing || isInvalid}
+							size="sm"
+							className="h-9 px-4"
+						>
+							<Save className="w-4 h-4 mr-2" /> Simpan Bobot
+						</Button>
+						{isInvalid && (
+							<span className="text-[10px] text-red-500 font-medium">Total: {total.toFixed(2)}% (Harus 100%)</span>
+						)}
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
+
 export default function SettingRanges({
 	ranges,
+	weights,
 	title,
 }: {
 	ranges: ClassRange[];
+	weights: { baca: number, tulis: number, hitung: number };
 	title: string;
 }) {
 	const { flash } = usePage<any>().props;
@@ -170,6 +245,8 @@ export default function SettingRanges({
 						<ChevronLeft className="w-4 h-4 mr-2" /> Kembali ke Pemetaan Kelas
 					</Link>
 				</Button>
+
+				<WeightSettings initialWeights={weights} />
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<Card className="col-span-1 h-fit">

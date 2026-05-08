@@ -82,8 +82,16 @@ class PemetaanKelasController extends Controller
             return $p;
         });
 
+        $setting = \App\Models\PpdbSetting::latest()->first();
+        $weights = [
+            'baca' => $setting->body['bobot_baca'] ?? 33.33,
+            'tulis' => $setting->body['bobot_tulis'] ?? 33.33,
+            'hitung' => $setting->body['bobot_hitung'] ?? 33.34,
+        ];
+
         return Inertia::render('Admin/PemetaanKelas/Index', [
             'peserta' => $peserta,
+            'weights' => $weights,
             'title' => 'Pemetaan Kelas Siswa Baru'
         ]);
     }
@@ -91,8 +99,17 @@ class PemetaanKelasController extends Controller
     public function settingRanges()
     {
         $ranges = ClassRange::orderBy('min_score', 'desc')->get();
+        
+        $setting = \App\Models\PpdbSetting::latest()->first();
+        $weights = [
+            'baca' => $setting->body['bobot_baca'] ?? 33.33,
+            'tulis' => $setting->body['bobot_tulis'] ?? 33.33,
+            'hitung' => $setting->body['bobot_hitung'] ?? 33.34,
+        ];
+
         return Inertia::render('Admin/PemetaanKelas/SettingRanges', [
             'ranges' => $ranges,
+            'weights' => $weights,
             'title' => 'Pengaturan Rentang Kelas'
         ]);
     }
@@ -149,5 +166,31 @@ class PemetaanKelasController extends Controller
         ClassRange::findOrFail($id)->update($validated);
 
         return back()->with('success', 'Rentang kelas berhasil diperbarui.');
+    }
+
+    public function updateWeights(Request $request)
+    {
+        $validated = $request->validate([
+            'baca' => 'required|numeric|min:0|max:100',
+            'tulis' => 'required|numeric|min:0|max:100',
+            'hitung' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $setting = \App\Models\PpdbSetting::latest()->first();
+        if (!$setting) {
+            $setting = \App\Models\PpdbSetting::create(['body' => []]);
+        }
+
+        $body = $setting->body;
+        $body['bobot_baca'] = $validated['baca'];
+        $body['bobot_tulis'] = $validated['tulis'];
+        $body['bobot_hitung'] = $validated['hitung'];
+
+        $setting->update(['body' => $body]);
+
+        // Recalculate SPK for all students since weights changed globally
+        \App\Jobs\CalculateSPKRanking::dispatchSync(null);
+
+        return back()->with('success', 'Bobot kriteria berhasil diperbarui dan ranking dihitung ulang.');
     }
 }

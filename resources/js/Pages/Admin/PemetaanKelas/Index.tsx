@@ -11,7 +11,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Head, Link, usePage, router } from "@inertiajs/react";
-import { Settings2, UserCheck, PenSquare, Eye, Save } from "lucide-react";
+import { Settings2, UserCheck, PenSquare, Eye, Save, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 
@@ -79,6 +79,12 @@ export default function Index({
 	title: string;
 }) {
 	const { flash } = usePage<any>().props;
+	const [search, setSearch] = useState("");
+
+	const filteredPeserta = peserta.filter((p) =>
+		p.nama_lengkap.toLowerCase().includes(search.toLowerCase()) ||
+		p.no_pendaftaran.toLowerCase().includes(search.toLowerCase())
+	);
 
 	return (
 		<>
@@ -101,6 +107,15 @@ export default function Index({
 						</Button>
 					</CardHeader>
 					<CardContent>
+						<div className="mb-4 relative">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+							<Input
+								placeholder="Cari nama siswa atau no pendaftaran..."
+								className="pl-10"
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+							/>
+						</div>
 						<div className="rounded-md border">
 							<Table>
 								<TableHeader>
@@ -113,14 +128,14 @@ export default function Index({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{peserta.length === 0 ? (
+									{filteredPeserta.length === 0 ? (
 										<TableRow>
 											<TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-												Tidak ada data siswa pada gelombang ini.
+												{search ? "Tidak ada siswa yang cocok dengan pencarian." : "Tidak ada data siswa pada gelombang ini."}
 											</TableCell>
 										</TableRow>
 									) : (
-										peserta.map((p) => (
+										filteredPeserta.map((p) => (
 											<TableRow key={p.id}>
 												<TableCell className="font-medium">
 													{p.nama_lengkap}
