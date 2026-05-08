@@ -29,6 +29,16 @@ Route::get('/debug/host', function () {
         'hostname' => gethostname(),
     ]);
 });
+Route::get('/stress', function () {
+
+    $sum = 0;
+
+    for ($i = 0; $i < 500000000; $i++) {
+        $sum += $i;
+    }
+
+    return $sum;
+});
 
 Route::get('/health', function () {
     return response()->json(['ok' => true]);
