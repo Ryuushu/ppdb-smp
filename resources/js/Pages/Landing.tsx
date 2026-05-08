@@ -23,7 +23,7 @@ interface Props {
     landingContents: Record<string, any[]>;
 }
 
-export default function Home({ gelombang, setting, masterDocuments, landingSettings, landingContents }: Props) {
+export default function Home({ gelombang, setting, masterDocuments, landingSettings = {}, landingContents = {} }: Props) {
 	const [isBrosurOpen, setIsBrosurOpen] = useState(false);
 
 	return (
@@ -32,14 +32,14 @@ export default function Home({ gelombang, setting, masterDocuments, landingSetti
 			<Navbar onShowBrosur={() => setIsBrosurOpen(true)} />
 			<HeroSection onShowBrosur={() => setIsBrosurOpen(true)} settings={landingSettings} />
             
-            <TimelineSection data={landingContents.timeline || []} />
-            <AlurSection data={landingContents.alur || []} />
+            <TimelineSection data={landingContents?.timeline || []} />
+            <AlurSection data={landingContents?.alur || []} />
             <VisiMisiSection settings={landingSettings || {}} />
-            <KeunggulanSection data={landingContents.keunggulan || []} />
-            <FasilitasSectionNew data={landingContents.fasilitas || []} />
-            <KegiatanPrestasiSection kegiatan={landingContents.kegiatan || []} prestasi={landingContents.prestasi || []} />
-            <GuruSection data={landingContents.guru || []} />
-            <ExtracurricularSection data={landingContents.ekstra || []} />
+            <KeunggulanSection data={landingContents?.keunggulan || []} />
+            <FasilitasSectionNew data={landingContents?.fasilitas || []} />
+            <KegiatanPrestasiSection kegiatan={landingContents?.kegiatan || []} prestasi={landingContents?.prestasi || []} />
+            <GuruSection data={landingContents?.guru || []} />
+            <ExtracurricularSection data={landingContents?.ekstra || []} />
 
 			<Footer />
 

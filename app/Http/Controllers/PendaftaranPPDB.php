@@ -77,8 +77,8 @@
                 }
             }
 
-            // Queue SPK ranking calculation after new registration
-            \App\Jobs\CalculateSPKRanking::dispatch($data['gelombang_id']);
+            // // Queue SPK ranking calculation after new registration
+            // \App\Jobs\CalculateSPKRanking::dispatch($data['gelombang_id']);
 
             session()->flash('success', 'Peserta berhasil didaftarkan. Silakan lanjut menginput nilai SPK.');
 
@@ -201,7 +201,7 @@
             }
 
             // Queue SPK ranking calculation after new registration
-            \App\Jobs\CalculateSPKRanking::dispatch($data['gelombang_id']);
+            // \App\Jobs\CalculateSPKRanking::dispatch($data['gelombang_id']);
 
             session()->flash('success', 'Terima kasih, anda berhasil mendaftar dengan nomor pendaftaran '.$ppdb->no_pendaftaran);
 
