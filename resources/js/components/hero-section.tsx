@@ -99,10 +99,10 @@ export function HeroSection({ onShowBrosur, settings }: { onShowBrosur: () => vo
 					className="mb-6 font-bold text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] tracking-tight"
 				>
 					<span className="block drop-shadow-lg">
-						Selamat Datang di
+						{settings?.hero_title_1 || "Selamat Datang di"}
 					</span>
 					<span className="block drop-shadow-lg mt-3 text-blue-400 dark:text-primary">
-						MI Nurul Ulum
+						{settings?.hero_title_2 || "MI Nurul Ulum"}
 					</span>
 				</h1>
 
@@ -110,8 +110,7 @@ export function HeroSection({ onShowBrosur, settings }: { onShowBrosur: () => vo
 					ref={descRef}
 					className="drop-shadow-md mx-auto mb-10 max-w-2xl text-white/85 text-lg md:text-xl leading-relaxed"
 				>
-					Membentuk generasi Qur'ani yang cerdas, berakhlak mulia, dan siap
-					menghadapi tantangan zaman dengan pendidikan yang berkualitas.
+					{settings?.hero_description || "Membentuk generasi Qur'ani yang cerdas, berakhlak mulia, dan siap menghadapi tantangan zaman dengan pendidikan yang berkualitas."}
 				</p>
 
 				<div

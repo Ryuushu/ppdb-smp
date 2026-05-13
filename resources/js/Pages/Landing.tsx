@@ -41,7 +41,7 @@ export default function Home({ gelombang, setting, masterDocuments, landingSetti
             <GuruSection data={landingContents?.guru || []} />
             <ExtracurricularSection data={landingContents?.ekstra || []} />
 
-			<Footer />
+			<Footer landingSettings={landingSettings} />
 
 			<BrosurModal 
 				isOpen={isBrosurOpen} 
@@ -49,6 +49,7 @@ export default function Home({ gelombang, setting, masterDocuments, landingSetti
 				gelombang={gelombang}
 				setting={setting}
                 masterDocuments={masterDocuments}
+                landingSettings={landingSettings}
 			/>
 		</main>
 	);

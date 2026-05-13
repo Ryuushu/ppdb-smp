@@ -15,6 +15,20 @@ import {
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
+const TikTokIcon = (props: any) => (
+    <svg 
+        {...props}
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+    >
+        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+);
+
 gsap.registerPlugin(ScrollTrigger);
 
 const quickLinks = [
@@ -24,9 +38,46 @@ const quickLinks = [
 ];
 
 
-export function Footer() {
+export function Footer({ landingSettings = {} }: { landingSettings?: Record<string, string> }) {
 	const footerRef = useRef<HTMLElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
+
+    const contactInfo = [
+        {
+            icon: MapPin,
+            text: landingSettings.footer_address || "Krajan Lama, Cindogo, Tapen, Kabupaten Bondowoso, Jawa Timur 68283",
+        },
+        { 
+            icon: Phone, 
+            text: landingSettings.footer_phone || "+62 812 2000 1409" 
+        },
+        { 
+            icon: Mail, 
+            text: landingSettings.footer_email || "minurululumcindogo@gmail.co" 
+        },
+        { 
+            icon: Clock, 
+            text: landingSettings.footer_hours || "Senin - Sabtu: 07:00 - 15:00" 
+        },
+    ];
+
+    const socialLinks = [
+        {
+            name: "Facebook",
+            icon: Facebook,
+            href: landingSettings.footer_facebook || "https://www.facebook.com/",
+        },
+        {
+            name: "Instagram",
+            icon: Instagram,
+            href: landingSettings.footer_instagram || "https://www.instagram.com/",
+        },
+        {
+            name: "TikTok",
+            icon: TikTokIcon,
+            href: landingSettings.footer_tiktok || "https://www.tiktok.com/",
+        },
+    ];
 
 	useEffect(() => {
 		const ctx = gsap.context(() => {
@@ -78,7 +129,7 @@ export function Footer() {
 				ref={contentRef}
 				className="mx-auto px-4 sm:px-6 lg:px-8 py-16 max-w-7xl"
 			>
-				<div className="gap-10 grid md:grid-cols-2 lg:grid-cols-4">
+				<div className="gap-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
 					<div className="space-y-6">
 						<Link href="/" className="flex items-center gap-3 group">
 							<div className="bg-white p-2 rounded-xl w-12 h-12 overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-300">
@@ -95,26 +146,10 @@ export function Footer() {
 						<p className="text-background/70 text-sm leading-relaxed">
 							Membentuk generasi Qur'ani yang cerdas, berakhlak mulia, dan siap
 							menghadapi tantangan zaman dengan pendidikan yang berkualitas di
-							Kab. Pekalongan.
+							Kab. Bondowoso.
 						</p>
 						<div className="flex gap-3">
-							{[
-								{
-									name: "Facebook",
-									icon: Facebook,
-									href: "https://www.facebook.com/",
-								},
-								{
-									name: "Instagram",
-									icon: Instagram,
-									href: "https://www.instagram.com/",
-								},
-								{
-									name: "TikTok",
-									icon: Youtube,
-									href: "https://www.tiktok.com/",
-								},
-							].map((social) => (
+							{socialLinks.map((social) => (
 								<a
 									key={social.name}
 									href={social.href}
@@ -144,15 +179,7 @@ export function Footer() {
 									</Link>
 								</li>
 							))}
-						</ul>
-					</div>
-
-					<div>
-						<h4 className="mb-6 font-bold text-background text-lg">
-							Tautan Utama
-						</h4>
-						<ul className="space-y-3">
-							<li key="register">
+                            <li key="register">
 								<Link
 									href={route('ppdb.register')}
 									className="inline-block text-background/70 hover:text-primary text-sm transition-all hover:translate-x-1 duration-300"
@@ -160,29 +187,29 @@ export function Footer() {
 									Daftar Online
 								</Link>
 							</li>
-							<li key="ranking">
-								<Link
-									href={route('ppdb.ranking')}
-									className="inline-block text-background/70 hover:text-primary text-sm transition-all hover:translate-x-1 duration-300"
-								>
-									Pengumuman Hasil
-								</Link>
-							</li>
 						</ul>
+					</div>
+
+					<div className="lg:col-span-1">
+						<h4 className="mb-6 font-bold text-background text-lg">Lokasi Kami</h4>
+                        <div className="rounded-2xl overflow-hidden border border-background/10 h-48 bg-background/5">
+                            {landingSettings.footer_map_iframe ? (
+                                <div 
+                                    className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full border-none"
+                                    dangerouslySetInnerHTML={{ __html: landingSettings.footer_map_iframe }} 
+                                />
+                            ) : (
+                                <div className="flex items-center justify-center h-full text-background/40 text-xs italic p-4 text-center">
+                                    Peta belum diatur di dashboard admin.
+                                </div>
+                            )}
+                        </div>
 					</div>
 
 					<div>
 						<h4 className="mb-6 font-bold text-background text-lg">Kontak</h4>
 						<ul className="space-y-4">
-							{[
-								{
-									icon: MapPin,
-									text: "Krajan Lama, Cindogo, Tapen, Kabupaten Bondowoso, Jawa Timur 68283",
-								},
-								{ icon: Phone, text: "+62 812 2000 1409" },
-								{ icon: Mail, text: "minurululumcindogo@gmail.co" },
-								{ icon: Clock, text: "Senin - Sabtu: 07:00 - 15:00" },
-							].map((item) => (
+							{contactInfo.map((item) => (
 								<li key={item.text} className="group flex items-start gap-3">
 									<div className="flex justify-center items-center bg-primary/20 group-hover:bg-primary rounded-lg w-8 h-8 group-hover:scale-110 transition-all duration-300 shrink-0">
 										<item.icon className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />

@@ -35,8 +35,38 @@ class LandingPageController extends Controller
             );
         }
 
+        // Handle hero_image upload if present
+        if ($request->hasFile('hero_image')) {
+            $oldPath = LandingSetting::where('key', 'hero_image')->value('value');
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('hero_image')->store('landing/settings', 'public');
+            LandingSetting::updateOrCreate(
+                ['key' => 'hero_image'],
+                ['value' => $path]
+            );
+        }
+
+        // Handle brosur_image upload if present
+        if ($request->hasFile('brosur_image')) {
+            $oldPath = LandingSetting::where('key', 'brosur_image')->value('value');
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('brosur_image')->store('landing/settings', 'public');
+            LandingSetting::updateOrCreate(
+                ['key' => 'brosur_image'],
+                ['value' => $path]
+            );
+        }
+
         // Handle kepsek_image upload if present
         if ($request->hasFile('kepsek_image')) {
+            $oldPath = LandingSetting::where('key', 'kepsek_image')->value('value');
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
             $path = $request->file('kepsek_image')->store('landing/settings', 'public');
             LandingSetting::updateOrCreate(
                 ['key' => 'kepsek_image'],

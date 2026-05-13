@@ -45,8 +45,12 @@ export default function LandingPageSettings({ settings, contents }: Props) {
             hero_stats_siswa: settings?.hero_stats_siswa || "540",
             hero_stats_akreditasi: settings?.hero_stats_akreditasi || "B",
             hero_stats_tahun: settings?.hero_stats_tahun || "2017",
+            hero_title_1: settings?.hero_title_1 || "Selamat Datang di",
+            hero_title_2: settings?.hero_title_2 || "MI Nurul Ulum",
+            hero_description: settings?.hero_description || "Membentuk generasi Qur'ani yang cerdas, berakhlak mulia, dan siap menghadapi tantangan zaman dengan pendidikan yang berkualitas.",
         },
         hero_image: null as File | null,
+        brosur_image: null as File | null,
     });
 
     const submitHero = (e: React.FormEvent) => {
@@ -68,6 +72,28 @@ export default function LandingPageSettings({ settings, contents }: Props) {
     const submitVm = (e: React.FormEvent) => {
         e.preventDefault();
         postVm(route("admin.landing-page.settings.update"), {
+            preserveScroll: true,
+        });
+    };
+
+    // Footer Form
+    const { data: footerData, setData: setFooterData, post: postFooter, processing: footerProcessing } = useForm({
+        _method: 'put',
+        settings: {
+            footer_address: settings?.footer_address || "Krajan Lama, Cindogo, Tapen, Kabupaten Bondowoso, Jawa Timur 68283",
+            footer_phone: settings?.footer_phone || "+62 812 2000 1409",
+            footer_email: settings?.footer_email || "minurululumcindogo@gmail.co",
+            footer_hours: settings?.footer_hours || "Senin - Sabtu: 07:00 - 15:00",
+            footer_facebook: settings?.footer_facebook || "https://www.facebook.com/",
+            footer_instagram: settings?.footer_instagram || "https://www.instagram.com/",
+            footer_tiktok: settings?.footer_tiktok || "https://www.tiktok.com/",
+            footer_map_iframe: settings?.footer_map_iframe || "",
+        },
+    });
+
+    const submitFooter = (e: React.FormEvent) => {
+        e.preventDefault();
+        postFooter(route("admin.landing-page.settings.update"), {
             preserveScroll: true,
         });
     };
@@ -97,6 +123,7 @@ export default function LandingPageSettings({ settings, contents }: Props) {
                         <TabsTrigger value="prestasi">Prestasi</TabsTrigger>
                         <TabsTrigger value="guru">Guru & Staf</TabsTrigger>
                         <TabsTrigger value="ekstra">Ekstrakurikuler</TabsTrigger>
+                        <TabsTrigger value="footer">Footer</TabsTrigger>
                     </TabsList>
 
                     {/* Hero Tab */}
@@ -131,6 +158,34 @@ export default function LandingPageSettings({ settings, contents }: Props) {
                                             />
                                         </div>
                                     </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Judul Baris 1 (Putih)</Label>
+                                            <Input 
+                                                value={heroData.settings.hero_title_1} 
+                                                onChange={e => setHeroData('settings', { ...heroData.settings, hero_title_1: e.target.value })} 
+                                                placeholder="Contoh: Selamat Datang di"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Judul Baris 2 (Biru)</Label>
+                                            <Input 
+                                                value={heroData.settings.hero_title_2} 
+                                                onChange={e => setHeroData('settings', { ...heroData.settings, hero_title_2: e.target.value })} 
+                                                placeholder="Contoh: MI Nurul Ulum"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Deskripsi Hero</Label>
+                                        <Textarea 
+                                            value={heroData.settings.hero_description} 
+                                            onChange={e => setHeroData('settings', { ...heroData.settings, hero_description: e.target.value })} 
+                                            placeholder="Masukkan deskripsi singkat..."
+                                            className="min-h-[80px]"
+                                        />
+                                    </div>
+
                                     <div className="space-y-2 pt-4 border-t">
                                         <Label>Gambar Latar Belakang (Background)</Label>
                                         <div className="flex flex-col gap-4">
@@ -143,6 +198,20 @@ export default function LandingPageSettings({ settings, contents }: Props) {
                                                 onChange={e => setHeroData('hero_image', e.target.files?.[0] || null)} 
                                             />
                                             <p className="text-xs text-muted-foreground">Sebaiknya gunakan gambar landscape dengan resolusi tinggi (contoh: 1920x1080px).</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 pt-4 border-t">
+                                        <Label>Gambar Brosur (Popup Brosur)</Label>
+                                        <div className="flex flex-col gap-4">
+                                            {settings?.brosur_image && (
+                                                <img src={`/storage/${settings.brosur_image}`} className="w-full md:w-1/4 h-48 object-cover rounded-xl border" alt="Brosur Preview" />
+                                            )}
+                                            <Input 
+                                                type="file" 
+                                                accept="image/*"
+                                                onChange={e => setHeroData('brosur_image', e.target.files?.[0] || null)} 
+                                            />
+                                            <p className="text-xs text-muted-foreground">Ini adalah gambar yang akan muncul saat pengunjung menekan tombol "Lihat Brosur". Gunakan gambar dengan rasio portrait.</p>
                                         </div>
                                     </div>
                                     <Button type="submit" disabled={heroProcessing}>Simpan Perubahan</Button>
@@ -306,6 +375,94 @@ export default function LandingPageSettings({ settings, contents }: Props) {
                             items={contents.ekstra || []}
                             fields={['title', 'description', 'image', 'icon', 'order']}
                         />
+                    </TabsContent>
+
+                    <TabsContent value="footer">
+                        <Card>
+                            <form onSubmit={submitFooter}>
+                                <CardHeader>
+                                    <CardTitle>Pengaturan Footer</CardTitle>
+                                    <CardDescription>Atur informasi kontak, sosial media, dan peta lokasi di bagian bawah website.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <h3 className="font-bold text-sm border-b pb-2">Informasi Kontak</h3>
+                                            <div className="space-y-2">
+                                                <Label>Alamat Lengkap</Label>
+                                                <Textarea 
+                                                    value={footerData.settings.footer_address} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_address: e.target.value })} 
+                                                    className="min-h-[80px]"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Nomor Telepon / WA</Label>
+                                                <Input 
+                                                    value={footerData.settings.footer_phone} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_phone: e.target.value })} 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Email</Label>
+                                                <Input 
+                                                    value={footerData.settings.footer_email} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_email: e.target.value })} 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Jam Operasional</Label>
+                                                <Input 
+                                                    value={footerData.settings.footer_hours} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_hours: e.target.value })} 
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h3 className="font-bold text-sm border-b pb-2">Sosial Media</h3>
+                                            <div className="space-y-2">
+                                                <Label>Link Facebook</Label>
+                                                <Input 
+                                                    value={footerData.settings.footer_facebook} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_facebook: e.target.value })} 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Link Instagram</Label>
+                                                <Input 
+                                                    value={footerData.settings.footer_instagram} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_instagram: e.target.value })} 
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Link TikTok</Label>
+                                                <Input 
+                                                    value={footerData.settings.footer_tiktok} 
+                                                    onChange={e => setFooterData('settings', { ...footerData.settings, footer_tiktok: e.target.value })} 
+                                                />
+                                            </div>
+                                            
+                                            <div className="pt-4 space-y-4">
+                                                <h3 className="font-bold text-sm border-b pb-2">Peta Lokasi (Google Maps)</h3>
+                                                <div className="space-y-2">
+                                                    <Label>Embed Iframe Map</Label>
+                                                    <Textarea 
+                                                        value={footerData.settings.footer_map_iframe} 
+                                                        onChange={e => setFooterData('settings', { ...footerData.settings, footer_map_iframe: e.target.value })} 
+                                                        placeholder="Tempel kode <iframe> dari Google Maps di sini..."
+                                                        className="min-h-[100px]"
+                                                    />
+                                                    <p className="text-[10px] text-muted-foreground">Buka Google Maps → Bagikan → Sematkan Peta → Salin HTML.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <Button type="submit" disabled={footerProcessing}>Simpan Perubahan Footer</Button>
+                                </CardContent>
+                            </form>
+                        </Card>
                     </TabsContent>
                 </Tabs>
             </div>
