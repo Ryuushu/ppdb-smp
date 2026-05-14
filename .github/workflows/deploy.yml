@@ -79,10 +79,6 @@ jobs:
           -f docker/laravel/Dockerfile \
           .
 
-    - name: Push Laravel Image
-      run: |
-        docker push ${{ vars.IMAGE_NAME_LARAVEL }}:${{ steps.tag.outputs.tag }}
-
     # =========================
     # BUILD & PUSH NGINX
     # =========================
@@ -92,6 +88,10 @@ jobs:
           -t ${{ vars.IMAGE_NAME_NGINX }}:${{ steps.tag.outputs.tag }} \
           -f docker/nginx/Dockerfile \
           .
+          
+    - name: Push Laravel Image
+      run: |
+        docker push ${{ vars.IMAGE_NAME_LARAVEL }}:${{ steps.tag.outputs.tag }}
 
     - name: Push Nginx Image
       run: |
