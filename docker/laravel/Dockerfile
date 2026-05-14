@@ -40,16 +40,17 @@ RUN composer install \
 # ========================
 # 2. FRONTEND BUILD (NODE)
 # ========================
-FROM node:20-alpine AS frontend
 
-WORKDIR /app
+#FROM node:20-alpine AS frontend
 
-COPY ./package*.json ./
-RUN npm ci
+#WORKDIR /app
 
-COPY . .
-RUN npm run build
-RUN ls -lah public/build
+#COPY ./package*.json ./
+#RUN npm ci
+
+#COPY . .
+#RUN npm run build
+#RUN ls -lah public/build
 # ========================
 # 3. PHP 8.4 RUNTIME (FINAL)
 # ========================
@@ -115,7 +116,7 @@ RUN { \
 # COPY APP (FIXED - NO DUPLICATE)
 # ========================
 COPY --from=vendor /app /var/www
-COPY --from=frontend /app/public/build /var/www/public/build
+#COPY --from=frontend /app/public/build /var/www/public/build
 
 
 # ========================
