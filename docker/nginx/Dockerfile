@@ -1,15 +1,15 @@
 # ========================
 # 1. FRONTEND BUILD (NODE)
 # ========================
-FROM node:20-alpine AS frontend
+#FROM node:20-alpine AS frontend
 
-WORKDIR /app
+#WORKDIR /app
 
-COPY ./package*.json ./
-RUN npm ci
+#COPY ./package*.json ./
+#RUN npm ci
 
-COPY . .
-RUN npm run build
+#COPY . .
+#RUN npm run build
 
 
 # ========================
