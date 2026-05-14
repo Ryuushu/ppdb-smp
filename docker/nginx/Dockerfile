@@ -1,15 +1,15 @@
 # ========================
 # 1. FRONTEND BUILD (NODE)
 # ========================
-#FROM node:20-alpine AS frontend
+FROM node:20-alpine AS frontend
 
-#WORKDIR /app
+WORKDIR /app
 
-#COPY ./package*.json ./
-#RUN npm ci
+COPY ./package*.json ./
+RUN npm ci
 
-#COPY . .
-#RUN npm run build
+COPY . .
+RUN npm run build
 
 
 # ========================
@@ -19,4 +19,4 @@ FROM nginx:alpine
 
 COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-#COPY --from=frontend /app/public /var/www/public
+COPY --from=frontend /app/public /var/www/public
