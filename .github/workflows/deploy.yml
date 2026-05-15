@@ -106,72 +106,75 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
+  
     steps:
-    - name: Install sshpass
-      run: sudo apt-get update && sudo apt-get install -y sshpass
-
-    - name: Deploy to K3s Server
-      run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-        ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-
-        set -e
-
-        export KUBECONFIG=/home/nixie/k3s.yaml
-
-        echo "Deploy tag: ${{ needs.build.outputs.image_tag }}"
-
-        # =========================
-        # UPDATE IMAGE
-        # =========================
-        kubectl set image deployment/nginx \
-          nginx=${{ vars.IMAGE_NAME_NGINX }}:${{ needs.build.outputs.image_tag }} \
-          -n app
-
-        kubectl set image deployment/laravel \
-          laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
-          -n app
-
-        # =========================
-        # WAIT ROLLOUT
-        # =========================
-        kubectl rollout status deployment/nginx -n app --timeout=180s
-        kubectl rollout status deployment/laravel -n app --timeout=180s
-
-        # =========================
-        # MIGRATION JOB
-        # =========================
-        SAFE_TAG=$(echo "${{ needs.build.outputs.image_tag }}" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
-        JOB_NAME="laravel-migrate-$SAFE_TAG"
-
-        kubectl delete job $JOB_NAME -n app --ignore-not-found
-
-        cat <<YAML | kubectl apply -f -
-        apiVersion: batch/v1
-        kind: Job
-        metadata:
-          name: $JOB_NAME
-          namespace: app
-        spec:
-          ttlSecondsAfterFinished: 300
-          backoffLimit: 1
-          template:
-            spec:
-              containers:
-              - name: laravel
-                image: ${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }}
-                command: ["php", "artisan", "migrate", "--seed", "--force"]
-                envFrom:
-                - secretRef:
-                    name: laravel-env
-                - secretRef:
-                    name: mysql-secret
-              restartPolicy: Never
-        YAML
-
-        kubectl wait --for=condition=complete job/$JOB_NAME -n app --timeout=300s
-
-        kubectl logs job/$JOB_NAME -n app
-
-        EOF
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+  
+      - name: Deploy to K3s Server (ALL sudo)
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+  
+          set -e
+  
+          export KUBECONFIG=/home/nixie/k3s.yaml
+  
+          echo "Deploy tag: ${{ needs.build.outputs.image_tag }}"
+  
+          # =========================
+          # UPDATE IMAGE
+          # =========================
+          sudo kubectl set image deployment/nginx \
+            nginx=${{ vars.IMAGE_NAME_NGINX }}:${{ needs.build.outputs.image_tag }} \
+            -n app
+  
+          sudo kubectl set image deployment/laravel \
+            laravel=${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }} \
+            -n app
+  
+          # =========================
+          # ROLLOUT STATUS
+          # =========================
+          sudo kubectl rollout status deployment/nginx -n app --timeout=180s
+          sudo kubectl rollout status deployment/laravel -n app --timeout=180s
+  
+          # =========================
+          # MIGRATION JOB NAME
+          # =========================
+          SAFE_TAG=$(echo "${{ needs.build.outputs.image_tag }}" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
+          JOB_NAME="laravel-migrate-$SAFE_TAG"
+  
+          sudo kubectl delete job $JOB_NAME -n app --ignore-not-found
+  
+          # =========================
+          # MIGRATION JOB
+          # =========================
+          cat <<YAML | sudo kubectl apply -f -
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: $JOB_NAME
+            namespace: app
+          spec:
+            ttlSecondsAfterFinished: 300
+            backoffLimit: 1
+            template:
+              spec:
+                containers:
+                - name: laravel
+                  image: ${{ vars.IMAGE_NAME_LARAVEL }}:${{ needs.build.outputs.image_tag }}
+                  command: ["php", "artisan", "migrate", "--seed", "--force"]
+                  envFrom:
+                  - secretRef:
+                      name: laravel-env
+                  - secretRef:
+                      name: mysql-secret
+                restartPolicy: Never
+          YAML
+  
+          sudo kubectl wait --for=condition=complete job/$JOB_NAME -n app --timeout=300s
+  
+          sudo kubectl logs job/$JOB_NAME -n app
+  
+          EOF
