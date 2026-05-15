@@ -113,8 +113,8 @@ jobs:
   
       - name: Deploy to K3s Server (ALL sudo)
         run: |
-          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          sshpass -p "7Qvt6$t2738"  ssh -o StrictHostKeyChecking=no \
+          Kelompok17@103.157.27.198 << 'EOF'
   
           set -e
   
