@@ -113,8 +113,11 @@ jobs:
   
       - name: Deploy to K3s Server (ALL sudo)
         run: |
-          sshpass -p '7Qvt6$t2738'  ssh -o StrictHostKeyChecking=no \
-          Kelompok17@103.157.27.198 << 'EOF'
+          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh \
+          -o StrictHostKeyChecking=no \
+          -o ServerAliveInterval=60 \
+          -o ServerAliveCountMax=120 \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
   
           set -e
   
@@ -134,21 +137,32 @@ jobs:
             -n app
   
           # =========================
-          # ROLLOUT STATUS
+          # WAIT ROLLOUT
           # =========================
           sudo kubectl rollout status deployment/nginx -n app --timeout=180s
           sudo kubectl rollout status deployment/laravel -n app --timeout=180s
   
           # =========================
-          # MIGRATION JOB NAME
+          # PREPARE JOB NAME
           # =========================
           SAFE_TAG=$(echo "${{ needs.build.outputs.image_tag }}" | tr '.' '-' | tr '[:upper:]' '[:lower:]')
           JOB_NAME="laravel-migrate-$SAFE_TAG"
   
+          # =========================
+          # COPY MYSQL SECRET
+          # =========================
+          sudo kubectl get secret mysql-secret -n infra -o yaml \
+          | sed '/resourceVersion\|uid\|creationTimestamp\|managedFields/d' \
+          | sed 's/namespace: infra/namespace: app/' \
+          | sudo kubectl apply -f -
+  
+          # =========================
+          # DELETE OLD JOB
+          # =========================
           sudo kubectl delete job $JOB_NAME -n app --ignore-not-found
   
           # =========================
-          # MIGRATION JOB
+          # RUN MIGRATION JOB
           # =========================
           cat <<YAML | sudo kubectl apply -f -
           apiVersion: batch/v1
@@ -173,8 +187,18 @@ jobs:
                 restartPolicy: Never
           YAML
   
-          sudo kubectl wait --for=condition=complete job/$JOB_NAME -n app --timeout=300s
+          # =========================
+          # WAIT MIGRATION
+          # =========================
+          sudo kubectl wait \
+            --for=condition=complete \
+            job/$JOB_NAME \
+            -n app \
+            --timeout=300s
   
+          # =========================
+          # JOB LOGS
+          # =========================
           sudo kubectl logs job/$JOB_NAME -n app
   
           EOF
